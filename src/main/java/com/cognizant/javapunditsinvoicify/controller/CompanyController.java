@@ -31,4 +31,9 @@ public class CompanyController {
         companyService.update(companyDto,companyId) ;
 
     }
+
+    @GetMapping("{company_id}")
+    public ResponseEntity<?> getCompanyById(@PathVariable(name = "company_id") Long companyId){
+        return new ResponseEntity<>(companyService.getCompanyById(companyId), HttpStatus.OK);
+    }
 }

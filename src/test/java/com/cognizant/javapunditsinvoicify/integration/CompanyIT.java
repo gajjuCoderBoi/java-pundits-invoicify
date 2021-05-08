@@ -9,16 +9,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.transaction.annotation.Transactional;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -46,7 +45,7 @@ public class CompanyIT {
         CompanyDto CompanyDto = new CompanyDto();
         CompanyDto.setName("Name");
         CompanyDto.setContactName("Contact Name");
-        CompanyDto.setContactTile("Contact Title");
+        CompanyDto.setContactTitle("Contact Title");
         CompanyDto.setContactNumber(123456789);
         CompanyDto.setInvoices("Invoices");
 
@@ -81,7 +80,7 @@ public class CompanyIT {
         CompanyDto CompanyDto = new CompanyDto();
         CompanyDto.setName("First Company");
         CompanyDto.setContactName("Contact Name");
-        CompanyDto.setContactTile("Contact Title");
+        CompanyDto.setContactTitle("Contact Title");
         CompanyDto.setContactNumber(123456789);
         CompanyDto.setInvoices("Invoices");
 
@@ -122,9 +121,9 @@ public class CompanyIT {
     public void updateCompany_Success() throws Exception {
         RequestBuilder createCompany = post("/company")
                 .content(objectMapper.writeValueAsString(CompanyDto.builder()
-                        .name("Name")
+                        .name("Test Name")
                         .contactName("Contact Name")
-                        .contactTile("Contact Title")
+                        .contactTitle("Contact Title")
                         .contactNumber(123456789)
                         .invoices("Invoices")
                         .address(AddressDto.builder()
@@ -132,29 +131,53 @@ public class CompanyIT {
                                 .line2("line 2")
                                 .city("City")
                                 .state("XX")
+                                .zipcode(12343)
                                 .build())
                         .build()))
                 .contentType(MediaType.APPLICATION_JSON);
 
-        mockMvc.perform(createCompany)
+        MvcResult result=  mockMvc.perform(createCompany)
                 .andExpect(status().isCreated())
-                .andDo(print())
+                .andReturn()
         ;
+
+        String companyId = objectMapper.readValue(result.getResponse().getContentAsString(), ResponseMessage.class)
+                .getResponseMessage();
 
         CompanyDto wallmartDto = CompanyDto
                 .builder()
                 .name("wallmart")
                 .contactName("wallmartCEO")
+                .address(AddressDto
+                        .builder()
+                        .city("New York")
+                        .state("PR")
+                        .build())
                 .build();
-        RequestBuilder updateRequest = put("/company/1")
+        RequestBuilder updateRequest = put(String.format("/company/%s",companyId))
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(wallmartDto));
 
         mockMvc.perform(updateRequest)
-                .andExpect(status().isNoContent())
-                .andDo(print());
+                .andExpect(status().isNoContent());
 
+        RequestBuilder getCompanyByIdRequest = get(String.format("/company/%s",companyId))
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON);
+
+        mockMvc.perform(getCompanyByIdRequest)
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("name").value("wallmart"))
+                .andExpect(jsonPath("contactName").value("wallmartCEO"))
+                .andExpect(jsonPath("contactNumber").value("123456789"))
+                .andExpect(jsonPath("contactTitle").value("Contact Title"))
+                .andExpect(jsonPath("address.line1").value("Address line 1"))
+                .andExpect(jsonPath("address.line2").value("line 2"))
+                .andExpect(jsonPath("address.city").value("New York"))
+                .andExpect(jsonPath("address.state").value("PR"))
+                .andExpect(jsonPath("address.zipcode").value("12343"))
+                .andDo(print());
     }
 
 
