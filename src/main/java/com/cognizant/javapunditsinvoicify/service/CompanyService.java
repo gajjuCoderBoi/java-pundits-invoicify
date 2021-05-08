@@ -7,12 +7,10 @@ import com.cognizant.javapunditsinvoicify.entity.CompanyEntity;
 import com.cognizant.javapunditsinvoicify.mapper.AddressMapper;
 import com.cognizant.javapunditsinvoicify.repository.CompanyRepository;
 
-import org.mapstruct.factory.Mappers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
 import com.cognizant.javapunditsinvoicify.response.ResponseMessage;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 
 import org.springframework.stereotype.Service;
@@ -50,7 +48,7 @@ public class CompanyService {
             companyEntity.setAddressEntity(addressEntity);
             companyEntity.setContactName(companyDto.getContactName());
             companyEntity.setContactNumber(companyDto.getContactNumber());
-            companyEntity.setContactTitle(companyDto.getContactTile());
+            companyEntity.setContactTitle(companyDto.getContactTitle());
             companyEntity.setInvoices(companyDto.getInvoices());
             companyEntity = this.companyRepository.save(companyEntity);
             responseMessage.setResponseMessage(companyEntity.getId().toString());
@@ -73,7 +71,7 @@ public class CompanyService {
             savedCompanyEntity.setAddressEntity(addressMapper.addressDtoToEntity(companyDto.getAddress()));
         savedCompanyEntity.setName(companyDto.getName());
         savedCompanyEntity.setContactName(companyDto.getContactName());
-        savedCompanyEntity.setContactTitle(companyDto.getContactTile());
+        savedCompanyEntity.setContactTitle(companyDto.getContactTitle());
         savedCompanyEntity.setContactNumber(companyDto.getContactNumber());
         companyRepository.save(savedCompanyEntity);
 

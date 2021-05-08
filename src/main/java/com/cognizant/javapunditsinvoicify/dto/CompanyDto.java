@@ -12,7 +12,7 @@ public class CompanyDto {
     private String name;
     private AddressDto address;
     private String contactName;
-    private String contactTile;
+    private String contactTitle;
     private Integer contactNumber;
     private String invoices;
 
