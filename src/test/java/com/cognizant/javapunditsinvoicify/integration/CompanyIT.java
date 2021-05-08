@@ -37,7 +37,7 @@ public class CompanyIT {
      */
 
     @Test
-    public void createCompanyTest() throws Exception{
+    public void createCompanyTest() throws Exception {
 
         CompanyDto CompanyDto = new CompanyDto();
         CompanyDto.setName("Name");
@@ -70,14 +70,20 @@ public class CompanyIT {
      */
     @Test
     @DirtiesContext()
-    public void updateCompany_Success() {
-        CompanyDto wallmart= CompanyDto
+    public void updateCompany_Success() throws Exception {
+        CompanyDto wallmartDto = CompanyDto
                 .builder()
+                .name("wallmart")
+                .contactName("wallmartCEO")
                 .build();
         RequestBuilder updateRequest = put("/company/1")
                 .accept(MediaType.APPLICATION_JSON)
-                .contentType(MediaType.APPLICATION_JSON);
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(wallmartDto));
 
+        mockMvc.perform(updateRequest)
+                .andExpect(status().isNoContent())
+                .andDo(print());
 
     }
 

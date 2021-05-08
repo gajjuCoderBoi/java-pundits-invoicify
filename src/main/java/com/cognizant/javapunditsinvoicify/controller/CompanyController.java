@@ -23,8 +23,10 @@ public class CompanyController {
     }
 
     @PutMapping("{company_id}")
-    public void updateCompany(@PathVariable(name = "company_id") Long companyId) {
-        return ;
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void updateCompany(@PathVariable(name = "company_id") Long companyId,
+                              @RequestBody CompanyDto companyDto) {
+        companyService.update(companyDto,companyId) ;
 
     }
 }
