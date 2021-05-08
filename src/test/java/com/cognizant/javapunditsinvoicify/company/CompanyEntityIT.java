@@ -1,8 +1,8 @@
 package com.cognizant.javapunditsinvoicify.company;
 
-import com.cognizant.javapunditsinvoicify.dto.AddressDTO;
+import com.cognizant.javapunditsinvoicify.dto.AddressDto;
 import com.cognizant.javapunditsinvoicify.entity.AddressEntity;
-import com.cognizant.javapunditsinvoicify.dto.CompanyDTO;
+import com.cognizant.javapunditsinvoicify.dto.CompanyDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -34,24 +34,24 @@ public class CompanyEntityIT {
     @Test
     public void createCompanyTest() throws Exception{
 
-        CompanyDTO companyDTO = new CompanyDTO();
-        companyDTO.setName("Name");
-        companyDTO.setContactName("Contact Name");
-        companyDTO.setContactTitle("Contact Title");
-        companyDTO.setContactNumber("Contact Number");
-        companyDTO.setInvoices("Invoices");
+        CompanyDto CompanyDto = new CompanyDto();
+        CompanyDto.setName("Name");
+        CompanyDto.setContactName("Contact Name");
+        CompanyDto.setContactTile("Contact Title");
+        CompanyDto.setContactNumber(123456789);
+        CompanyDto.setInvoices("Invoices");
 
-        AddressDTO addressDTO = new AddressDTO();
-        addressDTO.setLine1("Address line 1");
-        addressDTO.setLine2("line 2");
-        addressDTO.setCity("City");
-        addressDTO.setState("XX");
-        addressDTO.setZip(12345);
+        AddressDto AddressDto = new AddressDto();
+        AddressDto.setLine1("Address line 1");
+        AddressDto.setLine2("line 2");
+        AddressDto.setCity("City");
+        AddressDto.setState("XX");
+        AddressDto.setZipcode(12345);
 
-        companyDTO.setAddressDTO(addressDTO);
+        CompanyDto.setAddress(AddressDto);
 
-        RequestBuilder rq = post("/invoicify/companies")
-                .content(objectMapper.writeValueAsString(companyDTO))
+        RequestBuilder rq = post("/company")
+                .content(objectMapper.writeValueAsString(CompanyDto))
                 .contentType(MediaType.APPLICATION_JSON);
 
         mockMvc.perform(rq)

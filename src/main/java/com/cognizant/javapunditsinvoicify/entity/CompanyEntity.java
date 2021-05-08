@@ -26,7 +26,7 @@ public class CompanyEntity {
 
     String contactName;
     String contactTitle;
-    String contactNumber;
+    Integer contactNumber;
     String invoices;
 
 }

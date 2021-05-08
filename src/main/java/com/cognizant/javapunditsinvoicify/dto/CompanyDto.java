@@ -14,5 +14,6 @@ public class CompanyDto {
     private String contactName;
     private String contactTile;
     private Integer contactNumber;
+    private String invoices;
 
 }

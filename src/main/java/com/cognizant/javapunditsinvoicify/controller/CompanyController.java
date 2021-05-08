@@ -1,7 +1,7 @@
 package com.cognizant.javapunditsinvoicify.controller;
 
 import com.cognizant.javapunditsinvoicify.service.CompanyService;
-import com.cognizant.javapunditsinvoicify.dto.CompanyDTO;
+import com.cognizant.javapunditsinvoicify.dto.CompanyDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -18,8 +18,8 @@ public class CompanyController {
 
     @PostMapping()
     @ResponseStatus(HttpStatus.CREATED)
-    public void addCompanies(@RequestBody CompanyDTO companyDTO){
-        companyService.addCompany(companyDTO);
+    public void addCompanies(@RequestBody CompanyDto CompanyDto){
+        companyService.addCompany(CompanyDto);
     }
 
     @PutMapping("{company_id}")
