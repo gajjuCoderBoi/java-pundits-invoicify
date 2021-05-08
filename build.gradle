@@ -43,7 +43,7 @@ test {
 }
 
 asciidoctor {
-    inputs.dir snippetsDir
+    attributes 'snippets': snippetsDir
     dependsOn test
 }
 
@@ -53,3 +53,4 @@ bootJar {
         into 'static/docs'
     }
 }
+
