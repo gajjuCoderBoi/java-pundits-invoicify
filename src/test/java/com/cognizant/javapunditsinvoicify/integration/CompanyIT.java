@@ -2,6 +2,7 @@ package com.cognizant.javapunditsinvoicify.integration;
 
 import com.cognizant.javapunditsinvoicify.dto.AddressDto;
 import com.cognizant.javapunditsinvoicify.dto.CompanyDto;
+import com.cognizant.javapunditsinvoicify.response.ResponseMessage;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
