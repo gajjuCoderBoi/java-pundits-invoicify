@@ -1,4 +1,4 @@
-package com.cognizant.javapunditsinvoicify.company;
+package com.cognizant.javapunditsinvoicify.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
@@ -11,15 +11,19 @@ import javax.persistence.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name="COMPANY")
-public class Company {
+@Table(name="company")
+public class CompanyEntity {
 
     @Id
     @JsonIgnore
     @GeneratedValue(strategy = GenerationType.AUTO)
-    long id;
+    Long id;
     String name;
-    String address;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "address_id")
+    private AddressEntity addressEntity;
+
     String contactName;
     String contactTitle;
     String contactNumber;

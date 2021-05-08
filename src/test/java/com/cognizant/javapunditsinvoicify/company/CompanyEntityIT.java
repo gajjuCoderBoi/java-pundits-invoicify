@@ -1,10 +1,12 @@
 package com.cognizant.javapunditsinvoicify.company;
 
+import com.cognizant.javapunditsinvoicify.dto.AddressDTO;
+import com.cognizant.javapunditsinvoicify.entity.AddressEntity;
+import com.cognizant.javapunditsinvoicify.dto.CompanyDTO;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
@@ -21,7 +23,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 @Transactional
-public class CompanyIT {
+public class CompanyEntityIT {
 
     @InjectMocks
     private ObjectMapper objectMapper;
@@ -34,11 +36,19 @@ public class CompanyIT {
 
         CompanyDTO companyDTO = new CompanyDTO();
         companyDTO.setName("Name");
-        companyDTO.setAddress("Address");
         companyDTO.setContactName("Contact Name");
         companyDTO.setContactTitle("Contact Title");
         companyDTO.setContactNumber("Contact Number");
         companyDTO.setInvoices("Invoices");
+
+        AddressDTO addressDTO = new AddressDTO();
+        addressDTO.setLine1("Address line 1");
+        addressDTO.setLine2("line 2");
+        addressDTO.setCity("City");
+        addressDTO.setState("XX");
+        addressDTO.setZip(12345);
+
+        companyDTO.setAddressDTO(addressDTO);
 
         RequestBuilder rq = post("/invoicify/companies")
                 .content(objectMapper.writeValueAsString(companyDTO))
@@ -46,7 +56,8 @@ public class CompanyIT {
 
         mockMvc.perform(rq)
                 .andExpect(status().isCreated())
-                .andDo(print());
+                .andDo(print())
+        ;
     }
 
 }
