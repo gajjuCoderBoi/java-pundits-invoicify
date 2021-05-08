@@ -30,24 +30,6 @@ public class CompanyService {
     @Qualifier("address-mapper")
     private AddressMapper addressMapper ;
 
-    public void addCompany(CompanyDto companyDto) {
-        CompanyEntity companyEntity = new CompanyEntity();
-        companyEntity.setName(companyDto.getName());
-        AddressDto AddressDto = companyDto.getAddress();
-        AddressEntity addressEntity = AddressEntity.builder()
-                .line1(AddressDto.getLine1())
-                .line2(AddressDto.getLine2())
-                .city(AddressDto.getCity())
-                .state(AddressDto.getState())
-                .zip(AddressDto.getZipcode())
-                .build();
-        companyEntity.setAddressEntity(addressEntity);
-        companyEntity.setContactName(companyDto.getContactName());
-        companyEntity.setContactNumber(companyDto.getContactNumber());
-        companyEntity.setContactTitle(companyDto.getContactTile());
-        companyEntity.setInvoices(companyDto.getInvoices());
-        this.companyRepository.save(companyEntity);
-
     public ResponseMessage addCompany(CompanyDto companyDto) {
 
         ResponseMessage responseMessage = new ResponseMessage();
@@ -73,7 +55,6 @@ public class CompanyService {
             companyEntity = this.companyRepository.save(companyEntity);
             responseMessage.setResponseMessage(companyEntity.getId().toString());
             responseMessage.setHttpStatus(HttpStatus.CREATED);
-
 
         } else {
             responseMessage.setResponseMessage("Company Already Exist");
