@@ -1,0 +1,11 @@
+Invoicify Service
+
+Company
+
+.request
+include::{snippets}/addCompany/http-request.adoc[]
+
+.response
+include::{snippets}/addCompany/http-response.adoc[]
+
+

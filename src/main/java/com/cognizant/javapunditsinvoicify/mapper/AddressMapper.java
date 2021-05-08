@@ -5,8 +5,9 @@ import com.cognizant.javapunditsinvoicify.entity.AddressEntity;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;
+import org.mapstruct.ReportingPolicy;
 
-@Mapper
+@Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE, unmappedSourcePolicy = ReportingPolicy.IGNORE)
 public interface AddressMapper {
     @Mappings({
             @Mapping(source="dto.line1",target="line1"),
