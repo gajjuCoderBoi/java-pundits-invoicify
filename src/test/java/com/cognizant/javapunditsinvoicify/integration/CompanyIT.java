@@ -2,14 +2,12 @@ package com.cognizant.javapunditsinvoicify.integration;
 
 import com.cognizant.javapunditsinvoicify.dto.AddressDto;
 import com.cognizant.javapunditsinvoicify.dto.CompanyDto;
-import com.cognizant.javapunditsinvoicify.response.ResponseMessage;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
@@ -17,6 +15,10 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.transaction.annotation.Transactional;
 
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
+import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -46,7 +48,7 @@ public class CompanyIT {
         CompanyDto CompanyDto = new CompanyDto();
         CompanyDto.setName("Name");
         CompanyDto.setContactName("Contact Name");
-        CompanyDto.setContactTile("Contact Title");
+        CompanyDto.setContactTitle("Contact Title");
         CompanyDto.setContactNumber(123456789);
         CompanyDto.setInvoices("Invoices");
 
@@ -66,8 +68,24 @@ public class CompanyIT {
         mockMvc.perform(rq)
                 .andExpect(status().isCreated())
                 .andDo(print())
+                .andDo(document("addCompany", requestFields(
+                        fieldWithPath("name").description("Name of the Company"),
+                        fieldWithPath("contactName").description("Name of the Contact person of the company"),
+                        fieldWithPath("contactTitle").description("Title of the Contact person of the company"),
+                        fieldWithPath("contactNumber").description("Contact No of the company PoC"),
+                        fieldWithPath("invoices").description("Invoices"),
+                        fieldWithPath("address.line1").description("Address line 1 of the Company"),
+                        fieldWithPath("address.line2").description("Address line 2 of the Company"),
+                        fieldWithPath("address.city").description("City of the Company location"),
+                        fieldWithPath("address.state").description("State of the Company location"),
+                        fieldWithPath("address.zipcode").description("Zip-Code of the Company location")
 
-        ;
+                )))
+                .andDo(document("addCompany", responseFields(
+                        fieldWithPath("responseMessage").description("Id of the company created or conflict error-message for payload")
+
+                )));
+
     }
 
     /**
@@ -81,7 +99,7 @@ public class CompanyIT {
         CompanyDto CompanyDto = new CompanyDto();
         CompanyDto.setName("First Company");
         CompanyDto.setContactName("Contact Name");
-        CompanyDto.setContactTile("Contact Title");
+        CompanyDto.setContactTitle("Contact Title");
         CompanyDto.setContactNumber(123456789);
         CompanyDto.setInvoices("Invoices");
 
@@ -124,7 +142,7 @@ public class CompanyIT {
                 .content(objectMapper.writeValueAsString(CompanyDto.builder()
                         .name("Name")
                         .contactName("Contact Name")
-                        .contactTile("Contact Title")
+                        .contactTitle("Contact Title")
                         .contactNumber(123456789)
                         .invoices("Invoices")
                         .address(AddressDto.builder()
