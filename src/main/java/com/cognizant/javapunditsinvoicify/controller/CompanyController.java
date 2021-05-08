@@ -1,9 +1,11 @@
 package com.cognizant.javapunditsinvoicify.controller;
 
+import com.cognizant.javapunditsinvoicify.response.ResponseMessage;
 import com.cognizant.javapunditsinvoicify.service.CompanyService;
 import com.cognizant.javapunditsinvoicify.dto.CompanyDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -17,9 +19,9 @@ public class CompanyController {
     CompanyService companyService;
 
     @PostMapping()
-    @ResponseStatus(HttpStatus.CREATED)
-    public void addCompanies(@RequestBody CompanyDto CompanyDto){
-        companyService.addCompany(CompanyDto);
+    public ResponseEntity<?> addCompanies(@RequestBody CompanyDto CompanyDto){
+        ResponseMessage responseMessage = companyService.addCompany(CompanyDto);
+        return new ResponseEntity<>(responseMessage,responseMessage.getHttpStatus());
     }
 
     @PutMapping("{company_id}")
