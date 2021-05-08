@@ -1,5 +1,6 @@
 package com.cognizant.javapunditsinvoicify.integration;
 
+import com.cognizant.javapunditsinvoicify.dto.CompanyDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +29,9 @@ public class CompanyIT {
     @Test
     @DirtiesContext()
     public void updateCompany_Success() {
-
+        CompanyDto wallmart= CompanyDto
+                .builder()
+                .build();
         RequestBuilder updateRequest = put("/company/1")
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON);
