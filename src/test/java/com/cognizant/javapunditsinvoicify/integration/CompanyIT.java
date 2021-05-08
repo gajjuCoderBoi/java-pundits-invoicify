@@ -27,15 +27,14 @@ public class CompanyIT {
 
     @Test
     @DirtiesContext()
-    public void updateCompany_Success(){
+    public void updateCompany_Success() {
 
-        RequestBuilder updaterequest=put("/company/1")
+        RequestBuilder updateRequest = put("/company/1")
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON);
 
 
     }
-
 
 
 }
