@@ -71,6 +71,27 @@ public class CompanyIT {
     @Test
     @DirtiesContext()
     public void updateCompany_Success() throws Exception {
+        RequestBuilder createCompany = post("/company")
+                .content(objectMapper.writeValueAsString(CompanyDto.builder()
+                        .name("Name")
+                        .contactName("Contact Name")
+                        .contactTile("Contact Title")
+                        .contactNumber(123456789)
+                        .invoices("Invoices")
+                        .address(AddressDto.builder()
+                                .line1("Address line 1")
+                                .line2("line 2")
+                                .city("City")
+                                .state("XX")
+                                .build())
+                        .build()))
+                .contentType(MediaType.APPLICATION_JSON);
+
+        mockMvc.perform(createCompany)
+                .andExpect(status().isCreated())
+                .andDo(print())
+        ;
+
         CompanyDto wallmartDto = CompanyDto
                 .builder()
                 .name("wallmart")
