@@ -43,8 +43,14 @@ test {
 }
 
 asciidoctor {
-    inputs.dir snippetsDir
+    attributes 'snippets': snippetsDir
     dependsOn test
+}
+
+task copyConfig(type: Copy) {
+    from file("${projectDir}/conf.yml")
+    into file("${buildDir}/resources/main")
+    rename 'conf.yml', 'application-dev.yml'
 }
 
 bootJar {
@@ -52,4 +58,8 @@ bootJar {
     from("${asciidoctor.outputDir}/html5") {
         into 'static/docs'
     }
+    dependsOn copyConfig
+    archiveFileName = "invoicify.jar"
+    destinationDirectory = file("$projectDir/target")
 }
+

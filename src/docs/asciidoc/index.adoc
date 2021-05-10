@@ -1,6 +1,6 @@
 Invoicify Service
 
-Company
+AddCompany
 
 .request
 include::{snippets}/addCompany/http-request.adoc[]
