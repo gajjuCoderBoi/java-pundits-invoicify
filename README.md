@@ -113,10 +113,10 @@ Build from Source:
       
    * Using config.yml (need to repeat step 2)
 
-         ```yaml
-            # Add Server Port property
-            server.port=your-port                        
-         ```
+     ```yaml
+        # Add Server Port property
+        server.port=your-port                        
+     ```
    * Java Command
       
       ```shell
