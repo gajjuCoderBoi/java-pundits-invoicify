@@ -42,6 +42,9 @@ test {
     outputs.dir snippetsDir
     useJUnitPlatform()
     finalizedBy jacocoTestReport
+    jacoco {
+        excludes += ["**/dto/**","**/entity/**", "**/mapper/**"]
+    }
 }
 
 asciidoctor {
@@ -72,6 +75,18 @@ jacocoTestReport {
     reports {
         dependsOn test
         html.destination layout.buildDirectory.dir('reports/jacocoHtml').get().asFile
+
+    }
+    afterEvaluate {
+        classDirectories.setFrom(files(classDirectories.files.collect {
+            fileTree(dir: it,
+                    exclude: [
+                            'com/cognizant/javapunditsinvoicify/entity',
+                            'com/cognizant/javapunditsinvoicify/entity',
+                            'com/cognizant/javapunditsinvoicify/mapper'
+                    ]
+            )
+        }))
     }
 }
 
