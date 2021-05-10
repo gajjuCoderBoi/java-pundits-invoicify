@@ -14,7 +14,9 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class CompanyService {
@@ -98,6 +100,11 @@ public class CompanyService {
 
     private boolean isNotEmpty(String value){
         return StringUtils.isNotEmpty(value) && StringUtils.isNotBlank(value);
+    }
+
+    public List<CompanyDto> getCompanyList() {
+        List<CompanyDto> companyListDto=this.companyRepository.findAll().stream().map(x->companyMapper.companyEntityToDto(x)).collect(Collectors.toList());
+        return companyListDto;
     }
 }
 

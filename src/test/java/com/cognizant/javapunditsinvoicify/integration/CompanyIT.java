@@ -179,6 +179,37 @@ public class CompanyIT {
                 .andExpect(jsonPath("address.zipcode").value("12343"))
                 .andDo(print());
     }
+    @Test
+    @DirtiesContext()
+    public void listCompanies() throws Exception {
+        RequestBuilder createCompany4 = post("/company")
+                .content(objectMapper.writeValueAsString(CompanyDto.builder()
+                        .name("Test Name 3")
+                        .contactName("Contact Name 3")
+                        .contactTitle("Contact Title 3")
+                        .contactNumber(123456789)
+                        .invoices("Invoices")
+                        .address(AddressDto.builder()
+                                .line1("Address line 1 3")
+                                .line2("line 2 3")
+                                .city("City3")
+                                .state("XX3")
+                                .zipcode(12343)
+                                .build())
+                        .build()))
+                .contentType(MediaType.APPLICATION_JSON);
 
+        MvcResult result=  mockMvc.perform(createCompany4)
+                .andExpect(status().isCreated())
+                .andReturn()
+                ;
+
+
+        //List Companies
+        mockMvc.perform(get("/company/all")
+        ).andExpect(status().isOk())
+                .andExpect(jsonPath("length()").value(1));
+
+    }
 
 }

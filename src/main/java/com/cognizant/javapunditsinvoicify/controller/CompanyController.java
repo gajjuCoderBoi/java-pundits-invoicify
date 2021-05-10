@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/company")
 public class CompanyController {
@@ -36,4 +38,13 @@ public class CompanyController {
     public ResponseEntity<?> getCompanyById(@PathVariable(name = "company_id") Long companyId){
         return new ResponseEntity<>(companyService.getCompanyById(companyId), HttpStatus.OK);
     }
+
+    @GetMapping("all")
+    public List<CompanyDto> getBooks(){
+        return this.companyService.getCompanyList();
+    }
+
+
+
+
 }
