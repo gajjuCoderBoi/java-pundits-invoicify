@@ -5,5 +5,5 @@ RUN gradle build --info
 
 FROM openjdk:11-jre-slim
 WORKDIR /app
-COPY --from=builder /app/build/libs/*.jar app.jar
-ENTRYPOINT ["java", "-jar", "/app/app.jar"]
+COPY --from=builder /app/target/*.jar app.jar
+CMD [ "sh", "-c", "java -Xmx300m -Xss512k -Dserver.port=$PORT -jar /app/app.jar" ]
