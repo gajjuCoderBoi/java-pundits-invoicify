@@ -74,12 +74,12 @@ Build from Source:
 3. Launch Server: Jar
 
    ```shell
-      $ cd <project-directory>/target
+      $ cd java-pundits-invoicify/target
       $ java -jar invoicify.jar
    ```
 
-Note: By default Invoicify Server uses embedded H2 database. If you want to use PostgreSQL database engine you need to replace following lines in configuration file: **<project-dir>/conf.yml** in our case **java-pundits-invoicify/conf.yml** .
-After changes please repeat Step 2.
+   Note: By default Invoicify Server uses embedded H2 database. If you want to use PostgreSQL database engine you need to replace following lines in configuration file: **<project-dir>/conf.yml** in our case **java-pundits-invoicify/conf.yml** .
+   After changes please repeat Step 2.
    
    
 ```yaml
@@ -91,7 +91,7 @@ After changes please repeat Step 2.
          password: sa
    ```
 
-Configuration parameters for PostgreSQL (replace [SERVER-ADDRESS], [PORT] (if available), [DATABASE], [USER], [PASSWORD] with appropriate values):
+   Configuration parameters for PostgreSQL (replace [SERVER-ADDRESS], [PORT] (if available), [DATABASE], [USER], [PASSWORD] with appropriate values):
 
 ```yaml
       spring:
@@ -109,15 +109,15 @@ Configuration parameters for PostgreSQL (replace [SERVER-ADDRESS], [PORT] (if av
    ```shell
    $ java -jar target/invoicify.jar
    ```
-Note: By default Invoicify Server runs on port 8080. If you want to change the port follow:
+   Note: By default Invoicify Server runs on port 8080. If you want to change the port follow either of these steps:
       
-   1. Using config.yml (need to repeat step 2)
+   * Using config.yml (need to repeat step 2)
 
          ```yaml
             # Add Server Port property
             server.port=your-port                        
          ```
-   2. Java Command
+   * Java Command
       
       ```shell
          $ java -jar target/invoicify.jar --server.port=9090
@@ -125,11 +125,31 @@ Note: By default Invoicify Server runs on port 8080. If you want to change the p
          $ java jar -Dserver.port=9090 target/invoicify.jar
       ```
 
+      Docker Server:      
 
-   Docker Server:      
+   ```shell
+      $ docker run -d -p 8080:8080 --name invoicify <your email>/invoicify
+   ```
+   Note: To update database please follow Step 3 database instructions. 
 
-      ```shell
-      
-      ```      
+5. Enjoy
 
-4. Enjoy
+
+
+## Developers
+
+**José Antonio Vega Ruiz**
+
+- <https://github.com/joseantoniovegaruiz2>
+
+**Koustav Bhar**
+
+- <https://github.com/kbhar01>
+
+**Raghavendra Singh**
+
+- <https://github.com/raghav-codes>
+
+**Mohammad Javed**
+
+- <https://github.com/gajjuCoderBoi>
