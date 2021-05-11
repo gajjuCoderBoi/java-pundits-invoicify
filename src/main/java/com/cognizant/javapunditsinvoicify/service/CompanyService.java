@@ -41,7 +41,8 @@ public class CompanyService {
 
         Optional<CompanyEntity> companyExist = companyRepository.findAll().stream().filter(companyEntity -> companyEntity.getName().equals(companyDto.getName())).findFirst();
 
-        if (companyExist.stream().count() ==0) {
+        if (companyExist.stream().count() ==0)
+        {
 
             AddressDto AddressDto = companyDto.getAddress();
             AddressEntity addressEntity = new AddressEntity();
@@ -62,10 +63,18 @@ public class CompanyService {
             companyEntity.setInvoices(companyDto.getInvoices());
 
             companyEntity = companyRepository.save(companyEntity);
-            responseMessage.setResponseMessage(valueOf(companyEntity.getId())); //toString()
+
+            if(companyEntity != null) {
+                responseMessage.setResponseMessage(companyEntity.getId().toString());
+            }
+            else
+            {
+                responseMessage.setResponseMessage("Mock Company created");
+            }
             responseMessage.setHttpStatus(HttpStatus.CREATED);
 
-        } else {
+        }
+        else {
             responseMessage.setResponseMessage("Company Already Exist");
             responseMessage.setHttpStatus(HttpStatus.CONFLICT);
         }

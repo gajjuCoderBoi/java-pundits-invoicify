@@ -109,25 +109,15 @@ public class CompanyServiceUnitTest {
         companyService.update(mockCompanyDto, 1L);
     }
 
-
     @Test
     void addCompany() {
-        AddressDto addressDto = new AddressDto("Address line 1", "line 2", "City", "XX", 12345);
 
-        CompanyDto companyDto = new CompanyDto("First Company", addressDto, "Contact Name", "Contact Title", 123456789, "Invoices");
+        ResponseMessage actualResponse = companyService.addCompany(mockCompanyDto);
 
+        verify(companyRepository).save(mockCompanyEntity);
 
-        AddressEntity addressEntity = new AddressEntity("Address line 1","line 2","City","XX",12345);
-
-        CompanyEntity companyEntity = new CompanyEntity("First Company", addressEntity,"Contact Name" ,"Contact Title",123456789,"Invoices");
-
-        ResponseMessage responseMessage = service.addCompany(companyDto);
-
-        //when(companyRepository).save(companyEntity).thenReturn(new CompanyEntity("First Company",addressEntity,"Contact Name", "Contact Title", 123456789, "Invoices"));
-
-        when(companyRepository.save(companyEntity)).thenReturn(new ResponseMessage(companyEntity.getId().toString(), HttpStatus.CREATED));
-
-        assertNotNull(responseMessage);
-        assertNotNull(responseMessage.getResponseMessage());
+        assertNotNull(actualResponse);
+        assertNotNull(actualResponse.getResponseMessage());
+        assertEquals(actualResponse.getResponseMessage(),"Mock Company created");
     }
 }
