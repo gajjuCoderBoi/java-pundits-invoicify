@@ -6,6 +6,16 @@ include::{snippets}/company-list/http-request.adoc[]
 .response
 include::{snippets}/company-list/http-response.adoc[]
 
+
+Company List Simple View
+
+.request
+include::{snippets}/company-list-simple/http-request.adoc[]
+
+.response
+include::{snippets}/company-list-simple/http-response.adoc[]
+
+
 UpdateCompany
 
 .request
@@ -13,3 +23,4 @@ include::{snippets}/UpdateCompany/http-request.adoc[]
 
 .response
 include::{snippets}/UpdateCompany/http-response.adoc[]
+

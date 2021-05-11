@@ -304,6 +304,12 @@ public class CompanyIT {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("[0].companyName").value("Test Name"))
                 .andExpect(jsonPath("[0].city").value("City"))
-                .andExpect(jsonPath("[0].state").value("TX"));
+                .andExpect(jsonPath("[0].state").value("TX"))
+                .andDo(document("company-list-simple", responseFields(
+                        fieldWithPath("[0].companyName").description("Company Name"),
+                        fieldWithPath("[0].city").description("City"),
+                        fieldWithPath("[0].state").description("State")
+                )))
+        ;
     }
 }
