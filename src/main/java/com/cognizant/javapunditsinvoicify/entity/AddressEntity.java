@@ -16,7 +16,6 @@ import javax.persistence.*;
 @Table(name="address")
 public class AddressEntity {
     @Id
-    @JsonIgnore
     @GeneratedValue(strategy = GenerationType.AUTO)
     Long id;
     String line1;

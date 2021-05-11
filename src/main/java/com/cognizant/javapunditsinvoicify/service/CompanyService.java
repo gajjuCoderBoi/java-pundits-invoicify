@@ -19,6 +19,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
+import static java.lang.String.valueOf;
+
 @Service
 public class CompanyService {
 
@@ -37,26 +39,30 @@ public class CompanyService {
 
         ResponseMessage responseMessage = new ResponseMessage();
 
-        Optional<CompanyEntity> companyExist = companyRepository.findAll().stream().filter(companyEntity -> companyEntity.getName().equals(companyDto.getName())).findAny();
+        Optional<CompanyEntity> companyExist = companyRepository.findAll().stream().filter(companyEntity -> companyEntity.getName().equals(companyDto.getName())).findFirst();
 
         if (companyExist.stream().count() ==0) {
-            CompanyEntity companyEntity = new CompanyEntity();
-            companyEntity.setName(companyDto.getName());
+
             AddressDto AddressDto = companyDto.getAddress();
-            AddressEntity addressEntity = AddressEntity.builder()
-                    .line1(AddressDto.getLine1())
-                    .line2(AddressDto.getLine2())
-                    .city(AddressDto.getCity())
-                    .state(AddressDto.getState())
-                    .zip(AddressDto.getZipcode())
-                    .build();
+            AddressEntity addressEntity = new AddressEntity();
+
+            addressEntity.setLine1(AddressDto.getLine1());
+            addressEntity.setLine2(AddressDto.getLine2());
+            addressEntity.setCity(AddressDto.getCity());
+            addressEntity.setState(AddressDto.getState());
+            addressEntity.setZip(AddressDto.getZipcode());
+
+            CompanyEntity companyEntity = new CompanyEntity();
+
+            companyEntity.setName(companyDto.getName());
             companyEntity.setAddressEntity(addressEntity);
             companyEntity.setContactName(companyDto.getContactName());
             companyEntity.setContactNumber(companyDto.getContactNumber());
             companyEntity.setContactTitle(companyDto.getContactTitle());
             companyEntity.setInvoices(companyDto.getInvoices());
+
             companyEntity = companyRepository.save(companyEntity);
-            responseMessage.setResponseMessage(companyEntity.getId().toString());
+            responseMessage.setResponseMessage(valueOf(companyEntity.getId())); //toString()
             responseMessage.setHttpStatus(HttpStatus.CREATED);
 
         } else {

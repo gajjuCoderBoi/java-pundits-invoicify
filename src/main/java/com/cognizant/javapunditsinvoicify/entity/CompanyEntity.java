@@ -13,13 +13,12 @@ import javax.persistence.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Builder
 @DynamicUpdate
+@Builder
 @Table(name="company")
 public class CompanyEntity {
 
     @Id
-    @JsonIgnore
     @GeneratedValue(strategy = GenerationType.AUTO)
     Long id;
     String name;
@@ -33,4 +32,16 @@ public class CompanyEntity {
     Integer contactNumber;
     String invoices;
 
+    public Long getId() {
+        return id;
+    }
+
+    public CompanyEntity(String name, AddressEntity addressEntity, String contactName, String contactTitle, Integer contactNumber, String invoices) {
+        this.name = name;
+        this.addressEntity = addressEntity;
+        this.contactName = contactName;
+        this.contactTitle = contactTitle;
+        this.contactNumber = contactNumber;
+        this.invoices = invoices;
+    }
 }
