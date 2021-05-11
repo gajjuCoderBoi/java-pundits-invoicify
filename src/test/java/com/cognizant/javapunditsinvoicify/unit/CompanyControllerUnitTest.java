@@ -3,6 +3,7 @@ package com.cognizant.javapunditsinvoicify.unit;
 import com.cognizant.javapunditsinvoicify.controller.CompanyController;
 import com.cognizant.javapunditsinvoicify.dto.AddressDto;
 import com.cognizant.javapunditsinvoicify.dto.CompanyDto;
+import com.cognizant.javapunditsinvoicify.response.ResponseMessage;
 import com.cognizant.javapunditsinvoicify.service.CompanyService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -11,6 +12,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
@@ -22,6 +24,7 @@ import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -106,6 +109,22 @@ public class CompanyControllerUnitTest {
                 .andExpect(jsonPath("address.zipcode").value("12345"));
     }
 
+    @Test
+    public void addCompanyTest() throws Exception {
+        String companyId = "1";
+        RequestBuilder getCompanyByIdGetRequest =  post("/company")
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(mapper.writeValueAsString(companyDto));
 
+        ResponseMessage expectedResponse = new ResponseMessage();
+        expectedResponse.setResponseMessage(companyId);
+        expectedResponse.setHttpStatus(HttpStatus.OK);
+        when(companyService.addCompany(companyDto)).thenReturn(expectedResponse);
+
+        mockMvc.perform(getCompanyByIdGetRequest)
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("responseMessage").value(companyId));
+    }
 
 }
