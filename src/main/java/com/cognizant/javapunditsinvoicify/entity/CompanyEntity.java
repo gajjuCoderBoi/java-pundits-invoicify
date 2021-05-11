@@ -21,6 +21,7 @@ public class CompanyEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     Long id;
+    @Column(unique = true)
     String name;
 
     @OneToOne(cascade = CascadeType.ALL)
