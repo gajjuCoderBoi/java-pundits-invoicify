@@ -8,4 +8,20 @@ include::{snippets}/addCompany/http-request.adoc[]
 .response
 include::{snippets}/addCompany/http-response.adoc[]
 
+Get Company By ID
+
+.request
+include::{snippets}/get-company-by-id/http-request.adoc[]
+
+.response
+include::{snippets}/get-company-by-id/http-response.adoc[]
+
+Update Company
+
+.request
+include::{snippets}/update-company/http-request.adoc[]
+
+.response
+include::{snippets}/update-company/http-response.adoc[]
+
 

@@ -181,7 +181,21 @@ public class CompanyIT {
                 .content(objectMapper.writeValueAsString(wallmartDto));
 
         mockMvc.perform(updateRequest)
-                .andExpect(status().isNoContent());
+                .andExpect(status().isNoContent())
+                .andDo(document("update-company", requestFields(
+                        fieldWithPath("name").description("Name of the Company"),
+                        fieldWithPath("contactName").description("Name of the Contact person of the company"),
+                        fieldWithPath("contactTitle").description("Title of the Contact person of the company"),
+                        fieldWithPath("contactNumber").description("Contact No of the company PoC"),
+                        fieldWithPath("address.line1").description("Address line 1 of the Company"),
+                        fieldWithPath("address.line2").description("Address line 2 of the Company"),
+                        fieldWithPath("address.city").description("City of the Company location"),
+                        fieldWithPath("address.state").description("State of the Company location"),
+                        fieldWithPath("address.zipcode").description("Zip-Code of the Company location"),
+                        fieldWithPath("invoices").ignored()
+
+                )))
+        ;
 
         RequestBuilder getCompanyByIdRequest = get(String.format("/company/%s",companyId))
                 .accept(MediaType.APPLICATION_JSON)
@@ -198,7 +212,9 @@ public class CompanyIT {
                 .andExpect(jsonPath("address.city").value("New York"))
                 .andExpect(jsonPath("address.state").value("PR"))
                 .andExpect(jsonPath("address.zipcode").value("12343"))
-                .andDo(print());
+                .andDo(print())
+                .andDo(document("get-company-by-id"))
+        ;
     }
 
 
