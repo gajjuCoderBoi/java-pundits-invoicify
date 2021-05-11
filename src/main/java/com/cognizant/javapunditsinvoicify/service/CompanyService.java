@@ -55,7 +55,7 @@ public class CompanyService {
             companyEntity.setContactNumber(companyDto.getContactNumber());
             companyEntity.setContactTitle(companyDto.getContactTitle());
             companyEntity.setInvoices(companyDto.getInvoices());
-            companyEntity = this.companyRepository.save(companyEntity);
+            companyEntity = companyRepository.save(companyEntity);
             responseMessage.setResponseMessage(companyEntity.getId().toString());
             responseMessage.setHttpStatus(HttpStatus.CREATED);
 

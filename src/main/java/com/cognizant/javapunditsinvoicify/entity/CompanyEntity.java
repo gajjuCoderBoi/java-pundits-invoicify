@@ -2,6 +2,7 @@ package com.cognizant.javapunditsinvoicify.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.DynamicUpdate;
@@ -12,6 +13,7 @@ import javax.persistence.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
+@Builder
 @DynamicUpdate
 @Table(name="company")
 public class CompanyEntity {
