@@ -1,10 +1,10 @@
-Company
+Company List With Details
 
 .request
-include::{snippets}/Companies/http-request.adoc[]
+include::{snippets}/company-list/http-request.adoc[]
 
 .response
-include::{snippets}/Companies/http-response.adoc[]
+include::{snippets}/company-list/http-response.adoc[]
 
 UpdateCompany
 

@@ -259,7 +259,7 @@ public class CompanyIT {
                 .andExpect(jsonPath("[0].address.zipcode").value("12343"))
 
                 // Follow Up to andExpect
-                .andDo(document("Companies", responseFields(
+                .andDo(document("company-list", responseFields(
                         fieldWithPath("[0].name").description("wallmart"),
                         fieldWithPath("[0].contactName").description("wallmartCEO"),
                         fieldWithPath("[0].contactNumber").description("123456789"),
@@ -273,5 +273,10 @@ public class CompanyIT {
                 )));
 
     }
-
+    @Test
+    public void getCompanyListSimpleView() throws Exception {
+        RequestBuilder getCompanyListSimpleView=get("/company/all/simple");
+        mockMvc.perform(getCompanyListSimpleView)
+                .andExpect(status().isOk());
+    }
 }
