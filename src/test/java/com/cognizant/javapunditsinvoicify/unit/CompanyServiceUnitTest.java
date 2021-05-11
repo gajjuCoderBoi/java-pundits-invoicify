@@ -7,6 +7,7 @@ import com.cognizant.javapunditsinvoicify.entity.CompanyEntity;
 import com.cognizant.javapunditsinvoicify.mapper.AddressMapper;
 import com.cognizant.javapunditsinvoicify.mapper.CompanyMapper;
 import com.cognizant.javapunditsinvoicify.repository.CompanyRepository;
+import com.cognizant.javapunditsinvoicify.response.ResponseMessage;
 import com.cognizant.javapunditsinvoicify.service.CompanyService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -14,6 +15,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpStatus;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.util.Optional;
@@ -22,6 +24,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -104,5 +107,27 @@ public class CompanyServiceUnitTest {
         when(companyRepository.save(any(CompanyEntity.class))).thenReturn(mockCompanyEntity);
 
         companyService.update(mockCompanyDto, 1L);
+    }
+
+
+    @Test
+    void addCompany() {
+        AddressDto addressDto = new AddressDto("Address line 1", "line 2", "City", "XX", 12345);
+
+        CompanyDto companyDto = new CompanyDto("First Company", addressDto, "Contact Name", "Contact Title", 123456789, "Invoices");
+
+
+        AddressEntity addressEntity = new AddressEntity("Address line 1","line 2","City","XX",12345);
+
+        CompanyEntity companyEntity = new CompanyEntity("First Company", addressEntity,"Contact Name" ,"Contact Title",123456789,"Invoices");
+
+        ResponseMessage responseMessage = service.addCompany(companyDto);
+
+        //when(companyRepository).save(companyEntity).thenReturn(new CompanyEntity("First Company",addressEntity,"Contact Name", "Contact Title", 123456789, "Invoices"));
+
+        when(companyRepository.save(companyEntity)).thenReturn(new ResponseMessage(companyEntity.getId().toString(), HttpStatus.CREATED));
+
+        assertNotNull(responseMessage);
+        assertNotNull(responseMessage.getResponseMessage());
     }
 }

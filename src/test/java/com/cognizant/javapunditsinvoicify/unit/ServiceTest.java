@@ -1,4 +1,4 @@
-package com.cognizant.javapunditsinvoicify.service;
+package com.cognizant.javapunditsinvoicify.unit;
 
 import com.cognizant.javapunditsinvoicify.dto.AddressDto;
 import com.cognizant.javapunditsinvoicify.dto.CompanyDto;
@@ -36,13 +36,10 @@ public class ServiceTest {
 
         CompanyDto companyDto = new CompanyDto("First Company", addressDto, "Contact Name", "Contact Title", 123456789, "Invoices");
 
-        AddressEntity addressEntity =  AddressEntity.builder().id(12345L)
-                .line1("Address line 1").line2("line 2").city("City").state("XX").zip(12345).build();
 
-        CompanyEntity companyEntity = CompanyEntity.builder()
-                .id(123456L)
-                .name("First Company").addressEntity(addressEntity).contactName("Contact Name")
-                .contactTitle("Contact Title").contactNumber(123456789).invoices("Invoices").build();
+        AddressEntity addressEntity = new AddressEntity("Address line 1","line 2","City","XX",12345);
+
+        CompanyEntity companyEntity = new CompanyEntity("First Company", addressEntity,"Contact Name" ,"Contact Title",123456789,"Invoices");
 
         ResponseMessage responseMessage = service.addCompany(companyDto);
 
