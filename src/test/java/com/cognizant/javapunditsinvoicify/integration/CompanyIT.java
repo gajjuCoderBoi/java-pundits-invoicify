@@ -192,8 +192,6 @@ public class CompanyIT {
 
         mockMvc.perform(updateRequest)
                 .andExpect(status().isNoContent())
-                .andDo(document("UpdateCompany"));
-                .andExpect(status().isNoContent())
                 .andDo(document("update-company", requestFields(
                         fieldWithPath("name").description("Name of the Company"),
                         fieldWithPath("contactName").description("Name of the Contact person of the company"),
