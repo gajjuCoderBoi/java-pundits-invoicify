@@ -29,7 +29,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @AutoConfigureRestDocs
 @Transactional
-@DirtiesContext
+@DirtiesContext(methodMode = DirtiesContext.MethodMode.BEFORE_METHOD)
 @ActiveProfiles("qa")
 public class CompanyIT {
     @Autowired
@@ -275,8 +275,35 @@ public class CompanyIT {
     }
     @Test
     public void getCompanyListSimpleView() throws Exception {
+        RequestBuilder createCompany = post("/company")
+                .content(objectMapper.writeValueAsString(CompanyDto.builder()
+                        .name("Test Name")
+                        .contactName("Contact Name")
+                        .contactTitle("Contact Title")
+                        .contactNumber(123456789)
+                        .invoices("Invoices")
+                        .address(AddressDto.builder()
+                                .line1("Address line 1")
+                                .line2("line 2")
+                                .city("City")
+                                .state("TX")
+                                .zipcode(12343)
+                                .build())
+                        .build()))
+                .contentType(MediaType.APPLICATION_JSON);
+
+        MvcResult result=  mockMvc.perform(createCompany)
+                .andExpect(status().isCreated())
+                .andReturn()
+                ;
+
+
+
         RequestBuilder getCompanyListSimpleView=get("/company/all/simple");
         mockMvc.perform(getCompanyListSimpleView)
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("[0].companyName").value("Test Name"))
+                .andExpect(jsonPath("[0].city").value("City"))
+                .andExpect(jsonPath("[0].state").value("TX"));
     }
 }
