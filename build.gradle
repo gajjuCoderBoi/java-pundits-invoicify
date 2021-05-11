@@ -82,8 +82,9 @@ jacocoTestReport {
             fileTree(dir: it,
                     exclude: [
                             'com/cognizant/javapunditsinvoicify/entity',
-                            'com/cognizant/javapunditsinvoicify/entity',
-                            'com/cognizant/javapunditsinvoicify/mapper'
+                            'com/cognizant/javapunditsinvoicify/dto',
+                            'com/cognizant/javapunditsinvoicify/mapper',
+                            'com/cognizant/javapunditsinvoicify/response'
                     ]
             )
         }))
