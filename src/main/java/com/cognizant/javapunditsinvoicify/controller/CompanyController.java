@@ -44,7 +44,8 @@ public class CompanyController {
         return this.companyService.getCompanyList();
     }
 
-
+    @GetMapping("all/simple")
+    public List<CompanySimpleViewResponse> getSimpleList() {return null;}
 
 
 }
