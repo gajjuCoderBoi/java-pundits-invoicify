@@ -1,0 +1,15 @@
+Company
+
+.request
+include::{snippets}/Companies/http-request.adoc[]
+
+.response
+include::{snippets}/Companies/http-response.adoc[]
+
+UpdateCompany
+
+.request
+include::{snippets}/UpdateCompany/http-request.adoc[]
+
+.response
+include::{snippets}/UpdateCompany/http-response.adoc[]

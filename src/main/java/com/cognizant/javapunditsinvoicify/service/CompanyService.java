@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -103,7 +104,18 @@ public class CompanyService {
     }
 
     public List<CompanyDto> getCompanyList() {
-        List<CompanyDto> companyListDto=this.companyRepository.findAll().stream().map(x->companyMapper.companyEntityToDto(x)).collect(Collectors.toList());
+
+        List<CompanyDto> companyListDto=new ArrayList<>();
+        List<CompanyEntity> listSavedCompanyEntity =this.companyRepository.findAll();
+    //    if(savedCompanyEntity. == null) return companyListDto;
+        int i=0;
+                for (CompanyEntity savedCompanyEntity:listSavedCompanyEntity){
+
+         //       =this.companyRepository.findAll().stream().map(x->companyMapper.companyEntityToDto(x).setAddress(addressMapper.addressEntityToDto( x.getAddressEntity() )).collect(Collectors.toList());
+                    CompanyDto  companyDto = companyMapper.companyEntityToDto(savedCompanyEntity);
+                    companyDto.setAddress(addressMapper.addressEntityToDto(savedCompanyEntity.getAddressEntity()));
+                    companyListDto.add(companyDto);
+                }
         return companyListDto;
     }
 }

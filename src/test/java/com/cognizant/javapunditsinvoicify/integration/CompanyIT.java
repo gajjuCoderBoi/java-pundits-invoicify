@@ -17,6 +17,9 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.transaction.annotation.Transactional;
 
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -148,19 +151,26 @@ public class CompanyIT {
                 .builder()
                 .name("wallmart")
                 .contactName("wallmartCEO")
-                .address(AddressDto
-                        .builder()
-                        .city("New York")
-                        .state("PR")
-                        .build())
                 .build();
+
+
+        AddressDto addressWallmartDto= new AddressDto();
+        addressWallmartDto.setLine1("Address line 1");
+        addressWallmartDto.setLine2("line 2");
+        addressWallmartDto.setCity("New York");
+        addressWallmartDto.setState("PR");
+        addressWallmartDto.setZipcode(12343);
+
+        wallmartDto.setAddress(addressWallmartDto);
+
         RequestBuilder updateRequest = put(String.format("/company/%s",companyId))
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(wallmartDto));
 
         mockMvc.perform(updateRequest)
-                .andExpect(status().isNoContent());
+                .andExpect(status().isNoContent())
+                .andDo(document("UpdateCompany"));
 
         RequestBuilder getCompanyByIdRequest = get(String.format("/company/%s",companyId))
                 .accept(MediaType.APPLICATION_JSON)
@@ -182,33 +192,85 @@ public class CompanyIT {
     @Test
     @DirtiesContext()
     public void listCompanies() throws Exception {
-        RequestBuilder createCompany4 = post("/company")
+        RequestBuilder createCompany = post("/company")
                 .content(objectMapper.writeValueAsString(CompanyDto.builder()
-                        .name("Test Name 3")
-                        .contactName("Contact Name 3")
-                        .contactTitle("Contact Title 3")
+                        .name("Test Name")
+                        .contactName("Contact Name")
+                        .contactTitle("Contact Title")
                         .contactNumber(123456789)
                         .invoices("Invoices")
                         .address(AddressDto.builder()
-                                .line1("Address line 1 3")
-                                .line2("line 2 3")
-                                .city("City3")
-                                .state("XX3")
+                                .line1("Address line 1")
+                                .line2("line 2")
+                                .city("City")
+                                .state("XX")
                                 .zipcode(12343)
                                 .build())
                         .build()))
                 .contentType(MediaType.APPLICATION_JSON);
 
-        MvcResult result=  mockMvc.perform(createCompany4)
+        MvcResult result=  mockMvc.perform(createCompany)
                 .andExpect(status().isCreated())
                 .andReturn()
                 ;
+
+        String companyId = objectMapper.readValue(result.getResponse().getContentAsString(), ResponseMessage.class)
+                .getResponseMessage();
+
+        CompanyDto wallmartDto = CompanyDto
+                .builder()
+                .name("wallmart")
+                .contactName("wallmartCEO")
+                .build();
+
+
+        AddressDto addressWallmartDto= new AddressDto();
+        addressWallmartDto.setLine1("Address line 1");
+        addressWallmartDto.setLine2("line 2");
+        addressWallmartDto.setCity("New York");
+        addressWallmartDto.setState("PR");
+        addressWallmartDto.setZipcode(12343);
+
+        wallmartDto.setAddress(addressWallmartDto);
+
+        RequestBuilder updateRequest = put(String.format("/company/%s",companyId))
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(wallmartDto));
+
+        mockMvc.perform(updateRequest)
+                .andExpect(status().isNoContent())
+                .andDo(document("UpdateCompany"));
 
 
         //List Companies
         mockMvc.perform(get("/company/all")
         ).andExpect(status().isOk())
-                .andExpect(jsonPath("length()").value(1));
+                .andExpect(jsonPath("length()").value(1))
+                .andExpect(jsonPath("[0].name").value("wallmart"))
+                .andExpect(jsonPath("[0].contactName").value("wallmartCEO"))
+                .andExpect(jsonPath("[0].contactNumber").value("123456789"))
+                .andExpect(jsonPath("[0].contactTitle").value("Contact Title"))
+                .andExpect(jsonPath("[0].invoices").value("Invoices"))
+                .andExpect(jsonPath("[0].address.line1").value("Address line 1"))
+                .andExpect(jsonPath("[0].address.line2").value("line 2"))
+                .andExpect(jsonPath("[0].address.city").value("New York"))
+                .andExpect(jsonPath("[0].address.state").value("PR"))
+                .andExpect(jsonPath("[0].address.zipcode").value("12343"))
+
+                // Follow Up to andExpect
+                .andDo(document("Companies", responseFields(
+                        fieldWithPath("[0].name").description("wallmart"),
+                        fieldWithPath("[0].contactName").description("wallmartCEO"),
+                        fieldWithPath("[0].contactNumber").description("123456789"),
+                        fieldWithPath("[0].invoices").description("Invoices"),
+                        fieldWithPath("[0].contactTitle").description("Contact Title 3"),
+                        fieldWithPath("[0].address.line1").description("Address line 1"),
+                        fieldWithPath("[0].address.line2").description("line 2"),
+                        fieldWithPath("[0].address.city").description("New York"),
+                        fieldWithPath("[0].address.state").description("PR"),
+                        fieldWithPath("[0].address.zipcode").description("12343")
+                )));
 
     }
 
