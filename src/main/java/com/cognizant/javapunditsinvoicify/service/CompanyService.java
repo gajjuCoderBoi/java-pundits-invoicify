@@ -1,5 +1,6 @@
 package com.cognizant.javapunditsinvoicify.service;
 
+import com.cognizant.javapunditsinvoicify.response.CompanySimpleViewResponse;
 import com.cognizant.javapunditsinvoicify.dto.AddressDto;
 import com.cognizant.javapunditsinvoicify.dto.CompanyDto;
 import com.cognizant.javapunditsinvoicify.entity.AddressEntity;
@@ -17,7 +18,10 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static java.lang.String.valueOf;
 
@@ -116,6 +120,40 @@ public class CompanyService {
 
     private boolean isNotEmpty(String value){
         return StringUtils.isNotEmpty(value) && StringUtils.isNotBlank(value);
+    }
+
+    public List<CompanyDto> getCompanyList() {
+
+        List<CompanyDto> companyListDto=new ArrayList<>();
+        List<CompanyEntity> listSavedCompanyEntity =this.companyRepository.findAll();
+    //    if(savedCompanyEntity. == null) return companyListDto;
+        int i=0;
+                for (CompanyEntity savedCompanyEntity:listSavedCompanyEntity){
+
+         //       =this.companyRepository.findAll().stream().map(x->companyMapper.companyEntityToDto(x).setAddress(addressMapper.addressEntityToDto( x.getAddressEntity() )).collect(Collectors.toList());
+                    CompanyDto  companyDto = companyMapper.companyEntityToDto(savedCompanyEntity);
+                    companyDto.setAddress(addressMapper.addressEntityToDto(savedCompanyEntity.getAddressEntity()));
+                    companyListDto.add(companyDto);
+                }
+        return companyListDto;
+    }
+
+    public List<CompanySimpleViewResponse> getCompanySimpleList() {
+        List<CompanyEntity> savedCompanies=companyRepository.findAll();
+        List<CompanySimpleViewResponse> listCompanySimpleViewResponse=savedCompanies.
+                stream()
+                .map(entity->{
+                    return CompanySimpleViewResponse
+                            .builder()
+                            .companyName(entity.getName())
+                            .city(entity.getAddressEntity().getCity())
+                            .state(entity.getAddressEntity().getState())
+                            .build();
+
+                }).collect(Collectors.toList());
+        return listCompanySimpleViewResponse;
+
+
     }
 }
 

@@ -1,5 +1,24 @@
 Invoicify Service
 
+
+Company List With Details
+
+.request
+include::{snippets}/company-list/http-request.adoc[]
+
+.response
+include::{snippets}/company-list/http-response.adoc[]
+
+
+Company List Simple View
+
+.request
+include::{snippets}/company-list-simple/http-request.adoc[]
+
+.response
+include::{snippets}/company-list-simple/http-response.adoc[]
+
+
 AddCompany
 
 .request
