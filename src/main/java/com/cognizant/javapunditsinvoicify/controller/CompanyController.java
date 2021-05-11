@@ -1,5 +1,6 @@
 package com.cognizant.javapunditsinvoicify.controller;
 
+import com.cognizant.javapunditsinvoicify.response.CompanySimpleViewResponse;
 import com.cognizant.javapunditsinvoicify.response.ResponseMessage;
 import com.cognizant.javapunditsinvoicify.service.CompanyService;
 import com.cognizant.javapunditsinvoicify.dto.CompanyDto;
@@ -45,7 +46,7 @@ public class CompanyController {
     }
 
     @GetMapping("all/simple")
-    public List<CompanySimpleViewResponse> getSimpleList() {return null;}
+    public List<CompanySimpleViewResponse> getSimpleList() {return this.companyService.getCompanySimpleList();}
 
 
 }

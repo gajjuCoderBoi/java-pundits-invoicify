@@ -1,5 +1,6 @@
 package com.cognizant.javapunditsinvoicify.service;
 
+import com.cognizant.javapunditsinvoicify.response.CompanySimpleViewResponse;
 import com.cognizant.javapunditsinvoicify.dto.AddressDto;
 import com.cognizant.javapunditsinvoicify.dto.CompanyDto;
 import com.cognizant.javapunditsinvoicify.entity.AddressEntity;
@@ -117,6 +118,24 @@ public class CompanyService {
                     companyListDto.add(companyDto);
                 }
         return companyListDto;
+    }
+
+    public List<CompanySimpleViewResponse> getCompanySimpleList() {
+        List<CompanyEntity> savedCompanies=companyRepository.findAll();
+        List<CompanySimpleViewResponse> listCompanySimpleViewResponse=savedCompanies.
+                stream()
+                .map(entity->{
+                    return CompanySimpleViewResponse
+                            .builder()
+                            .companyName(entity.getName())
+                            .city(entity.getAddressEntity().getCity())
+                            .state(entity.getAddressEntity().getState())
+                            .build();
+
+                }).collect(Collectors.toList());
+        return listCompanySimpleViewResponse;
+
+
     }
 }
 
