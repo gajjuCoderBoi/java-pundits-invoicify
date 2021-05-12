@@ -15,7 +15,7 @@
   <br>
 </p>
 
-[![Build, Test, Release, Deploy](https://github.com/gajjuCoderBoi/java-pundits-invoicify/actions/workflows/cicd.yml/badge.svg)](https://github.com/gajjuCoderBoi/java-pundits-invoicify/actions/workflows/cicd.yml)  [![codecov](https://codecov.io/gh/gajjuCoderBoi/java-pundits-invoicify/branch/develop/graph/badge.svg?token=N8P18UJIME)](https://codecov.io/gh/gajjuCoderBoi/java-pundits-invoicify)  [![Generic badge](https://img.shields.io/badge/java->=11-blue.svg)](https://shields.io/) [![Generic badge](https://img.shields.io/badge/springboot_version-2.4.5-blue.svg)](https://shields.io/)
+[![Build, Test, Release, Deploy](https://github.com/gajjuCoderBoi/java-pundits-invoicify/actions/workflows/cicd.yml/badge.svg)](https://github.com/gajjuCoderBoi/java-pundits-invoicify/actions/workflows/cicd.yml)  [![codecov](https://codecov.io/gh/gajjuCoderBoi/java-pundits-invoicify/branch/develop/graph/badge.svg?token=N8P18UJIME)](https://codecov.io/gh/gajjuCoderBoi/java-pundits-invoicify)  [![Generic badge](https://img.shields.io/badge/java_ver->=11-blue.svg)](https://shields.io/) [![Generic badge](https://img.shields.io/badge/springboot_version-2.4.5-blue.svg)](https://shields.io/)
 
 ## Table of contents
 
@@ -127,15 +127,74 @@ Build from Source:
          $ java jar -Dserver.port=9090 target/invoicify.jar
       ```
 
-      Docker Server:      
+      Docker Container:      
 
-   ```shell
-      $ docker run -d -p 8080:8080 --name invoicify <your email>/invoicify
-   ```
-   Note: To update database please follow Step 3 database instructions. 
+       ```shell
+          $ docker run -d -p 8080:8080 --name invoicify <your email>/invoicify
+       ```
+   
+        Note: To update database please follow Step 3 database instructions.
+    
+      Docker Compose:
+
+        ```shell
+            $ docker-compose up
+        ```
+          
+        <details>
+        <summary>
+        Docker Compose
+        </summary>
+    
+        ```yaml
+        version: "3"
+          services:
+            invoicify-db:
+              image: postgres
+              container_name: invoicify-db
+              ports:
+                - 5432:5432
+              environment:
+                - POSTGRES_USER=myusername
+                - POSTGRES_PASSWORD=mypassword
+                - POSTGRES_DB=invoicifydb
+            
+            invoicify-service:
+              image: ghazanfar9131/java-pundits-invoicify
+              depends_on: invoicify-db
+              ports:
+                - 8081:8080
+              environment:
+                - SPRING_DATASOURCE_URL=jdbc:postgresql://invoicify-db:5432/invoicifydb
+                - SPRING_DATASOURCE_USERNAME=myusername
+                - SPRING_DATASOURCE_PASSWORD=mypassword
+                - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+                - SPRING_JPA_DATABASE_PLATFORM=org.hibernate.dialect.PostgreSQLDialect
+        ```
+    
+        </details>
+
+    
+
 
 5. Enjoy
 
+## Releasese
+
+* Docker ([Image](https://hub.docker.com/r/ghazanfar9131/java-pundits-invoicify))
+
+   ```shell
+   $ docker pull ghazanfar9131/java-pundits-invoicify
+   ```
+
+* Jar Server
+
+   [Releases](https://github.com/gajjuCoderBoi/java-pundits-invoicify/releases)   
+
+    ```shell
+       C:\> wget https://github.com/gajjuCoderBoi/java-pundits-invoicify/releases/download/Releases/invoicify.jar
+    ```
+  
 
 
 ## Developers
