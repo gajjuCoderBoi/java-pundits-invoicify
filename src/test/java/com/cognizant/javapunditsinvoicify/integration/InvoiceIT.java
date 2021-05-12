@@ -1,6 +1,8 @@
 package com.cognizant.javapunditsinvoicify.integration;
 
 import com.cognizant.javapunditsinvoicify.dto.InvoiceItemDto;
+import com.cognizant.javapunditsinvoicify.entity.InvoiceEntity;
+import com.cognizant.javapunditsinvoicify.repository.InvoiceRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +36,30 @@ public class InvoiceIT {
 
     @Autowired
     private ObjectMapper objectMapper;
+
+    @Autowired
+    private InvoiceRepository invoiceRepository;
+
+    @Test
+    public void postInvoiceItem_Failed_InvalidInvoiceId() throws Exception {
+
+        InvoiceItemDto sampleInvoiceItemDto = InvoiceItemDto.builder()
+                .description("Test Item")
+                .build();
+
+        RequestBuilder postInvoiceItem = post("/invoice")
+                .param("invoice_id", "1")
+                .accept(APPLICATION_JSON)
+                .contentType(APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(sampleInvoiceItemDto))
+                ;
+
+        mockMvc.perform(postInvoiceItem)
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("responseMessage").value("Invalid Invoice Id. Not Found."))
+                .andDo(print())
+        ;
+    }
 
     @Test
     public void postInvoiceItem_Success() throws Exception {
