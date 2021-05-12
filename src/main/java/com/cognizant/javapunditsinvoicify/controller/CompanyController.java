@@ -1,5 +1,6 @@
 package com.cognizant.javapunditsinvoicify.controller;
 
+import com.cognizant.javapunditsinvoicify.response.CompanySimpleViewResponse;
 import com.cognizant.javapunditsinvoicify.response.ResponseMessage;
 import com.cognizant.javapunditsinvoicify.service.CompanyService;
 import com.cognizant.javapunditsinvoicify.dto.CompanyDto;
@@ -11,6 +12,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/company")
@@ -36,4 +39,14 @@ public class CompanyController {
     public ResponseEntity<?> getCompanyById(@PathVariable(name = "company_id") Long companyId){
         return new ResponseEntity<>(companyService.getCompanyById(companyId), HttpStatus.OK);
     }
+
+    @GetMapping("all")
+    public List<CompanyDto> getBooks(){
+        return this.companyService.getCompanyList();
+    }
+
+    @GetMapping("all/simple")
+    public List<CompanySimpleViewResponse> getSimpleList() {return this.companyService.getCompanySimpleList();}
+
+
 }

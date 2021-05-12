@@ -1,20 +1,20 @@
 package com.cognizant.javapunditsinvoicify.response;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.http.HttpStatus;
 
 @Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
-public class ResponseMessage {
+public class CompanySimpleViewResponse {
 
-    String responseMessage;
-    @JsonIgnore
-    HttpStatus httpStatus;
+
+    private String companyName;
+    private String city;
+    private String state;
+
 
 }
