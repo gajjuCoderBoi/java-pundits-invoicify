@@ -43,4 +43,21 @@ include::{snippets}/update-company/http-request.adoc[]
 .response
 include::{snippets}/update-company/http-response.adoc[]
 
+== Invoice
 
+Add Invoice Item
+
+.Sample Request
+include::{snippets}/invoice-add-item/http-request.adoc[]
+
+.request-parameters
+include::{snippets}/invoice-add-item/request-parameters.adoc[]
+
+.request-body
+include::{snippets}/invoice-add-item/request-fields.adoc[]
+
+.response-body
+include::{snippets}/invoice-add-item/response-fields.adoc[]
+
+.Sample Response
+include::{snippets}/invoice-add-item/http-response.adoc[]
