@@ -9,11 +9,13 @@
 <h3 align="center">Invoicify (Back-End Spring Boot REST API)</h3>
 
 <p align="center">
-  Playlist is a service where the user can go and create a playlist and add/remove songs to playlist.
+  Invoicify is a service where the user can go and create a Company and add/remove invoice to Company.
   <br>
 
   <br>
 </p>
+
+[![Build, Test, Release, Deploy](https://github.com/gajjuCoderBoi/java-pundits-invoicify/actions/workflows/cicd.yml/badge.svg)](https://github.com/gajjuCoderBoi/java-pundits-invoicify/actions/workflows/cicd.yml)  [![codecov](https://codecov.io/gh/gajjuCoderBoi/java-pundits-invoicify/branch/develop/graph/badge.svg?token=N8P18UJIME)](https://codecov.io/gh/gajjuCoderBoi/java-pundits-invoicify)
 
 ## Table of contents
 
