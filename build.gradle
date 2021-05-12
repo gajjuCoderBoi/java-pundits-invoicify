@@ -43,7 +43,7 @@ test {
     useJUnitPlatform()
     finalizedBy jacocoTestReport
     jacoco {
-        excludes += ["**/dto/**","**/entity/**", "**/mapper/**"]
+        excludes += ["**/dto/**","**/entity/**", "**/mapper/**", "**/response/**"]
     }
 }
 
@@ -74,7 +74,11 @@ jacoco {
 jacocoTestReport {
     reports {
         dependsOn test
-        html.destination layout.buildDirectory.dir('reports/jacocoHtml').get().asFile
+        xml.enabled true
+        csv.enabled true
+        csv.destination layout.buildDirectory.dir('coverage/reports/jacocoCsv.csv').get().asFile
+        xml.destination layout.buildDirectory.dir('coverage/reports/jacocoXml.xml').get().asFile
+        html.destination layout.buildDirectory.dir('coverage/reports/jacocoHtml').get().asFile
 
     }
     afterEvaluate {
