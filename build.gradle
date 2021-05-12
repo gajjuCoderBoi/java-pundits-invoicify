@@ -3,6 +3,7 @@ plugins {
     id 'io.spring.dependency-management' version '1.0.11.RELEASE'
     id 'org.asciidoctor.convert' version '1.5.8'
     id 'java'
+    id 'jacoco'
 }
 
 group = 'com.cognizant'
@@ -40,6 +41,10 @@ dependencies {
 test {
     outputs.dir snippetsDir
     useJUnitPlatform()
+    finalizedBy jacocoTestReport
+    jacoco {
+        excludes += ["**/dto/**","**/entity/**", "**/mapper/**", "**/response/**"]
+    }
 }
 
 asciidoctor {
@@ -61,5 +66,42 @@ bootJar {
     dependsOn copyConfig
     archiveFileName = "invoicify.jar"
     destinationDirectory = file("$projectDir/target")
+}
+jacoco {
+    toolVersion = "0.8.6"
+}
+
+jacocoTestReport {
+    reports {
+        dependsOn test
+        xml.enabled true
+        csv.enabled true
+        csv.destination layout.buildDirectory.dir('coverage/reports/jacocoCsv.csv').get().asFile
+        xml.destination layout.buildDirectory.dir('coverage/reports/jacocoXml.xml').get().asFile
+        html.destination layout.buildDirectory.dir('coverage/reports/jacocoHtml').get().asFile
+
+    }
+    afterEvaluate {
+        classDirectories.setFrom(files(classDirectories.files.collect {
+            fileTree(dir: it,
+                    exclude: [
+                            'com/cognizant/javapunditsinvoicify/entity',
+                            'com/cognizant/javapunditsinvoicify/dto',
+                            'com/cognizant/javapunditsinvoicify/mapper',
+                            'com/cognizant/javapunditsinvoicify/response'
+                    ]
+            )
+        }))
+    }
+}
+
+jacocoTestCoverageVerification {
+    violationRules {
+        rule {
+            limit {
+                minimum = 0.85
+            }
+        }
+    }
 }
 
