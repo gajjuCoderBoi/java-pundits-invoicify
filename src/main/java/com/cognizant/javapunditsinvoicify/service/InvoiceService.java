@@ -43,4 +43,8 @@ public class InvoiceService {
                 .httpStatus(CREATED)
                 .build();
     }
+
+    public String createInvoice() {
+        return invoiceRepository.save(new InvoiceEntity()).getId().toString();
+    }
 }

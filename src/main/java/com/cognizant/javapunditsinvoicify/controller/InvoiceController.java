@@ -15,6 +15,11 @@ public class InvoiceController {
     private InvoiceService invoiceService;
 
     @PostMapping
+    public String createInvoice(){
+        return invoiceService.createInvoice();
+    }
+
+    @PostMapping("item")
     public ResponseEntity<?> addInvoiceItem(@RequestBody InvoiceItemDto invoiceItemDto, @RequestParam("invoice_id") Long invoiceId){
         ResponseMessage response = invoiceService.addInvoiceItem(invoiceItemDto, invoiceId);
         return new ResponseEntity<>(response, response.getHttpStatus());

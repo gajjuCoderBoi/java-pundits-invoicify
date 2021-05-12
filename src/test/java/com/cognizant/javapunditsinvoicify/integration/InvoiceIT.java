@@ -37,9 +37,6 @@ public class InvoiceIT {
     @Autowired
     private ObjectMapper objectMapper;
 
-    @Autowired
-    private InvoiceRepository invoiceRepository;
-
     @Test
     public void postInvoiceItem_Failed_InvalidInvoiceId() throws Exception {
 
@@ -47,7 +44,7 @@ public class InvoiceIT {
                 .description("Test Item")
                 .build();
 
-        RequestBuilder postInvoiceItem = post("/invoice")
+        RequestBuilder postInvoiceItem = post("/invoice/item")
                 .param("invoice_id", "1")
                 .accept(APPLICATION_JSON)
                 .contentType(APPLICATION_JSON)
@@ -63,13 +60,14 @@ public class InvoiceIT {
 
     @Test
     public void postInvoiceItem_Success() throws Exception {
+        String invoiceId = postEmptyInvoice();
 
         InvoiceItemDto sampleInvoiceItemDto = InvoiceItemDto.builder()
                 .description("Test Item")
                 .build();
 
-        RequestBuilder postInvoiceItem = post("/invoice")
-                .param("invoice_id", "1")
+        RequestBuilder postInvoiceItem = post("/invoice/item")
+                .param("invoice_id", invoiceId)
                 .accept(APPLICATION_JSON)
                 .contentType(APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(sampleInvoiceItemDto))
@@ -80,5 +78,10 @@ public class InvoiceIT {
                 .andExpect(jsonPath("responseMessage").value("Invoice Item Successfully Added."))
                 .andDo(print())
         ;
+    }
+
+    private String postEmptyInvoice() throws Exception {
+        return mockMvc.perform(post("/invoice"))
+        .andReturn().getResponse().getContentAsString();
     }
 }
