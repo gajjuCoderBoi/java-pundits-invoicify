@@ -39,6 +39,7 @@ public class CompanyService {
     @Autowired
     @Qualifier("company-mapper")
     private CompanyMapper companyMapper;
+
     public ResponseMessage addCompany(CompanyDto companyDto) {
 
         ResponseMessage responseMessage = new ResponseMessage();
