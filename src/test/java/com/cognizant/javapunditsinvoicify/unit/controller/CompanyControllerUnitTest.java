@@ -1,4 +1,4 @@
-package com.cognizant.javapunditsinvoicify.unit;
+package com.cognizant.javapunditsinvoicify.unit.controller;
 
 import com.cognizant.javapunditsinvoicify.controller.CompanyController;
 import com.cognizant.javapunditsinvoicify.dto.AddressDto;

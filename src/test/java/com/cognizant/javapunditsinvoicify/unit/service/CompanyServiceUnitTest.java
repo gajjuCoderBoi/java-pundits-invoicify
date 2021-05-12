@@ -1,4 +1,4 @@
-package com.cognizant.javapunditsinvoicify.unit;
+package com.cognizant.javapunditsinvoicify.unit.service;
 
 import com.cognizant.javapunditsinvoicify.dto.AddressDto;
 import com.cognizant.javapunditsinvoicify.dto.CompanyDto;
@@ -15,7 +15,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.http.HttpStatus;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.util.Optional;
