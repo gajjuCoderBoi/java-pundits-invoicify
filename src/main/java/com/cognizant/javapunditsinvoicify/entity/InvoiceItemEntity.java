@@ -1,5 +1,6 @@
 package com.cognizant.javapunditsinvoicify.entity;
 
+import ch.qos.logback.classic.db.names.TableName;
 import com.cognizant.javapunditsinvoicify.misc.FeeType;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -9,6 +10,7 @@ import javax.persistence.*;
 @Entity
 @Data
 @NoArgsConstructor
+@Table(name = "invoiceItemEntity")
 public class InvoiceItemEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

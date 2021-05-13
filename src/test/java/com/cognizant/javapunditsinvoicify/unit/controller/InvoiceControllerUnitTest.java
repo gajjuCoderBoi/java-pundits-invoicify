@@ -75,13 +75,13 @@ public class InvoiceControllerUnitTest {
                 ;
 
         when(invoiceService.addInvoiceItem(any(InvoiceItemDto.class), anyLong())).thenReturn(ResponseMessage.builder()
-                .responseMessage("Invoice Item Successfully Added.")
+                .responseMessage("InvoiceItem added Successfully.")
                 .httpStatus(CREATED)
                 .build());
 
         mockMvc.perform(postInvoiceItem)
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("responseMessage").value("Invoice Item Successfully Added."))
+                .andExpect(jsonPath("responseMessage").value("InvoiceItem added Successfully."))
                 .andDo(print())
         ;
     }

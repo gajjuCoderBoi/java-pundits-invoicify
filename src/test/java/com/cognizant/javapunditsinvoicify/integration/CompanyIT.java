@@ -44,24 +44,24 @@ public class CompanyIT {
     @Test
     public void createCompanyTest() throws Exception {
 
-        CompanyDto CompanyDto = new CompanyDto();
-        CompanyDto.setName("Name");
-        CompanyDto.setContactName("Contact Name");
-        CompanyDto.setContactTitle("Contact Title");
-        CompanyDto.setContactNumber(123456789);
-        CompanyDto.setInvoices("Invoices");
+        CompanyDto companyDto = new CompanyDto();
+        companyDto.setName("Name");
+        companyDto.setContactName("Contact Name");
+        companyDto.setContactTitle("Contact Title");
+        companyDto.setContactNumber(123456789);
+        companyDto.setInvoices("Invoices");
 
-        AddressDto AddressDto = new AddressDto();
-        AddressDto.setLine1("Address line 1");
-        AddressDto.setLine2("line 2");
-        AddressDto.setCity("City");
-        AddressDto.setState("XX");
-        AddressDto.setZipcode(12345);
+        AddressDto addressDto = new AddressDto();
+        addressDto.setLine1("Address line 1");
+        addressDto.setLine2("line 2");
+        addressDto.setCity("City");
+        addressDto.setState("XX");
+        addressDto.setZipcode(12345);
 
-        CompanyDto.setAddress(AddressDto);
+        companyDto.setAddress(addressDto);
 
         RequestBuilder rq = post("/company")
-                .content(objectMapper.writeValueAsString(CompanyDto))
+                .content(objectMapper.writeValueAsString(companyDto))
                 .contentType(MediaType.APPLICATION_JSON);
 
         mockMvc.perform(rq)
@@ -95,24 +95,24 @@ public class CompanyIT {
     @Test
     public void createDuplicateCompanyTest() throws Exception{
 
-        CompanyDto CompanyDto = new CompanyDto();
-        CompanyDto.setName("First Company");
-        CompanyDto.setContactName("Contact Name");
-        CompanyDto.setContactTitle("Contact Title");
-        CompanyDto.setContactNumber(123456789);
-        CompanyDto.setInvoices("Invoices");
+        CompanyDto companyDto = new CompanyDto();
+        companyDto.setName("First Company");
+        companyDto.setContactName("Contact Name");
+        companyDto.setContactTitle("Contact Title");
+        companyDto.setContactNumber(123456789);
+        companyDto.setInvoices("Invoices");
 
-        AddressDto AddressDto = new AddressDto();
-        AddressDto.setLine1("Address line 1");
-        AddressDto.setLine2("line 2");
-        AddressDto.setCity("City");
-        AddressDto.setState("XX");
-        AddressDto.setZipcode(12345);
+        AddressDto addressDto = new AddressDto();
+        addressDto.setLine1("Address line 1");
+        addressDto.setLine2("line 2");
+        addressDto.setCity("City");
+        addressDto.setState("XX");
+        addressDto.setZipcode(12345);
 
-        CompanyDto.setAddress(AddressDto);
+        companyDto.setAddress(addressDto);
 
         RequestBuilder rq = post("/company")
-                .content(objectMapper.writeValueAsString(CompanyDto))
+                .content(objectMapper.writeValueAsString(companyDto))
                 .contentType(MediaType.APPLICATION_JSON);
 
         mockMvc.perform(rq)

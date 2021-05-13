@@ -1,5 +1,6 @@
 package com.cognizant.javapunditsinvoicify.controller;
 
+import com.cognizant.javapunditsinvoicify.dto.InvoiceDto;
 import com.cognizant.javapunditsinvoicify.dto.InvoiceItemDto;
 import com.cognizant.javapunditsinvoicify.response.ResponseMessage;
 import com.cognizant.javapunditsinvoicify.service.InvoiceService;
@@ -14,14 +15,22 @@ public class InvoiceController {
     @Autowired
     private InvoiceService invoiceService;
 
-    @PostMapping
-    public String createInvoice(){
-        return invoiceService.createInvoice();
+//    @PostMapping
+//    public String createInvoice(){
+//        return invoiceService.createInvoice();
+//    }
+
+    @PostMapping("/item")
+    public ResponseEntity<?> addInvoiceItem(@RequestBody InvoiceItemDto invoiceItemDto,
+                                            @RequestParam("invoice_id") Long invoiceId)
+    {
+        ResponseMessage response = invoiceService.addInvoiceItem(invoiceItemDto, invoiceId);
+        return new ResponseEntity<>(response, response.getHttpStatus());
     }
 
-    @PostMapping("item")
-    public ResponseEntity<?> addInvoiceItem(@RequestBody InvoiceItemDto invoiceItemDto, @RequestParam("invoice_id") Long invoiceId){
-        ResponseMessage response = invoiceService.addInvoiceItem(invoiceItemDto, invoiceId);
+    @PostMapping
+    public ResponseEntity<?> addInvoice(@RequestBody InvoiceDto invoiceDto){
+        ResponseMessage response = invoiceService.addInvoice(invoiceDto);
         return new ResponseEntity<>(response, response.getHttpStatus());
     }
 

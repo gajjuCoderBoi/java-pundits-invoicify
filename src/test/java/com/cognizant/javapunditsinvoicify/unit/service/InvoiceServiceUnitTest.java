@@ -51,7 +51,7 @@ public class InvoiceServiceUnitTest {
                 .build(), 1L);
 
         assertNotNull(actualResponse);
-        assertEquals(actualResponse.getResponseMessage(), "Invoice Item Successfully Added.");
+        assertEquals(actualResponse.getResponseMessage(), "InvoiceItem added Successfully.");
         assertEquals(actualResponse.getHttpStatus(), CREATED);
 
     }
