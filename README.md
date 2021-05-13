@@ -1,4 +1,4 @@
-# Guest Book Service
+# Invoicify Service
 
 <p align="center">
   <a href="#">
@@ -93,7 +93,7 @@ Build from Source:
          password: sa
    ```
 
-   Configuration parameters for PostgreSQL (replace [SERVER-ADDRESS], [PORT] (if available), [DATABASE], [USER], [PASSWORD] with appropriate values):
+   Configuration parameters for PostgreSQL (replace **[SERVER-ADDRESS]**, **[PORT]** (if available), **[DATABASE]**, **[USER]**, **[PASSWORD]** with appropriate values):
 
 ```yaml
       spring:
@@ -117,7 +117,8 @@ Build from Source:
 
      ```yaml
         # Add Server Port property
-        server.port=your-port                        
+        server
+          port: your-port                        
      ```
    * Java Command
       
