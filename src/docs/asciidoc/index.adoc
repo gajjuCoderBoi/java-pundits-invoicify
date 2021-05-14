@@ -1,44 +1,71 @@
-Invoicify Service
+= Invoicify Service
 
 
-Company List With Details
+=== Company List With Details
 
 .request
 include::{snippets}/company-list/http-request.adoc[]
+
+.response body
+include::{snippets}/company-list/response-fields.adoc[]
 
 .response
 include::{snippets}/company-list/http-response.adoc[]
 
 
-Company List Simple View
+=== Company List Simple View
 
 .request
 include::{snippets}/company-list-simple/http-request.adoc[]
+
+.response body
+include::{snippets}/company-list-simple/response-fields.adoc[]
 
 .response
 include::{snippets}/company-list-simple/http-response.adoc[]
 
 
-AddCompany
+=== AddCompany
 
 .request
 include::{snippets}/addCompany/http-request.adoc[]
 
+.request parameters
+include::{snippets}/addCompany/request-fields.adoc[]
+
+.reponse body
+include::{snippets}/addCompany/response-fields.adoc[]
+
 .response
 include::{snippets}/addCompany/http-response.adoc[]
 
-Get Company By ID
+=== Get Company By ID
 
 .request
 include::{snippets}/get-company-by-id/http-request.adoc[]
 
+.request path parameters
+include::{snippets}/get-company-by-id/path-parameters.adoc[]
+
+.reponse body
+include::{snippets}/get-company-by-id/response-fields.adoc[]
+
 .response
 include::{snippets}/get-company-by-id/http-response.adoc[]
 
-Update Company
+=== Update Company
 
 .request
 include::{snippets}/update-company/http-request.adoc[]
+
+.request path parameters
+include::{snippets}/update-company/path-parameters.adoc[]
+
+.request body
+include::{snippets}/update-company/request-body.adoc[]
+
+.reponse body
+include::{snippets}/update-company/response-body.adoc[]
 
 .response
 include::{snippets}/update-company/http-response.adoc[]
