@@ -1,0 +1,16 @@
+==== AddCompany
+
+===== Sample Request
+include::{snippets}/addCompany/http-request.adoc[]
+
+===== Sample Response
+include::{snippets}/addCompany/http-response.adoc[]
+
+===== Curl Sample
+include::{snippets}/addCompany/curl-request.adoc[]
+
+===== Request Fields
+include::{snippets}/addCompany/request-fields.adoc[]
+
+===== Response Fields
+include::{snippets}/addCompany/response-fields.adoc[]
