@@ -1,73 +1,74 @@
-= Invoicify Service
+= Invoicify Service Spring REST Doc API
+java-pundits-invoicify 1.1
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 4
+:sectlinks:
+:sectnums:
 
+[[overview]]
+= Overview
 
-=== Company List With Details
+[[overview-http-verbs]]
+== HTTP verbs
 
-.request
-include::{snippets}/company-list/http-request.adoc[]
+RESTful notes tries to adhere as closely as possible to standard HTTP and REST conventions in its
+use of HTTP verbs.
 
-.response body
-include::{snippets}/company-list/response-fields.adoc[]
+|===
+| Verb | Usage
 
-.response
-include::{snippets}/company-list/http-response.adoc[]
+| `GET`
+| Used to retrieve a resource
 
+| `POST`
+| Used to create a new resource
 
-=== Company List Simple View
+| `PATCH`
+| Used to update an existing resource, including partial updates
 
-.request
-include::{snippets}/company-list-simple/http-request.adoc[]
+| `DELETE`
+| Used to delete an existing resource
+|===
 
-.response body
-include::{snippets}/company-list-simple/response-fields.adoc[]
+RESTful notes tries to adhere as closely as possible to standard HTTP and REST conventions in its
+use of HTTP status codes.
 
-.response
-include::{snippets}/company-list-simple/http-response.adoc[]
+|===
+| Status code | Usage
 
+| `200 OK`
+| The request completed successfully
 
-=== AddCompany
+| `201 Created`
+| A new resource has been created successfully. The resource's URI is available from the response's
+`Location` header
 
-.request
-include::{snippets}/addCompany/http-request.adoc[]
+| `204 No Content`
+| An update to an existing resource has been applied successfully
 
-.request parameters
-include::{snippets}/addCompany/request-fields.adoc[]
+| `400 Bad Request`
+| The request was malformed. The response body will include an error providing further information
 
-.reponse body
-include::{snippets}/addCompany/response-fields.adoc[]
+| `404 Not Found`
+| The requested resource did not exist
 
-.response
-include::{snippets}/addCompany/http-response.adoc[]
+| `404 Not Found`
+| The Requested data is not found.
+|===
 
-=== Get Company By ID
+[[overview-hypermedia]]
+== API
 
-.request
-include::{snippets}/get-company-by-id/http-request.adoc[]
+Description (todo)
 
-.request path parameters
-include::{snippets}/get-company-by-id/path-parameters.adoc[]
+=== Company
 
-.reponse body
-include::{snippets}/get-company-by-id/response-fields.adoc[]
+include::company/company.adoc[]
 
-.response
-include::{snippets}/get-company-by-id/http-response.adoc[]
-
-=== Update Company
-
-.request
-include::{snippets}/update-company/http-request.adoc[]
-
-.request path parameters
-include::{snippets}/update-company/path-parameters.adoc[]
-
-.request body
-include::{snippets}/update-company/request-body.adoc[]
-
-.reponse body
-include::{snippets}/update-company/response-body.adoc[]
-
-.response
-include::{snippets}/update-company/http-response.adoc[]
+=== Invoice
+include::invoice/invoice.adoc[]
 
 
