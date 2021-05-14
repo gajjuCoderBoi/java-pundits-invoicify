@@ -1,0 +1,16 @@
+==== Get Company By ID
+
+===== Sample Request
+include::{snippets}/get-company-by-id/http-request.adoc[]
+
+===== Sample Response
+include::{snippets}/get-company-by-id/http-response.adoc[]
+
+===== Curl Sample
+include::{snippets}/get-company-by-id/curl-request.adoc[]
+
+===== Path Parameters
+include::{snippets}/get-company-by-id/path-parameters.adoc[]
+
+===== Response Fields
+include::{snippets}/get-company-by-id/response-fields.adoc[]
