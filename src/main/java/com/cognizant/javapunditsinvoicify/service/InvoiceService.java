@@ -63,7 +63,6 @@ public class InvoiceService {
     public ResponseMessage addInvoice(InvoiceDto invoiceDto) {
 
         InvoiceEntity invoiceEntity = invoiceMapper.invoiceDtoToEntity(invoiceDto);
-//        InvoiceItemDto invoiceItemDto = invoiceDto.getInvoiceItemDto();
         List<InvoiceItemDto> listInvoiceItemDto = invoiceDto.getInvoiceItemDtoList();
         List<InvoiceItemEntity> invoiceItemEntityList = new ArrayList<>();
         for (InvoiceItemDto itemDto :  listInvoiceItemDto)

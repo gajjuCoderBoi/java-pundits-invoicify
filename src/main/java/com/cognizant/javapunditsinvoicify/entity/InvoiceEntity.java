@@ -2,6 +2,7 @@ package com.cognizant.javapunditsinvoicify.entity;
 
 import com.cognizant.javapunditsinvoicify.dto.InvoiceItemDto;
 import com.cognizant.javapunditsinvoicify.misc.PaymentStatus;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
