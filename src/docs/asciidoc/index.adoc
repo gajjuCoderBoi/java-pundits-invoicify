@@ -66,9 +66,9 @@ Description (todo)
 
 === Company
 
-include::company/company.adoc[]
+include::company/index.adoc[]
 
 === Invoice
-include::invoice/invoice.adoc[]
+include::invoice/index.adoc[]
 
 
