@@ -5,6 +5,7 @@ import com.cognizant.javapunditsinvoicify.dto.InvoiceItemDto;
 import com.cognizant.javapunditsinvoicify.entity.InvoiceEntity;
 import com.cognizant.javapunditsinvoicify.entity.InvoiceItemEntity;
 import com.cognizant.javapunditsinvoicify.mapper.InvoiceItemMapper;
+import com.cognizant.javapunditsinvoicify.mapper.InvoiceMapper;
 import com.cognizant.javapunditsinvoicify.misc.FeeType;
 import com.cognizant.javapunditsinvoicify.misc.PaymentStatus;
 import com.cognizant.javapunditsinvoicify.repository.InvoiceItemRepository;
@@ -17,6 +18,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.util.ArrayList;
@@ -35,6 +37,7 @@ import static org.springframework.http.HttpStatus.NOT_FOUND;
 @ExtendWith(MockitoExtension.class)
 @ActiveProfiles("qa")
 public class InvoiceServiceUnitTest {
+
     @InjectMocks
     private InvoiceService invoiceService;
 
@@ -45,6 +48,9 @@ public class InvoiceServiceUnitTest {
     private InvoiceItemRepository invoiceItemRepository;
 
     @Mock
+    private InvoiceMapper invoiceMapper;
+
+    @Mock
     private InvoiceItemMapper invoiceItemMapper;
 
     private InvoiceItemDto invoiceItemDto;
@@ -52,24 +58,26 @@ public class InvoiceServiceUnitTest {
     
     @BeforeEach
     void initMockData(){
+        invoiceDto = new InvoiceDto();
         Date date = new Date(System.currentTimeMillis());
-        List<InvoiceItemDto> invoiceItemDtoList = new ArrayList<>();
-        InvoiceItemDto invoiceItemDto = new InvoiceItemDto();
+        invoiceDto.setCreatedDate(date);
+        invoiceDto.setModifiedDate(date);
+
+        invoiceItemDto = new InvoiceItemDto();
         invoiceItemDto.setDescription("Item 1");
         invoiceItemDto.setFeeType(FeeType.RATE);
         invoiceItemDto.setRate(5.0d);
         invoiceItemDto.setQuantity(5);
-        invoiceItemDto.setDescription("Item 1");
-        invoiceItemDtoList.add(invoiceItemDto);
-        InvoiceDto invoiceDto = InvoiceDto.builder()
-                .createdDate(date)
-                .modifiedDate(date)
-                .paymentStatus(PaymentStatus.UNPAID)
-                .companyName("Test Company Name")
-                .build();
-        invoiceDto.setInvoiceItemDtoList(invoiceItemDtoList);
+        List<InvoiceItemDto> itemListDto = new ArrayList<>();
+        itemListDto.add(invoiceItemDto);
+
+        invoiceDto.setInvoiceItemDtoList(itemListDto);
+        invoiceDto.setCompanyName("Test Company");
+
+        invoiceDto.setPaymentStatus(PaymentStatus.UNPAID);
+        invoiceDto.setTotal(100.0d);
     }
-    
+
     @Test
     public void addInvoiceItem_Failed(){
         when(invoiceRepository.findById(anyLong())).thenReturn(java.util.Optional.of(new InvoiceEntity()));
