@@ -45,10 +45,10 @@ public class InvoiceServiceUnitTest {
     private InvoiceRepository invoiceRepository;
 
     @Mock
-    private InvoiceItemRepository invoiceItemRepository;
+    private InvoiceMapper invoiceMapper;
 
     @Mock
-    private InvoiceMapper invoiceMapper;
+    private InvoiceItemRepository invoiceItemRepository;
 
     @Mock
     private InvoiceItemMapper invoiceItemMapper;
@@ -110,6 +110,7 @@ public class InvoiceServiceUnitTest {
     @Test
     public void createInvoices()
     {
+        when(invoiceMapper.invoiceDtoToEntity(any())).thenReturn(new InvoiceEntity());
         ResponseMessage actualResponse = invoiceService.addInvoice(invoiceDto);
 
         assertNotNull(actualResponse);

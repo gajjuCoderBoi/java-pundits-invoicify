@@ -17,18 +17,11 @@ import javax.persistence.*;
 public class AddressEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    Long id;
-    String line1;
-    String line2;
-    String city;
-    String state;
-    Integer zip;
+    private Long id;
+    private String line1;
+    private String line2;
+    private String city;
+    private String state;
+    private Integer zip;
 
-    public AddressEntity(String line1, String line2, String city, String state, Integer zip) {
-        this.line1 = line1;
-        this.line2 = line2;
-        this.city = city;
-        this.state = state;
-        this.zip = zip;
-    }
 }

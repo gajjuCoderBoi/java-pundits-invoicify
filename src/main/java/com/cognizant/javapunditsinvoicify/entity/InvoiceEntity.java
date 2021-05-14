@@ -5,8 +5,12 @@ import com.cognizant.javapunditsinvoicify.misc.PaymentStatus;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+import org.springframework.data.annotation.CreatedDate;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 
@@ -18,19 +22,17 @@ public class InvoiceEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
-    Date createdDate;
-    Date modifiedDate;
-    String companyName;
+    @CreationTimestamp
+    private LocalDateTime createdDate;
+    @UpdateTimestamp
+    private LocalDateTime modifiedDate;
+    private String companyName;
 
-    @OneToMany
-    @JoinTable(
-            name="invoiceItemEntity",
-            joinColumns = @JoinColumn( name="invoice_id")
-    )
+    @OneToMany(mappedBy = "invoiceEntity")
     private List<InvoiceItemEntity> invoiceItemEntityList;
 
     @Enumerated(EnumType.ORDINAL)
-    PaymentStatus paymentStatus;
+    private PaymentStatus paymentStatus;
 
-    Double total;
+    private Double total;
 }

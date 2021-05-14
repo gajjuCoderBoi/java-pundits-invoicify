@@ -9,6 +9,7 @@ import com.cognizant.javapunditsinvoicify.entity.InvoiceEntity;
 import com.cognizant.javapunditsinvoicify.misc.FeeType;
 import com.cognizant.javapunditsinvoicify.misc.PaymentStatus;
 import com.cognizant.javapunditsinvoicify.repository.InvoiceRepository;
+import com.cognizant.javapunditsinvoicify.response.ResponseMessage;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
@@ -74,7 +75,7 @@ public class InvoiceIT {
 
     @Test
     public void postInvoiceItem_Success() throws Exception {
-        String invoiceId = postInvoice();
+        String invoiceId = objectMapper.readValue(postInvoice(), ResponseMessage.class).getResponseMessage();
 
         InvoiceItemDto sampleInvoiceItemDto = InvoiceItemDto.builder()
                 .description("Test Item")

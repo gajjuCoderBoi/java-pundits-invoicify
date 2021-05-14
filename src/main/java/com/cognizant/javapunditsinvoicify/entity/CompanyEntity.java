@@ -20,29 +20,21 @@ public class CompanyEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    Long id;
+    private Long id;
     @Column(unique = true)
-    String name;
+    private String name;
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "address_id")
     private AddressEntity addressEntity;
 
-    String contactName;
-    String contactTitle;
-    Integer contactNumber;
-    String invoices;
+    private String contactName;
+    private String contactTitle;
+    private Integer contactNumber;
+    private String invoices;
 
     public Long getId() {
         return id;
     }
 
-    public CompanyEntity(String name, AddressEntity addressEntity, String contactName, String contactTitle, Integer contactNumber, String invoices) {
-        this.name = name;
-        this.addressEntity = addressEntity;
-        this.contactName = contactName;
-        this.contactTitle = contactTitle;
-        this.contactNumber = contactNumber;
-        this.invoices = invoices;
-    }
 }
