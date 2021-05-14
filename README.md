@@ -14,7 +14,7 @@
 
   <br>
 
-[![Build, Test, Release, Deploy](https://github.com/gajjuCoderBoi/java-pundits-invoicify/actions/workflows/cicd.yml/badge.svg)](https://github.com/gajjuCoderBoi/java-pundits-invoicify/actions/workflows/cicd.yml)  [![codecov](https://codecov.io/gh/gajjuCoderBoi/java-pundits-invoicify/branch/develop/graph/badge.svg?token=N8P18UJIME)](https://codecov.io/gh/gajjuCoderBoi/java-pundits-invoicify)  [![Generic badge](https://img.shields.io/badge/java_ver->=11-blue.svg)](https://shields.io/) [![Generic badge](https://img.shields.io/badge/springboot_version-2.4.5-blue.svg)](https://shields.io/)
+[![Build, Test, Release, Deploy](https://github.com/gajjuCoderBoi/java-pundits-invoicify/actions/workflows/cicd.yml/badge.svg)](https://github.com/gajjuCoderBoi/java-pundits-invoicify/actions/workflows/cicd.yml)  [![codecov](https://codecov.io/gh/gajjuCoderBoi/java-pundits-invoicify/branch/develop/graph/badge.svg?token=N8P18UJIME)](https://codecov.io/gh/gajjuCoderBoi/java-pundits-invoicify) [![Generic badge](https://img.shields.io/badge/docker_pulls-ghazanfar9131/java--pundits--invoicify-red.svg)](https://hub.docker.com/repository/docker/ghazanfar9131/java-pundits-invoicify) [![Generic badge](https://img.shields.io/badge/java_ver->=11-blue.svg)]() [![Generic badge](https://img.shields.io/badge/springboot_version-2.4.5-blue.svg)]() 
 
 </p>
 
