@@ -1,0 +1,13 @@
+==== Company List Simple View
+
+===== Sample Request
+include::{snippets}/company-list-simple/http-request.adoc[]
+
+===== Sample Response
+include::{snippets}/company-list-simple/http-response.adoc[]
+
+===== Curl Sample
+include::{snippets}/company-list-simple/curl-request.adoc[]
+
+===== Response Fields
+include::{snippets}/company-list-simple/response-fields.adoc[]

@@ -1,46 +1,74 @@
-Invoicify Service
+= Invoicify Service Spring REST Doc API
+java-pundits-invoicify 1.1
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 4
+:sectlinks:
+:sectnums:
 
+[[overview]]
+= Overview
 
-Company List With Details
+[[overview-http-verbs]]
+== HTTP verbs
 
-.request
-include::{snippets}/company-list/http-request.adoc[]
+RESTful notes tries to adhere as closely as possible to standard HTTP and REST conventions in its
+use of HTTP verbs.
 
-.response
-include::{snippets}/company-list/http-response.adoc[]
+|===
+| Verb | Usage
 
+| `GET`
+| Used to retrieve a resource
 
-Company List Simple View
+| `POST`
+| Used to create a new resource
 
-.request
-include::{snippets}/company-list-simple/http-request.adoc[]
+| `PATCH`
+| Used to update an existing resource, including partial updates
 
-.response
-include::{snippets}/company-list-simple/http-response.adoc[]
+| `DELETE`
+| Used to delete an existing resource
+|===
 
+RESTful notes tries to adhere as closely as possible to standard HTTP and REST conventions in its
+use of HTTP status codes.
 
-AddCompany
+|===
+| Status code | Usage
 
-.request
-include::{snippets}/addCompany/http-request.adoc[]
+| `200 OK`
+| The request completed successfully
 
-.response
-include::{snippets}/addCompany/http-response.adoc[]
+| `201 Created`
+| A new resource has been created successfully. The resource's URI is available from the response's
+`Location` header
 
-Get Company By ID
+| `204 No Content`
+| An update to an existing resource has been applied successfully
 
-.request
-include::{snippets}/get-company-by-id/http-request.adoc[]
+| `400 Bad Request`
+| The request was malformed. The response body will include an error providing further information
 
-.response
-include::{snippets}/get-company-by-id/http-response.adoc[]
+| `404 Not Found`
+| The requested resource did not exist
 
-Update Company
+| `404 Not Found`
+| The Requested data is not found.
+|===
 
-.request
-include::{snippets}/update-company/http-request.adoc[]
+[[overview-hypermedia]]
+== API
 
-.response
-include::{snippets}/update-company/http-response.adoc[]
+Description (todo)
+
+=== Company
+
+include::company/company.adoc[]
+
+=== Invoice
+include::invoice/invoice.adoc[]
 
 
