@@ -1,0 +1,13 @@
+==== Get Invoice By Id
+
+===== Sample Request
+include::{snippets}/get-invoice-by-id/http-request.adoc[]
+
+===== Path Variables
+include::{snippets}/get-invoice-by-id/path-parameters.adoc[]
+
+===== Response-Body
+include::{snippets}/get-invoice-by-id/response-fields.adoc[]
+
+===== Sample Response
+include::{snippets}/get-invoice-by-id/http-response.adoc[]

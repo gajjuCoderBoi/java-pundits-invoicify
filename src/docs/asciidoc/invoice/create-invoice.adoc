@@ -1,12 +1,10 @@
-==== Invoice
-
-Add Invoice Item
+==== Add Invoice Item
 
 ===== Sample Request
 include::{snippets}/add-invoice/http-request.adoc[]
 
-===== Request-Parameters
-include::{snippets}/add-invoice/request-parameters.adoc[]
+===== Path Variables
+include::{snippets}/add-invoice/path-parameters.adoc[]
 
 ===== Request-Body
 include::{snippets}/add-invoice/request-fields.adoc[]
