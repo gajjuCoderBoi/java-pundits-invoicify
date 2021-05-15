@@ -104,7 +104,6 @@ public class InvoiceService {
         InvoiceEntity invoiceEntity=invoiceRepository.findById(invoiceId).orElse(null);
 
         InvoiceDto invoiceDto= invoiceMapper.invoiceEntityToDto(invoiceEntity);
-
         if(invoiceEntity.getCreatedDate() != null) {
             invoiceDto.setCreatedDate(DateFormatUtil.formatDate(invoiceEntity.getCreatedDate()));
             invoiceDto.setModifiedDate(DateFormatUtil.formatDate(invoiceEntity.getModifiedDate()));
@@ -129,8 +128,7 @@ public class InvoiceService {
         return invoiceDto;
     }
 
-    public ResponseMessage updateInvoice(InvoiceDto invoiceDto, Long invoiceId)
-    {
+    public ResponseMessage updateInvoice(InvoiceDto invoiceDto, Long invoiceId) {
         ResponseMessage responseMessage = new ResponseMessage();
         InvoiceEntity savedInvoiceEntity;
 

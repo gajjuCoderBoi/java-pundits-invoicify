@@ -8,17 +8,13 @@ import com.cognizant.javapunditsinvoicify.entity.AddressEntity;
 import com.cognizant.javapunditsinvoicify.entity.CompanyEntity;
 import com.cognizant.javapunditsinvoicify.entity.InvoiceEntity;
 import com.cognizant.javapunditsinvoicify.entity.InvoiceItemEntity;
-import com.cognizant.javapunditsinvoicify.mapper.AddressMapper;
-import com.cognizant.javapunditsinvoicify.mapper.CompanyMapper;
 import com.cognizant.javapunditsinvoicify.mapper.InvoiceItemMapper;
 import com.cognizant.javapunditsinvoicify.mapper.InvoiceMapper;
-import com.cognizant.javapunditsinvoicify.misc.FeeType;
 import com.cognizant.javapunditsinvoicify.misc.PaymentStatus;
 import com.cognizant.javapunditsinvoicify.repository.CompanyRepository;
 import com.cognizant.javapunditsinvoicify.repository.InvoiceItemRepository;
 import com.cognizant.javapunditsinvoicify.repository.InvoiceRepository;
 import com.cognizant.javapunditsinvoicify.response.ResponseMessage;
-import com.cognizant.javapunditsinvoicify.service.CompanyService;
 import com.cognizant.javapunditsinvoicify.service.InvoiceService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -29,18 +25,16 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.time.ZonedDateTime;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
 import java.util.Optional;
 
+import static com.cognizant.javapunditsinvoicify.misc.PaymentStatus.PAID;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.springframework.http.HttpStatus.*;
+import static org.springframework.http.HttpStatus.CREATED;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 @ExtendWith(MockitoExtension.class)
 @ActiveProfiles("qa")
@@ -61,19 +55,11 @@ public class InvoiceServiceUnitTest {
     @Mock
     private InvoiceItemMapper invoiceItemMapper;
 
-    private InvoiceItemDto invoiceItemDto;
     private InvoiceDto invoiceDto;
-    @InjectMocks
-    private CompanyService companyService;
 
     @Mock
     private CompanyRepository companyRepository;
 
-    @Mock
-    private CompanyMapper companyMapper;
-
-    @Mock
-    private AddressMapper addressMapper;
 
     private CompanyEntity mockCompanyEntity;
     private InvoiceEntity mockInvoiceEntity;
@@ -147,8 +133,7 @@ public class InvoiceServiceUnitTest {
     }
 
     @Test
-    public void createInvoices()
-    {
+    public void createInvoices() {
         when(invoiceMapper.invoiceDtoToEntity(any())).thenReturn(new InvoiceEntity());
         when(companyRepository.findById(anyLong())).thenReturn(Optional.of(new CompanyEntity()));
         InvoiceEntity invoiceEntity = new InvoiceEntity();
@@ -160,5 +145,26 @@ public class InvoiceServiceUnitTest {
         assertEquals(actualResponse.getId(),"1");
         assertEquals(actualResponse.getResponseMessage(),"Invoice created.");
         assertEquals(actualResponse.getHttpStatus(), CREATED);
+    }
+
+    @Test
+    public void getInvoiceIdById(){
+        ZonedDateTime _new, _modified;
+        _new = _modified = ZonedDateTime.parse("2021-05-15T19:47:08.528563200-04:00[America/New_York]");
+        mockInvoiceEntity = new InvoiceEntity();
+        mockInvoiceEntity.setCompanyEntity(mockCompanyEntity);
+        mockInvoiceEntity.setModifiedDate(_new);
+        mockInvoiceEntity.setCreatedDate(_modified);
+        mockInvoiceEntity.setPaymentStatus(PAID);
+
+        when(invoiceRepository.findById(anyLong())).thenReturn(Optional.of(mockInvoiceEntity));
+        when(invoiceMapper.invoiceEntityToDto(any(InvoiceEntity.class))).thenReturn(new InvoiceDto());
+
+        InvoiceDto actual = invoiceService.getInvoiceById(1L);
+
+        assertNotNull(actual);
+        assertEquals( "May 15, 2021 19:47 PM - Eastern Daylight Time", actual.getCreatedDate());
+        assertEquals("May 15, 2021 19:47 PM - Eastern Daylight Time", actual.getModifiedDate());
+
     }
 }

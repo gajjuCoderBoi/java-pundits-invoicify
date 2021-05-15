@@ -43,7 +43,7 @@ test {
     useJUnitPlatform()
     finalizedBy jacocoTestReport
     jacoco {
-        excludes += ["**/dto/**","**/entity/**", "**/mapper/**", "**/response/**"]
+        excludes += ["**/dto/**","**/entity/**", "**/mapper/**", "**/response/**", "**/util/**", "**/misc/**"]
     }
 }
 
@@ -88,7 +88,9 @@ jacocoTestReport {
                             'com/cognizant/javapunditsinvoicify/entity',
                             'com/cognizant/javapunditsinvoicify/dto',
                             'com/cognizant/javapunditsinvoicify/mapper',
-                            'com/cognizant/javapunditsinvoicify/response'
+                            'com/cognizant/javapunditsinvoicify/response',
+                            'com/cognizant/javapunditsinvoicify/util',
+                            'com/cognizant/javapunditsinvoicify/misc'
                     ]
             )
         }))
