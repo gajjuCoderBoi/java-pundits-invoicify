@@ -1,0 +1,13 @@
+==== Delete Invoice Item
+
+===== Sample Request
+include::{snippets}/delete-invoice/http-request.adoc[]
+
+===== Request-Parameters
+include::{snippets}/delete-invoice/path-parameters.adoc[]
+
+===== Response-Body
+include::{snippets}/delete-invoice/response-fields.adoc[]
+
+===== Sample Response
+include::{snippets}/delete-invoice/http-response.adoc[]

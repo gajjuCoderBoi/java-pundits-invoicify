@@ -1,3 +1,7 @@
 include::create-invoice.adoc[]
 
+include::update-invoice.adoc[]
+
+include::delete-invoice.adoc[]
+
 include::get-invoice-by-id.adoc[]

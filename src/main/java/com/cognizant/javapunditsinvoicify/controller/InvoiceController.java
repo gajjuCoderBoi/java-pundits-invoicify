@@ -15,11 +15,6 @@ public class InvoiceController {
     @Autowired
     private InvoiceService invoiceService;
 
-//    @PostMapping
-//    public String createInvoice(){
-//        return invoiceService.createInvoice();
-//    }
-
     @PostMapping("/item")
     public ResponseEntity<?> addInvoiceItem(@RequestBody InvoiceItemDto invoiceItemDto,
                                             @RequestParam("invoice_id") Long invoiceId)
@@ -42,4 +37,19 @@ public class InvoiceController {
         InvoiceDto invoiceDto=invoiceService.getInvoiceById(invoiceId);
         return invoiceDto;
     }
+    @PutMapping("/{invoiceId}")
+    public ResponseEntity<?> updateInvoice(@RequestBody InvoiceDto invoiceDto,
+                                        @PathVariable(name="invoiceId") Long invoiceId)
+    {
+        ResponseMessage response = invoiceService.updateInvoice(invoiceDto, invoiceId);
+        return new ResponseEntity<>(response, response.getHttpStatus());
+    }
+
+    @DeleteMapping("/{invoiceId}")
+    public ResponseEntity<?> deleteInvoice(@PathVariable(name="invoiceId") Long invoiceId)
+    {
+        ResponseMessage response = invoiceService.deleteInvoice(invoiceId);
+        return new ResponseEntity<>(response, response.getHttpStatus());
+    }
+
 }
