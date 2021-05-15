@@ -1,9 +1,12 @@
 package com.cognizant.javapunditsinvoicify.unit.controller;
 
 import com.cognizant.javapunditsinvoicify.controller.InvoiceController;
+import com.cognizant.javapunditsinvoicify.dto.InvoiceDto;
 import com.cognizant.javapunditsinvoicify.dto.InvoiceItemDto;
+import com.cognizant.javapunditsinvoicify.misc.FeeType;
 import com.cognizant.javapunditsinvoicify.response.ResponseMessage;
 import com.cognizant.javapunditsinvoicify.service.InvoiceService;
+import com.cognizant.javapunditsinvoicify.util.DateFormatUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,11 +16,15 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.RequestBuilder;
 
+import java.time.ZonedDateTime;
+
+import static com.cognizant.javapunditsinvoicify.util.DateFormatUtil.formatDate;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpStatus.*;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -84,5 +91,20 @@ public class InvoiceControllerUnitTest {
                 .andExpect(jsonPath("responseMessage").value("InvoiceItem added Successfully."))
                 .andDo(print())
         ;
+    }
+
+    @Test
+    public void getInvoiceByIdUnitTest(){
+        ZonedDateTime createdTime =  ZonedDateTime.now();
+        ZonedDateTime modifiedTime = ZonedDateTime.now();
+        InvoiceDto mockInvoiceDto = InvoiceDto.builder()
+                .total(100D)
+                .createdDate(formatDate(createdTime))
+                .build();
+
+        RequestBuilder  getInvoiceById = get("/invoice/1")
+                .accept(APPLICATION_JSON);
+
+        when(invoiceService.getInvoiceById(anyLong())).thenReturn(mockInvoiceDto);
     }
 }
