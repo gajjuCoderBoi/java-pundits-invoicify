@@ -1,1 +1,2 @@
-Todo
+
+include::create-invoice.adoc[]

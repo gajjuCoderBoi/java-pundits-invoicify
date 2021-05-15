@@ -1,4 +1,4 @@
-package com.cognizant.javapunditsinvoicify.unit;
+package com.cognizant.javapunditsinvoicify.unit.controller;
 
 import com.cognizant.javapunditsinvoicify.controller.CompanyController;
 import com.cognizant.javapunditsinvoicify.dto.AddressDto;
@@ -51,7 +51,6 @@ public class CompanyControllerUnitTest {
         companyDto.setContactName("Contact Name");
         companyDto.setContactTitle("Contact Title");
         companyDto.setContactNumber(123456789);
-        companyDto.setInvoices("Invoices");
 
         addressDto = new AddressDto();
         addressDto.setLine1("Address Line 1");

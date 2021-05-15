@@ -22,6 +22,7 @@ import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.docu
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
+import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -47,24 +48,23 @@ public class CompanyIT {
     @Test
     public void createCompanyTest() throws Exception {
 
-        CompanyDto CompanyDto = new CompanyDto();
-        CompanyDto.setName("Name");
-        CompanyDto.setContactName("Contact Name");
-        CompanyDto.setContactTitle("Contact Title");
-        CompanyDto.setContactNumber(123456789);
-        CompanyDto.setInvoices("Invoices");
+        CompanyDto companyDto = new CompanyDto();
+        companyDto.setName("Name");
+        companyDto.setContactName("Contact Name");
+        companyDto.setContactTitle("Contact Title");
+        companyDto.setContactNumber(123456789);
 
-        AddressDto AddressDto = new AddressDto();
-        AddressDto.setLine1("Address line 1");
-        AddressDto.setLine2("line 2");
-        AddressDto.setCity("City");
-        AddressDto.setState("XX");
-        AddressDto.setZipcode(12345);
+        AddressDto addressDto = new AddressDto();
+        addressDto.setLine1("Address line 1");
+        addressDto.setLine2("line 2");
+        addressDto.setCity("City");
+        addressDto.setState("XX");
+        addressDto.setZipcode(12345);
 
-        CompanyDto.setAddress(AddressDto);
+        companyDto.setAddress(addressDto);
 
         RequestBuilder rq = post("/company")
-                .content(objectMapper.writeValueAsString(CompanyDto))
+                .content(objectMapper.writeValueAsString(companyDto))
                 .contentType(MediaType.APPLICATION_JSON);
 
         mockMvc.perform(rq)
@@ -98,24 +98,23 @@ public class CompanyIT {
     @Test
     public void createDuplicateCompanyTest() throws Exception{
 
-        CompanyDto CompanyDto = new CompanyDto();
-        CompanyDto.setName("First Company");
-        CompanyDto.setContactName("Contact Name");
-        CompanyDto.setContactTitle("Contact Title");
-        CompanyDto.setContactNumber(123456789);
-        CompanyDto.setInvoices("Invoices");
+        CompanyDto companyDto = new CompanyDto();
+        companyDto.setName("First Company");
+        companyDto.setContactName("Contact Name");
+        companyDto.setContactTitle("Contact Title");
+        companyDto.setContactNumber(123456789);
 
-        AddressDto AddressDto = new AddressDto();
-        AddressDto.setLine1("Address line 1");
-        AddressDto.setLine2("line 2");
-        AddressDto.setCity("City");
-        AddressDto.setState("XX");
-        AddressDto.setZipcode(12345);
+        AddressDto addressDto = new AddressDto();
+        addressDto.setLine1("Address line 1");
+        addressDto.setLine2("line 2");
+        addressDto.setCity("City");
+        addressDto.setState("XX");
+        addressDto.setZipcode(12345);
 
-        CompanyDto.setAddress(AddressDto);
+        companyDto.setAddress(addressDto);
 
         RequestBuilder rq = post("/company")
-                .content(objectMapper.writeValueAsString(CompanyDto))
+                .content(objectMapper.writeValueAsString(companyDto))
                 .contentType(MediaType.APPLICATION_JSON);
 
         mockMvc.perform(rq)
@@ -146,7 +145,6 @@ public class CompanyIT {
                         .contactName("Contact Name")
                         .contactTitle("Contact Title")
                         .contactNumber(123456789)
-                        .invoices("Invoices")
                         .address(AddressDto.builder()
                                 .line1("Address line 1")
                                 .line2("line 2")
@@ -246,7 +244,6 @@ public class CompanyIT {
                         .contactName("Contact Name")
                         .contactTitle("Contact Title")
                         .contactNumber(123456789)
-                        .invoices("Invoices")
                         .address(AddressDto.builder()
                                 .line1("Address line 1")
                                 .line2("line 2")
@@ -299,7 +296,6 @@ public class CompanyIT {
                 .andExpect(jsonPath("$[0].contactName").value("wallmartCEO"))
                 .andExpect(jsonPath("$[0].contactNumber").value("123456789"))
                 .andExpect(jsonPath("$[0].contactTitle").value("Contact Title"))
-                .andExpect(jsonPath("$[0].invoices").value("Invoices"))
                 .andExpect(jsonPath("$[0].address.line1").value("Address line 1"))
                 .andExpect(jsonPath("$[0].address.line2").value("line 2"))
                 .andExpect(jsonPath("$[0].address.city").value("New York"))
@@ -331,7 +327,6 @@ public class CompanyIT {
                         .contactName("Contact Name")
                         .contactTitle("Contact Title")
                         .contactNumber(123456789)
-                        .invoices("Invoices")
                         .address(AddressDto.builder()
                                 .line1("Address line 1")
                                 .line2("line 2")
