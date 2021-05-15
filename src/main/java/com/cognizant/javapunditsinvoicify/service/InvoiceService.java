@@ -7,13 +7,18 @@ import com.cognizant.javapunditsinvoicify.entity.InvoiceEntity;
 import com.cognizant.javapunditsinvoicify.entity.InvoiceItemEntity;
 import com.cognizant.javapunditsinvoicify.mapper.InvoiceItemMapper;
 import com.cognizant.javapunditsinvoicify.mapper.InvoiceMapper;
+import com.cognizant.javapunditsinvoicify.misc.FeeType;
 import com.cognizant.javapunditsinvoicify.repository.CompanyRepository;
 import com.cognizant.javapunditsinvoicify.repository.InvoiceItemRepository;
 import com.cognizant.javapunditsinvoicify.repository.InvoiceRepository;
 import com.cognizant.javapunditsinvoicify.response.ResponseMessage;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
@@ -80,5 +85,22 @@ public class InvoiceService {
                 .responseMessage("Invoice created.")
                 .httpStatus(CREATED)
                 .build();
+    }
+
+    public InvoiceDto getInvoiceById(Long invoiceId) {
+
+    //    InvoiceEntity invoiceEntity=invoiceRepository.findById(invoiceId).orElse(null);
+            InvoiceEntity invoiceEntity=invoiceRepository.findAll().stream().filter(x->x.getId()==invoiceId).collect(Collectors.toList()).get(0);
+
+
+        InvoiceDto invoiceDto= invoiceMapper.invoiceEntityToDto(invoiceEntity);
+       // invoiceDto.setCreatedDate(invoiceEntity.getCreatedDate().toString());
+        System.out.println(invoiceEntity.getCreatedDate());
+        invoiceDto.setTotal(invoiceEntity.getInvoiceItemEntityList().stream().mapToDouble(x-> {
+        if(x.getFeeType()== FeeType.FLAT) return x.getAmount();
+        else return x.getRate()*x.getQuantity();
+        }
+         ).sum());
+        return invoiceDto;
     }
 }

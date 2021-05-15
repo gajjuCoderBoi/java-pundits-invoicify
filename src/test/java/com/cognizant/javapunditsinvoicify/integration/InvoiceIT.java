@@ -201,7 +201,8 @@ public class InvoiceIT {
 
     @Test
     public void getInvoiceById() throws Exception {
-        RequestBuilder getInvoiceById=RestDocumentationRequestBuilders.get("/invoice/{invoiceId}","1");
+        String invoiceId = objectMapper.readValue(postInvoice(), ResponseMessage.class).getId();
+        RequestBuilder getInvoiceById=RestDocumentationRequestBuilders.get("/invoice/{invoiceId}",invoiceId);
         mockMvc.perform(getInvoiceById)
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("createdDate").exists())

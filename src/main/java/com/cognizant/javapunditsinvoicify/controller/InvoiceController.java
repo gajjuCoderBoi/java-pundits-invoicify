@@ -36,4 +36,10 @@ public class InvoiceController {
         return new ResponseEntity<>(response, response.getHttpStatus());
     }
 
+    @GetMapping("/{invoiceId}")
+    public InvoiceDto getInvoiceById(@PathVariable (name= "invoiceId") Long invoiceId)
+    {
+        InvoiceDto invoiceDto=invoiceService.getInvoiceById(invoiceId);
+        return invoiceDto;
+    }
 }
