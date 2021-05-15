@@ -9,6 +9,7 @@ import com.cognizant.javapunditsinvoicify.entity.InvoiceEntity;
 import com.cognizant.javapunditsinvoicify.entity.InvoiceItemEntity;
 import com.cognizant.javapunditsinvoicify.mapper.InvoiceItemMapper;
 import com.cognizant.javapunditsinvoicify.mapper.InvoiceMapper;
+import com.cognizant.javapunditsinvoicify.misc.PaymentStatus;
 import com.cognizant.javapunditsinvoicify.repository.CompanyRepository;
 import com.cognizant.javapunditsinvoicify.repository.InvoiceItemRepository;
 import com.cognizant.javapunditsinvoicify.repository.InvoiceRepository;
@@ -17,6 +18,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 
 import static org.springframework.http.HttpStatus.*;
 
@@ -75,6 +79,8 @@ public class InvoiceService {
         InvoiceEntity invoiceEntity = invoiceMapper.invoiceDtoToEntity(invoiceDto);
         invoiceEntity.setPaymentStatus(invoiceDto.getPaymentStatus());
         invoiceEntity.setCompanyEntity(savedCompanyEntity);
+        invoiceEntity.setCreatedDate(invoiceDto.getCreatedDate());
+        invoiceEntity.setModifiedDate(ZonedDateTime.now());
         invoiceEntity = invoiceRepository.save(invoiceEntity);
 
         return ResponseMessage.builder()
@@ -97,14 +103,21 @@ public class InvoiceService {
             responseMessage.setHttpStatus(NOT_FOUND);
         }
         else {
-
-            if (invoiceDto.getPaymentStatus() != null) {
+            if (invoiceDto.getPaymentStatus().equals(PaymentStatus.PAID))
+            {
                 savedInvoiceEntity.setPaymentStatus(invoiceDto.getPaymentStatus());
+                savedInvoiceEntity.setModifiedDate(ZonedDateTime.now());
+                invoiceRepository.save(savedInvoiceEntity);
+                responseMessage.setId(savedInvoiceEntity.getId().toString());
+                responseMessage.setResponseMessage("Invoice updated successfully.");
+                responseMessage.setHttpStatus(ACCEPTED);
             }
-            invoiceRepository.save(savedInvoiceEntity);
-            responseMessage.setId(savedInvoiceEntity.getId().toString());
-            responseMessage.setResponseMessage("Invoice updated successfully.");
-            responseMessage.setHttpStatus(ACCEPTED);
+            else
+            {
+                responseMessage.setId(savedInvoiceEntity.getId().toString());
+                responseMessage.setResponseMessage("Invoice NOT updated.");
+                responseMessage.setHttpStatus(NOT_ACCEPTABLE);
+            }
         }
 
         return responseMessage;
@@ -122,10 +135,20 @@ public class InvoiceService {
             responseMessage.setHttpStatus(NOT_FOUND);
         }
         else {
-            invoiceRepository.delete(existingInvoiceEntity);
-            responseMessage.setId(existingInvoiceEntity.getId().toString());
-            responseMessage.setResponseMessage("Invoice deleted successfully.");
-            responseMessage.setHttpStatus(ACCEPTED);
+            if(existingInvoiceEntity.getPaymentStatus().equals(PaymentStatus.PAID)
+            && existingInvoiceEntity.getCreatedDate().plusYears(1).isBefore(ZonedDateTime.now()))
+            {
+                invoiceRepository.delete(existingInvoiceEntity);
+                responseMessage.setId(existingInvoiceEntity.getId().toString());
+                responseMessage.setResponseMessage("Invoice deleted successfully.");
+                responseMessage.setHttpStatus(ACCEPTED);
+            }
+            else
+            {
+                responseMessage.setId(existingInvoiceEntity.getId().toString());
+                responseMessage.setResponseMessage("Unpaid Invoice cannot be deleted.");
+                responseMessage.setHttpStatus(NOT_ACCEPTABLE);
+            }
         }
 
         return responseMessage;

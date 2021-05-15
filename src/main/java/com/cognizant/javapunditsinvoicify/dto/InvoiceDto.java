@@ -4,6 +4,7 @@ import com.cognizant.javapunditsinvoicify.entity.InvoiceItemEntity;
 import com.cognizant.javapunditsinvoicify.misc.PaymentStatus;
 import lombok.*;
 
+import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.List;
 
@@ -15,8 +16,8 @@ import java.util.List;
 @ToString
 public class InvoiceDto {
 
-    String createdDate;
-    String modifiedDate;
+    ZonedDateTime createdDate;
+    ZonedDateTime modifiedDate;
     PaymentStatus paymentStatus;
     Double total;
 

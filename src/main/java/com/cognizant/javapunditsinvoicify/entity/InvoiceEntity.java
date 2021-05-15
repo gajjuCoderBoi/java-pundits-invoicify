@@ -11,6 +11,7 @@ import org.springframework.data.annotation.CreatedDate;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.List;
 
@@ -22,10 +23,9 @@ public class InvoiceEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
-    @CreationTimestamp
-    private LocalDateTime createdDate;
-    @UpdateTimestamp
-    private LocalDateTime modifiedDate;
+
+    private ZonedDateTime createdDate;
+    private ZonedDateTime modifiedDate;
 
     @ManyToOne
     @JoinColumn(name="company_id", referencedColumnName = "id")
