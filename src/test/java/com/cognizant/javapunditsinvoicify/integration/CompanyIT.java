@@ -75,7 +75,7 @@ public class CompanyIT {
                         fieldWithPath("contactName").description("Name of the Contact person of the company"),
                         fieldWithPath("contactTitle").description("Title of the Contact person of the company"),
                         fieldWithPath("contactNumber").description("Contact No of the company PoC"),
-                        fieldWithPath("invoices").description("Invoices"),
+                        fieldWithPath("invoices").ignored(),
                         fieldWithPath("address.line1").description("Address line 1 of the Company"),
                         fieldWithPath("address.line2").description("Address line 2 of the Company"),
                         fieldWithPath("address.city").description("City of the Company location"),

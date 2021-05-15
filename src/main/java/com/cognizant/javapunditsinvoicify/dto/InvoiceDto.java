@@ -1,10 +1,8 @@
 package com.cognizant.javapunditsinvoicify.dto;
 
-import com.cognizant.javapunditsinvoicify.entity.InvoiceItemEntity;
 import com.cognizant.javapunditsinvoicify.misc.PaymentStatus;
 import lombok.*;
 
-import java.util.Date;
 import java.util.List;
 
 @Data
@@ -15,9 +13,10 @@ import java.util.List;
 @ToString
 public class InvoiceDto {
 
-    String createdDate;
-    String modifiedDate;
-    PaymentStatus paymentStatus;
-    Double total;
+    private String createdDate;
+    private String modifiedDate;
+    private PaymentStatus paymentStatus;
+    private Double total;
+    private List<InvoiceItemDto> items;
 
 }
