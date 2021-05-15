@@ -15,11 +15,8 @@ import java.util.List;
 @ToString
 public class InvoiceDto {
 
-    Date createdDate;
-    Date modifiedDate;
-    String companyName;
-
-    List<InvoiceItemDto> invoiceItemDtoList;
+    String createdDate;
+    String modifiedDate;
     PaymentStatus paymentStatus;
     Double total;
 

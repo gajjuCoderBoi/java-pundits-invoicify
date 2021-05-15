@@ -12,6 +12,7 @@ import com.cognizant.javapunditsinvoicify.repository.InvoiceRepository;
 import com.cognizant.javapunditsinvoicify.response.ResponseMessage;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
@@ -118,21 +119,6 @@ public class InvoiceIT {
     private String postInvoice() throws Exception {
 
         InvoiceDto invoiceDto = new InvoiceDto();
-        Date date = new Date(System.currentTimeMillis());
-        invoiceDto.setCreatedDate(date);
-        invoiceDto.setModifiedDate(date);
-
-        InvoiceItemDto invoiceItemDto = new InvoiceItemDto();
-        invoiceItemDto.setDescription("Item 1");
-        invoiceItemDto.setFeeType(FeeType.RATE);
-        invoiceItemDto.setRate(5.0d);
-        invoiceItemDto.setQuantity(5);
-        invoiceItemDto.setDescription("Item 1");
-        List<InvoiceItemDto> itemListDto = new ArrayList<>();
-        itemListDto.add(invoiceItemDto);
-
-        invoiceDto.setInvoiceItemDtoList(itemListDto);
-        invoiceDto.setCompanyName("Test Company");
 
         invoiceDto.setPaymentStatus(PaymentStatus.UNPAID);
         invoiceDto.setTotal(100.0d);
@@ -154,20 +140,6 @@ public class InvoiceIT {
         String companyId = createCompany();
 
         InvoiceDto invoiceDto = new InvoiceDto();
-        Date date = new Date(System.currentTimeMillis());
-        invoiceDto.setCreatedDate(date);
-        invoiceDto.setModifiedDate(date);
-
-        InvoiceItemDto invoiceItemDto = new InvoiceItemDto();
-        invoiceItemDto.setDescription("Item 1");
-        invoiceItemDto.setFeeType(FeeType.RATE);
-        invoiceItemDto.setRate(5.0d);
-        invoiceItemDto.setQuantity(5);
-        List<InvoiceItemDto> itemListDto = new ArrayList<>();
-        itemListDto.add(invoiceItemDto);
-
-        invoiceDto.setInvoiceItemDtoList(itemListDto);
-        invoiceDto.setCompanyName("Test Company");
 
         invoiceDto.setPaymentStatus(PaymentStatus.UNPAID);
         invoiceDto.setTotal(100.0d);
@@ -187,11 +159,10 @@ public class InvoiceIT {
                                 parameterWithName("companyId").description("Company Id")
                         ),
                         requestFields(
-                                fieldWithPath("description").description("Item Description.").type("String"),
-                                fieldWithPath("feeType").description("Type of the Item. ").type("String: FLAT, RATE"),
-                                fieldWithPath("quantity").description("Quantity of An Item. (Only Populate when feeType:rate)").type("Integer"),
-                                fieldWithPath("rate").description("Rate of the Item. (Only Populate when feeType:rate)").type("Double"),
-                                fieldWithPath("amount").description("Item Amount.  (Only Populate when feeType:rate) (Only Populate when feeType:flat)").type("Double")
+                                fieldWithPath("createdDate").ignored(),
+                                fieldWithPath("modifiedDate").ignored(),
+                                fieldWithPath("paymentStatus").description("Payment Status.").type("String: PAID,UNPAID"),
+                                fieldWithPath("total").ignored()
                         ),
                         responseFields(
                                 fieldWithPath("responseMessage").description("Response Message i.e Success Message or Error Message. ")
@@ -202,7 +173,7 @@ public class InvoiceIT {
     private String createCompany() throws Exception {
         RequestBuilder createCompany = post("/company")
                 .content(objectMapper.writeValueAsString(CompanyDto.builder()
-                        .name("Test Name")
+                        .name(RandomStringUtils.randomAlphanumeric(10))
                         .contactName("Contact Name")
                         .contactTitle("Contact Title")
                         .contactNumber(123456789)

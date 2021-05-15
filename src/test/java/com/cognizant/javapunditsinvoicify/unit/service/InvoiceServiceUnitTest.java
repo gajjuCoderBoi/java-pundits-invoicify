@@ -83,33 +83,15 @@ public class InvoiceServiceUnitTest {
     @BeforeEach
     void initMockData(){
         invoiceDto = new InvoiceDto();
-        Date date = new Date(System.currentTimeMillis());
-        invoiceDto.setCreatedDate(date);
-        invoiceDto.setModifiedDate(date);
-
-        invoiceItemDto = new InvoiceItemDto();
-        invoiceItemDto.setDescription("Item 1");
-        invoiceItemDto.setFeeType(FeeType.RATE);
-        invoiceItemDto.setRate(5.0d);
-        invoiceItemDto.setQuantity(5);
-        List<InvoiceItemDto> itemListDto = new ArrayList<>();
-        itemListDto.add(invoiceItemDto);
-
-        invoiceDto.setInvoiceItemDtoList(itemListDto);
-        invoiceDto.setCompanyName("Test Company");
-
         invoiceDto.setPaymentStatus(PaymentStatus.UNPAID);
         invoiceDto.setTotal(100.0d);
 
-
         //Company Mock data
-
         mockCompanyEntity = new CompanyEntity();
         mockCompanyEntity.setName("Name");
         mockCompanyEntity.setContactName("Contact Name");
         mockCompanyEntity.setContactTitle("Contact Title");
         mockCompanyEntity.setContactNumber(123456789);
-     //   mockCompanyEntity.setId(1L);
 
         AddressEntity addressEntity = new AddressEntity();
         addressEntity.setLine1("Address Line 1");
@@ -134,8 +116,6 @@ public class InvoiceServiceUnitTest {
         addressDto.setZipcode(12345);
 
         mockCompanyDto.setAddress(addressDto);
-
-
     }
 
     @Test

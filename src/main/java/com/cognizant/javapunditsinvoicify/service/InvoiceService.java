@@ -79,13 +79,6 @@ public class InvoiceService {
         }
 
         InvoiceEntity invoiceEntity = invoiceMapper.invoiceDtoToEntity(invoiceDto);
-        List<InvoiceItemDto> listInvoiceItemDto = invoiceDto.getInvoiceItemDtoList();
-        List<InvoiceItemEntity> invoiceItemEntityList = new ArrayList<>();
-        for (InvoiceItemDto itemDto :  listInvoiceItemDto)
-        {
-            invoiceItemEntityList.add(invoiceItemMapper.invoiceItemDtoToEntity(itemDto));
-        }
-        invoiceEntity.setInvoiceItemEntityList(invoiceItemEntityList);
         invoiceEntity.setPaymentStatus(invoiceDto.getPaymentStatus());
         invoiceEntity.setCompanyEntity(savedCompanyEntity);
         invoiceEntity = invoiceRepository.save(invoiceEntity);
