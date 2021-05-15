@@ -13,11 +13,7 @@ import com.cognizant.javapunditsinvoicify.repository.InvoiceRepository;
 import com.cognizant.javapunditsinvoicify.response.ResponseMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
@@ -62,10 +58,6 @@ public class InvoiceService {
                 .build();
     }
 
-//    public String createInvoice() {
-//        return invoiceRepository.save(new InvoiceEntity()).getId().toString();
-//    }
-
     public ResponseMessage addInvoice(InvoiceDto invoiceDto, Long companyId) {
 
         CompanyEntity savedCompanyEntity = companyRepository.findById(companyId).orElse(null);
@@ -84,7 +76,8 @@ public class InvoiceService {
         invoiceEntity = invoiceRepository.save(invoiceEntity);
 
         return ResponseMessage.builder()
-                .responseMessage(invoiceEntity != null? invoiceEntity.getId().toString() : "Invoice created Successfully.")
+                .id(invoiceEntity.getId().toString())
+                .responseMessage("Invoice created.")
                 .httpStatus(CREATED)
                 .build();
     }
