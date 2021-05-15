@@ -37,5 +37,4 @@ public class InvoiceEntity {
     @Enumerated(EnumType.ORDINAL)
     private PaymentStatus paymentStatus;
 
-    private Double total;
 }

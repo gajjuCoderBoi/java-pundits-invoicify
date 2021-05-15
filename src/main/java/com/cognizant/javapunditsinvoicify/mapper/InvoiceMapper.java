@@ -12,14 +12,12 @@ import static org.mapstruct.ReportingPolicy.IGNORE;
 public interface InvoiceMapper {
 
     @Mappings({
-            @Mapping(source = "entity.paymentStatus", target = "paymentStatus"),
-            @Mapping(source = "entity.total", target = "total")
+            @Mapping(source = "entity.paymentStatus", target = "paymentStatus")
     })
     InvoiceDto invoiceEntityToDto(InvoiceEntity entity);
 
     @Mappings({
-            @Mapping(source = "dto.paymentStatus", target = "paymentStatus"),
-            @Mapping(source = "dto.total", target = "total")
+            @Mapping(source = "dto.paymentStatus", target = "paymentStatus")
     })
     InvoiceEntity invoiceDtoToEntity(InvoiceDto dto);
 }
