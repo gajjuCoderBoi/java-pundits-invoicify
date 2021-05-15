@@ -103,7 +103,7 @@ public class InvoiceService {
             responseMessage.setHttpStatus(NOT_FOUND);
         }
         else {
-            if (invoiceDto.getPaymentStatus().equals(PaymentStatus.PAID))
+            if (savedInvoiceEntity.getPaymentStatus().equals(PaymentStatus.UNPAID))
             {
                 savedInvoiceEntity.setPaymentStatus(invoiceDto.getPaymentStatus());
                 savedInvoiceEntity.setModifiedDate(ZonedDateTime.now());

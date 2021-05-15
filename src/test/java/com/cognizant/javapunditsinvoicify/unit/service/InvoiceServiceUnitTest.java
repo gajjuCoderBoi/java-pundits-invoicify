@@ -28,6 +28,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.context.ActiveProfiles;
 
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -39,8 +40,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.springframework.http.HttpStatus.CREATED;
-import static org.springframework.http.HttpStatus.NOT_FOUND;
+import static org.springframework.http.HttpStatus.*;
 
 @ExtendWith(MockitoExtension.class)
 @ActiveProfiles("qa")
@@ -76,6 +76,7 @@ public class InvoiceServiceUnitTest {
     private AddressMapper addressMapper;
 
     private CompanyEntity mockCompanyEntity;
+    private InvoiceEntity mockInvoiceEntity;
     private CompanyDto mockCompanyDto;
     private AddressDto addressDto;
 
@@ -160,5 +161,4 @@ public class InvoiceServiceUnitTest {
         assertEquals(actualResponse.getResponseMessage(),"Invoice created.");
         assertEquals(actualResponse.getHttpStatus(), CREATED);
     }
-
 }
