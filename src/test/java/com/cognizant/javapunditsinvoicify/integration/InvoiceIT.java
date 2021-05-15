@@ -35,6 +35,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.swing.text.html.parser.Entity;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -129,7 +131,6 @@ public class InvoiceIT {
         String companyId = createCompany();
 
         InvoiceDto invoiceDto = new InvoiceDto();
-
         invoiceDto.setPaymentStatus(PaymentStatus.UNPAID);
 
         RequestBuilder postInvoice = RestDocumentationRequestBuilders
@@ -193,6 +194,214 @@ public class InvoiceIT {
                         )
                         )
                 );
+    }
+
+    @Test
+    public void updateInvoiceTest_Success() throws Exception {
+
+        String companyId = createCompany();
+
+        InvoiceDto invoiceDto = new InvoiceDto();
+        invoiceDto.setPaymentStatus(PaymentStatus.UNPAID);
+
+        RequestBuilder postInvoice = RestDocumentationRequestBuilders
+                .post("/invoice/{companyId}", companyId)
+                .accept(APPLICATION_JSON)
+                .contentType(APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(invoiceDto));
+
+        MvcResult result = mockMvc.perform(postInvoice)
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("responseMessage").exists())
+                .andDo(print())
+                .andReturn();
+
+        String invoiceId = objectMapper.readValue(result.getResponse().getContentAsString(), ResponseMessage.class)
+                .getId();
+
+        InvoiceDto updatedInvoiceDto = new InvoiceDto();
+        updatedInvoiceDto.setPaymentStatus(PaymentStatus.PAID);
+
+        RequestBuilder updateInvoice = RestDocumentationRequestBuilders
+                .put("/invoice/{invoiceId}", invoiceId)
+                .accept(APPLICATION_JSON)
+                .contentType(APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(updatedInvoiceDto));
+
+        mockMvc.perform(updateInvoice)
+                .andExpect(status().isAccepted())
+                .andExpect(jsonPath("responseMessage").exists())
+                .andDo(print())
+                .andDo(document("update-invoice",
+                        pathParameters(
+                                parameterWithName("invoiceId").description("Invoice Id")
+                        ),
+                        requestFields(
+                                fieldWithPath("createdDate").ignored(),
+                                fieldWithPath("modifiedDate").ignored(),
+                                fieldWithPath("paymentStatus").description("Payment Status.").type("String: PAID,UNPAID"),
+                                fieldWithPath("total").ignored()
+                        ),
+                        responseFields(
+                                fieldWithPath("id").description("Invoice Id."),
+                                fieldWithPath("responseMessage").description("Response Message i.e Success Message or Error Message. ")
+                        )
+                ));
+    }
+
+    @Test
+    public void updateInvoiceTest_Failure() throws Exception {
+
+        String companyId = createCompany();
+
+        InvoiceDto invoiceDto = new InvoiceDto();
+        invoiceDto.setPaymentStatus(PaymentStatus.PAID);
+
+        RequestBuilder postInvoice = RestDocumentationRequestBuilders
+                .post("/invoice/{companyId}", companyId)
+                .accept(APPLICATION_JSON)
+                .contentType(APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(invoiceDto));
+
+        MvcResult result = mockMvc.perform(postInvoice)
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("responseMessage").exists())
+                .andDo(print())
+                .andReturn();
+
+        String invoiceId = objectMapper.readValue(result.getResponse().getContentAsString(), ResponseMessage.class)
+                .getId();
+
+        InvoiceDto updatedInvoiceDto = new InvoiceDto();
+        updatedInvoiceDto.setPaymentStatus(PaymentStatus.UNPAID);
+
+        RequestBuilder updateInvoice = RestDocumentationRequestBuilders
+                .put("/invoice/{invoiceId}", invoiceId)
+                .accept(APPLICATION_JSON)
+                .contentType(APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(updatedInvoiceDto));
+
+        mockMvc.perform(updateInvoice)
+                .andExpect(status().isNotAcceptable())
+                .andExpect(jsonPath("responseMessage").exists())
+                .andDo(print());
+    }
+
+    @Test
+    public void deleteInvoiceTest_Success() throws Exception {
+
+        String companyId = createCompany();
+
+        InvoiceDto invoiceDto = new InvoiceDto();
+        ZonedDateTime date = ZonedDateTime.now().minusYears(2);
+        invoiceDto.setCreatedDate(date);
+        invoiceDto.setPaymentStatus(PaymentStatus.PAID);
+
+        RequestBuilder postInvoice = RestDocumentationRequestBuilders
+                .post("/invoice/{companyId}", companyId)
+                .accept(APPLICATION_JSON)
+                .contentType(APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(invoiceDto));
+
+        MvcResult result = mockMvc.perform(postInvoice)
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("responseMessage").exists())
+                .andDo(print())
+                .andReturn();
+
+        String invoiceId = objectMapper.readValue(result.getResponse().getContentAsString(), ResponseMessage.class)
+                .getId();
+
+        RequestBuilder deleteInvoice = RestDocumentationRequestBuilders
+                .delete("/invoice/{invoiceId}", invoiceId)
+                .accept(APPLICATION_JSON)
+                .contentType(APPLICATION_JSON);
+
+        mockMvc.perform(deleteInvoice)
+                .andExpect(status().isAccepted())
+                .andExpect(jsonPath("responseMessage").exists())
+                .andDo(print())
+                .andDo(document("delete-invoice",
+                        pathParameters(
+                                parameterWithName("invoiceId").description("Invoice Id")
+                        ),
+                        responseFields(
+                                fieldWithPath("id").description("Invoice Id."),
+                                fieldWithPath("responseMessage").description("Response Message i.e Success Message or Error Message. ")
+                        )
+                ));
+    }
+
+    @Test
+    public void deleteInvoiceTest_Failure_Unpaid() throws Exception {
+
+        String companyId = createCompany();
+
+        InvoiceDto invoiceDto = new InvoiceDto();
+        ZonedDateTime date = ZonedDateTime.now().minusYears(2);
+        invoiceDto.setCreatedDate(date);
+        invoiceDto.setPaymentStatus(PaymentStatus.UNPAID);
+
+        RequestBuilder postInvoice = RestDocumentationRequestBuilders
+                .post("/invoice/{companyId}", companyId)
+                .accept(APPLICATION_JSON)
+                .contentType(APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(invoiceDto));
+
+        MvcResult result = mockMvc.perform(postInvoice)
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("responseMessage").exists())
+                .andDo(print())
+                .andReturn();
+
+        String invoiceId = objectMapper.readValue(result.getResponse().getContentAsString(), ResponseMessage.class)
+                .getId();
+
+        RequestBuilder deleteInvoice = RestDocumentationRequestBuilders
+                .delete("/invoice/{invoiceId}", invoiceId)
+                .accept(APPLICATION_JSON)
+                .contentType(APPLICATION_JSON);
+
+        mockMvc.perform(deleteInvoice)
+                .andExpect(status().isNotAcceptable())
+                .andExpect(jsonPath("responseMessage").exists())
+                .andDo(print());
+    }
+
+    @Test
+    public void deleteInvoiceTest_Failure_Date() throws Exception {
+
+        String companyId = createCompany();
+
+        InvoiceDto invoiceDto = new InvoiceDto();
+        ZonedDateTime date = ZonedDateTime.now();
+        invoiceDto.setCreatedDate(date);
+        invoiceDto.setPaymentStatus(PaymentStatus.PAID);
+
+        RequestBuilder postInvoice = RestDocumentationRequestBuilders
+                .post("/invoice/{companyId}", companyId)
+                .accept(APPLICATION_JSON)
+                .contentType(APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(invoiceDto));
+
+        MvcResult result = mockMvc.perform(postInvoice)
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("responseMessage").exists())
+                .andDo(print())
+                .andReturn();
+
+        String invoiceId = objectMapper.readValue(result.getResponse().getContentAsString(), ResponseMessage.class)
+                .getId();
+
+        RequestBuilder deleteInvoice = RestDocumentationRequestBuilders
+                .delete("/invoice/{invoiceId}", invoiceId)
+                .accept(APPLICATION_JSON)
+                .contentType(APPLICATION_JSON);
+
+        mockMvc.perform(deleteInvoice)
+                .andExpect(status().isNotAcceptable())
+                .andExpect(jsonPath("responseMessage").exists())
+                .andDo(print());
     }
 
     private String postInvoice(String companyId) throws Exception {
@@ -269,4 +478,6 @@ public class InvoiceIT {
                 .andExpect(status().isCreated())
                 .andDo(print());
     }
+
+
 }
