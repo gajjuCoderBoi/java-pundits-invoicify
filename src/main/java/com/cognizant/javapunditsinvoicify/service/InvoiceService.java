@@ -12,11 +12,13 @@ import com.cognizant.javapunditsinvoicify.repository.CompanyRepository;
 import com.cognizant.javapunditsinvoicify.repository.InvoiceItemRepository;
 import com.cognizant.javapunditsinvoicify.repository.InvoiceRepository;
 import com.cognizant.javapunditsinvoicify.response.ResponseMessage;
+import com.cognizant.javapunditsinvoicify.util.DateFormatUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
+import java.time.ZonedDateTime;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
@@ -59,6 +61,7 @@ public class InvoiceService {
 
         return ResponseMessage.builder()
                 .responseMessage("InvoiceItem added Successfully.")
+                .id(String.valueOf(invoiceItemEntity.getId()))
                 .httpStatus(CREATED)
                 .build();
     }
@@ -78,8 +81,9 @@ public class InvoiceService {
         InvoiceEntity invoiceEntity = invoiceMapper.invoiceDtoToEntity(invoiceDto);
         invoiceEntity.setPaymentStatus(invoiceDto.getPaymentStatus());
         invoiceEntity.setCompanyEntity(savedCompanyEntity);
+        invoiceEntity.setCreatedDate(ZonedDateTime.now());
+        invoiceEntity.setModifiedDate(ZonedDateTime.now());
         invoiceEntity = invoiceRepository.save(invoiceEntity);
-
         return ResponseMessage.builder()
                 .id(invoiceEntity.getId().toString())
                 .responseMessage("Invoice created.")
@@ -89,18 +93,31 @@ public class InvoiceService {
 
     public InvoiceDto getInvoiceById(Long invoiceId) {
 
-    //    InvoiceEntity invoiceEntity=invoiceRepository.findById(invoiceId).orElse(null);
-            InvoiceEntity invoiceEntity=invoiceRepository.findAll().stream().filter(x->x.getId()==invoiceId).collect(Collectors.toList()).get(0);
-
+        InvoiceEntity invoiceEntity=invoiceRepository.findById(invoiceId).orElse(null);
 
         InvoiceDto invoiceDto= invoiceMapper.invoiceEntityToDto(invoiceEntity);
-       // invoiceDto.setCreatedDate(invoiceEntity.getCreatedDate().toString());
-        System.out.println(invoiceEntity.getCreatedDate());
-        invoiceDto.setTotal(invoiceEntity.getInvoiceItemEntityList().stream().mapToDouble(x-> {
-        if(x.getFeeType()== FeeType.FLAT) return x.getAmount();
-        else return x.getRate()*x.getQuantity();
+
+        if(invoiceEntity.getCreatedDate() != null) {
+            invoiceDto.setCreatedDate(DateFormatUtil.formatDate(invoiceEntity.getCreatedDate()));
+            invoiceDto.setModifiedDate(DateFormatUtil.formatDate(invoiceEntity.getModifiedDate()));
         }
-         ).sum());
+        Double calculatedTotal = 0.0;
+        if(invoiceEntity.getInvoiceItemEntityList()!=null) {
+            calculatedTotal = invoiceEntity.getInvoiceItemEntityList().stream().mapToDouble(invoiceItemEntity -> {
+                System.out.println(invoiceItemEntity.getFeeType());
+                        if (invoiceItemEntity.getFeeType() == FeeType.FLAT)
+                            return invoiceItemEntity.getAmount();
+                        else return invoiceItemEntity.getRate() * invoiceItemEntity.getQuantity();
+                    }
+            ).sum();
+            invoiceDto.setItems(
+                    invoiceEntity.getInvoiceItemEntityList().stream().map(entity->{
+                        return invoiceItemMapper.invoiceItemEntityToDto(entity);
+                    }).collect(Collectors.toList())
+            );
+        }
+
+        invoiceDto.setTotal(calculatedTotal);
         return invoiceDto;
     }
 }
