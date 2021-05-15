@@ -198,4 +198,19 @@ public class InvoiceIT {
 
         return companyId;
     }
+
+    @Test
+    public void getInvoiceById() throws Exception {
+        RequestBuilder getInvoiceById=RestDocumentationRequestBuilders.get("/invoice/{invoiceId}","1");
+        mockMvc.perform(getInvoiceById)
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("createdDate").exists())
+                .andExpect(jsonPath("paymentStatus").exists())
+                .andExpect(jsonPath("total").exists())
+                .andDo(print());
+
+
+
+
+    }
 }
