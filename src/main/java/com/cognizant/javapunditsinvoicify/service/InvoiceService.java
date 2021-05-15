@@ -69,6 +69,7 @@ public class InvoiceService {
     public ResponseMessage addInvoice(InvoiceDto invoiceDto, Long companyId) {
 
         CompanyEntity savedCompanyEntity = companyRepository.findById(companyId).orElse(null);
+
         if(savedCompanyEntity == null)
         {
             return ResponseMessage.builder()
