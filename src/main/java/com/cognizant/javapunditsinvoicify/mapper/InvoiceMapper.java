@@ -14,7 +14,6 @@ public interface InvoiceMapper {
     @Mappings({
             @Mapping(source = "entity.createdDate", target = "createdDate"),
             @Mapping(source = "entity.modifiedDate", target = "modifiedDate"),
-            @Mapping(source = "entity.companyName", target = "companyName"),
             @Mapping(source = "entity.paymentStatus", target = "paymentStatus"),
             @Mapping(source = "entity.total", target = "total")
     })
@@ -23,7 +22,6 @@ public interface InvoiceMapper {
     @Mappings({
             @Mapping(source = "dto.createdDate", target = "createdDate"),
             @Mapping(source = "dto.modifiedDate", target = "modifiedDate"),
-            @Mapping(source = "dto.companyName", target = "companyName"),
             @Mapping(source = "dto.paymentStatus", target = "paymentStatus"),
             @Mapping(source = "dto.total", target = "total")
     })

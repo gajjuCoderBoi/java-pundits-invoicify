@@ -53,7 +53,6 @@ public class CompanyIT {
         companyDto.setContactName("Contact Name");
         companyDto.setContactTitle("Contact Title");
         companyDto.setContactNumber(123456789);
-        companyDto.setInvoices("Invoices");
 
         AddressDto addressDto = new AddressDto();
         addressDto.setLine1("Address line 1");
@@ -104,7 +103,6 @@ public class CompanyIT {
         companyDto.setContactName("Contact Name");
         companyDto.setContactTitle("Contact Title");
         companyDto.setContactNumber(123456789);
-        companyDto.setInvoices("Invoices");
 
         AddressDto addressDto = new AddressDto();
         addressDto.setLine1("Address line 1");
@@ -147,7 +145,6 @@ public class CompanyIT {
                         .contactName("Contact Name")
                         .contactTitle("Contact Title")
                         .contactNumber(123456789)
-                        .invoices("Invoices")
                         .address(AddressDto.builder()
                                 .line1("Address line 1")
                                 .line2("line 2")
@@ -247,7 +244,6 @@ public class CompanyIT {
                         .contactName("Contact Name")
                         .contactTitle("Contact Title")
                         .contactNumber(123456789)
-                        .invoices("Invoices")
                         .address(AddressDto.builder()
                                 .line1("Address line 1")
                                 .line2("line 2")
@@ -300,7 +296,6 @@ public class CompanyIT {
                 .andExpect(jsonPath("$[0].contactName").value("wallmartCEO"))
                 .andExpect(jsonPath("$[0].contactNumber").value("123456789"))
                 .andExpect(jsonPath("$[0].contactTitle").value("Contact Title"))
-                .andExpect(jsonPath("$[0].invoices").value("Invoices"))
                 .andExpect(jsonPath("$[0].address.line1").value("Address line 1"))
                 .andExpect(jsonPath("$[0].address.line2").value("line 2"))
                 .andExpect(jsonPath("$[0].address.city").value("New York"))
@@ -332,7 +327,6 @@ public class CompanyIT {
                         .contactName("Contact Name")
                         .contactTitle("Contact Title")
                         .contactNumber(123456789)
-                        .invoices("Invoices")
                         .address(AddressDto.builder()
                                 .line1("Address line 1")
                                 .line2("line 2")

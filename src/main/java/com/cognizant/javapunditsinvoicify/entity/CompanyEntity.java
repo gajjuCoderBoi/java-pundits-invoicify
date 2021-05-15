@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -31,7 +32,9 @@ public class CompanyEntity {
     private String contactName;
     private String contactTitle;
     private Integer contactNumber;
-    private String invoices;
+
+    @OneToMany(mappedBy = "companyEntity")
+    private List<InvoiceEntity> invoices;
 
     public Long getId() {
         return id;

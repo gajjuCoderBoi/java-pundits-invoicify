@@ -17,9 +17,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
+import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,8 +34,7 @@ import java.util.List;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
-import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
-import static org.springframework.restdocs.request.RequestDocumentation.requestParameters;
+import static org.springframework.restdocs.request.RequestDocumentation.*;
 import static org.springframework.test.annotation.DirtiesContext.MethodMode.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -75,6 +77,8 @@ public class InvoiceIT {
 
     @Test
     public void postInvoiceItem_Success() throws Exception {
+        String companyId = createCompany();
+
         String invoiceId = objectMapper.readValue(postInvoice(), ResponseMessage.class).getResponseMessage();
 
         InvoiceItemDto sampleInvoiceItemDto = InvoiceItemDto.builder()
@@ -133,7 +137,9 @@ public class InvoiceIT {
         invoiceDto.setPaymentStatus(PaymentStatus.UNPAID);
         invoiceDto.setTotal(100.0d);
 
-        RequestBuilder postInvoice = post("/invoice")
+        String companyId = createCompany();
+
+        RequestBuilder postInvoice = post("/invoice/" + companyId)
                 .accept(APPLICATION_JSON)
                 .contentType(APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(invoiceDto));
@@ -144,6 +150,9 @@ public class InvoiceIT {
 
     @Test
     public void postInvoiceTest() throws Exception {
+
+        String companyId = createCompany();
+
         InvoiceDto invoiceDto = new InvoiceDto();
         Date date = new Date(System.currentTimeMillis());
         invoiceDto.setCreatedDate(date);
@@ -163,7 +172,8 @@ public class InvoiceIT {
         invoiceDto.setPaymentStatus(PaymentStatus.UNPAID);
         invoiceDto.setTotal(100.0d);
 
-        RequestBuilder postInvoice = post("/invoice")
+        RequestBuilder postInvoice = RestDocumentationRequestBuilders
+                .post("/invoice/{companyId}", companyId)
                 .accept(APPLICATION_JSON)
                 .contentType(APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(invoiceDto));
@@ -171,21 +181,49 @@ public class InvoiceIT {
         mockMvc.perform(postInvoice)
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("responseMessage").exists())
-                .andDo(print());
-//                .andDo(document("add-invoice",
-//                        requestParameters(
-//                                parameterWithName("invoice_id").description("Invoice Id to add Item into.")
-//                        ),
-//                        requestFields(
-//                                fieldWithPath("description").description("Item Description.").type("String"),
-//                                fieldWithPath("feeType").description("Type of the Item. ").type("String: FLAT, RATE"),
-//                                fieldWithPath("quantity").description("Quantity of An Item. (Only Populate when feeType:rate)").type("Integer"),
-//                                fieldWithPath("rate").description("Rate of the Item. (Only Populate when feeType:rate)").type("Double"),
-//                                fieldWithPath("amount").description("Item Amount.  (Only Populate when feeType:rate) (Only Populate when feeType:flat)").type("Double")
-//                        ),
-//                        responseFields(
-//                                fieldWithPath("responseMessage").description("Response Message i.e Success Message or Error Message. ")
-//                        )
-//                ));
+                .andDo(print())
+                .andDo(document("add-invoice",
+                        pathParameters(
+                                parameterWithName("companyId").description("Company Id")
+                        ),
+                        requestFields(
+                                fieldWithPath("description").description("Item Description.").type("String"),
+                                fieldWithPath("feeType").description("Type of the Item. ").type("String: FLAT, RATE"),
+                                fieldWithPath("quantity").description("Quantity of An Item. (Only Populate when feeType:rate)").type("Integer"),
+                                fieldWithPath("rate").description("Rate of the Item. (Only Populate when feeType:rate)").type("Double"),
+                                fieldWithPath("amount").description("Item Amount.  (Only Populate when feeType:rate) (Only Populate when feeType:flat)").type("Double")
+                        ),
+                        responseFields(
+                                fieldWithPath("responseMessage").description("Response Message i.e Success Message or Error Message. ")
+                        )
+                ));
+    }
+
+    private String createCompany() throws Exception {
+        RequestBuilder createCompany = post("/company")
+                .content(objectMapper.writeValueAsString(CompanyDto.builder()
+                        .name("Test Name")
+                        .contactName("Contact Name")
+                        .contactTitle("Contact Title")
+                        .contactNumber(123456789)
+                        .address(AddressDto.builder()
+                                .line1("Address line 1")
+                                .line2("line 2")
+                                .city("City")
+                                .state("XX")
+                                .zipcode(12343)
+                                .build())
+                        .build()))
+                .contentType(MediaType.APPLICATION_JSON);
+
+        MvcResult result=  mockMvc.perform(createCompany)
+                .andExpect(status().isCreated())
+                .andReturn()
+                ;
+
+        String companyId = objectMapper.readValue(result.getResponse().getContentAsString(), ResponseMessage.class)
+                .getResponseMessage();
+
+        return companyId;
     }
 }

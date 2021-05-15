@@ -26,7 +26,10 @@ public class InvoiceEntity {
     private LocalDateTime createdDate;
     @UpdateTimestamp
     private LocalDateTime modifiedDate;
-    private String companyName;
+
+    @ManyToOne
+    @JoinColumn(name="company_id", referencedColumnName = "id")
+    private CompanyEntity companyEntity;
 
     @OneToMany(mappedBy = "invoiceEntity")
     private List<InvoiceItemEntity> invoiceItemEntityList;

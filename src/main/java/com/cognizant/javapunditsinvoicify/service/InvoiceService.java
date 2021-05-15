@@ -2,15 +2,18 @@ package com.cognizant.javapunditsinvoicify.service;
 
 import com.cognizant.javapunditsinvoicify.dto.InvoiceDto;
 import com.cognizant.javapunditsinvoicify.dto.InvoiceItemDto;
+import com.cognizant.javapunditsinvoicify.entity.CompanyEntity;
 import com.cognizant.javapunditsinvoicify.entity.InvoiceEntity;
 import com.cognizant.javapunditsinvoicify.entity.InvoiceItemEntity;
 import com.cognizant.javapunditsinvoicify.mapper.InvoiceItemMapper;
 import com.cognizant.javapunditsinvoicify.mapper.InvoiceMapper;
+import com.cognizant.javapunditsinvoicify.repository.CompanyRepository;
 import com.cognizant.javapunditsinvoicify.repository.InvoiceItemRepository;
 import com.cognizant.javapunditsinvoicify.repository.InvoiceRepository;
 import com.cognizant.javapunditsinvoicify.response.ResponseMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -27,6 +30,9 @@ public class InvoiceService {
 
     @Autowired
     private InvoiceItemRepository invoiceItemRepository;
+
+    @Autowired
+    private CompanyRepository companyRepository;
 
     @Autowired
     @Qualifier("invoice-item-mapper")
@@ -60,7 +66,16 @@ public class InvoiceService {
 //        return invoiceRepository.save(new InvoiceEntity()).getId().toString();
 //    }
 
-    public ResponseMessage addInvoice(InvoiceDto invoiceDto) {
+    public ResponseMessage addInvoice(InvoiceDto invoiceDto, Long companyId) {
+
+        CompanyEntity savedCompanyEntity = companyRepository.findById(companyId).orElse(null);
+        if(savedCompanyEntity == null)
+        {
+            return ResponseMessage.builder()
+                    .responseMessage("No Company found.")
+                    .httpStatus(NOT_FOUND)
+                    .build();
+        }
 
         InvoiceEntity invoiceEntity = invoiceMapper.invoiceDtoToEntity(invoiceDto);
         List<InvoiceItemDto> listInvoiceItemDto = invoiceDto.getInvoiceItemDtoList();
@@ -71,6 +86,7 @@ public class InvoiceService {
         }
         invoiceEntity.setInvoiceItemEntityList(invoiceItemEntityList);
         invoiceEntity.setPaymentStatus(invoiceDto.getPaymentStatus());
+        invoiceEntity.setCompanyEntity(savedCompanyEntity);
         invoiceEntity = invoiceRepository.save(invoiceEntity);
 
         return ResponseMessage.builder()

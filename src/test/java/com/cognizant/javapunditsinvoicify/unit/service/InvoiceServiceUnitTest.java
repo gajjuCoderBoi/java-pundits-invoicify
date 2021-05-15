@@ -111,7 +111,7 @@ public class InvoiceServiceUnitTest {
     public void createInvoices()
     {
         when(invoiceMapper.invoiceDtoToEntity(any())).thenReturn(new InvoiceEntity());
-        ResponseMessage actualResponse = invoiceService.addInvoice(invoiceDto);
+        ResponseMessage actualResponse = invoiceService.addInvoice(invoiceDto,1l);
 
         assertNotNull(actualResponse);
         assertEquals(actualResponse.getHttpStatus(), CREATED);

@@ -52,7 +52,6 @@ public class CompanyServiceUnitTest {
         mockCompanyEntity.setContactName("Contact Name");
         mockCompanyEntity.setContactTitle("Contact Title");
         mockCompanyEntity.setContactNumber(123456789);
-        mockCompanyEntity.setInvoices("Invoices");
 
         AddressEntity addressEntity = new AddressEntity();
         addressEntity.setLine1("Address Line 1");
@@ -68,7 +67,6 @@ public class CompanyServiceUnitTest {
         mockCompanyDto.setContactName("Contact Name");
         mockCompanyDto.setContactTitle("Contact Title");
         mockCompanyDto.setContactNumber(123456789);
-        mockCompanyDto.setInvoices("Invoices");
 
         addressDto = new AddressDto();
         addressDto.setLine1("Address Line 1");

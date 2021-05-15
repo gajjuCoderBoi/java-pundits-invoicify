@@ -2,6 +2,8 @@ package com.cognizant.javapunditsinvoicify.dto;
 
 import lombok.*;
 
+import java.util.List;
+
 @Data
 @Builder
 @NoArgsConstructor
@@ -14,6 +16,6 @@ public class CompanyDto {
     private String contactName;
     private String contactTitle;
     private Integer contactNumber;
-    private String invoices;
+    private List<InvoiceDto> invoices;
 
 }

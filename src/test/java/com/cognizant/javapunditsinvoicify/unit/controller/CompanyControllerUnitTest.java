@@ -51,7 +51,6 @@ public class CompanyControllerUnitTest {
         companyDto.setContactName("Contact Name");
         companyDto.setContactTitle("Contact Title");
         companyDto.setContactNumber(123456789);
-        companyDto.setInvoices("Invoices");
 
         addressDto = new AddressDto();
         addressDto.setLine1("Address Line 1");
