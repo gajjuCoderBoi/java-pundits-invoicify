@@ -8,44 +8,34 @@ import com.cognizant.javapunditsinvoicify.entity.CompanyEntity;
 import com.cognizant.javapunditsinvoicify.entity.InvoiceEntity;
 import com.cognizant.javapunditsinvoicify.misc.FeeType;
 import com.cognizant.javapunditsinvoicify.misc.PaymentStatus;
+import com.cognizant.javapunditsinvoicify.repository.CompanyRepository;
 import com.cognizant.javapunditsinvoicify.repository.InvoiceRepository;
 import com.cognizant.javapunditsinvoicify.response.ResponseMessage;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Import;
-import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.event.annotation.BeforeTestClass;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.RequestBuilder;
-import org.springframework.transaction.annotation.Transactional;
 
-import javax.swing.text.html.parser.Entity;
-import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
 
+import static com.cognizant.javapunditsinvoicify.misc.PaymentStatus.PAID;
+import static com.cognizant.javapunditsinvoicify.misc.PaymentStatus.UNPAID;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.restdocs.request.RequestDocumentation.*;
-import static org.springframework.test.annotation.DirtiesContext.MethodMode.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -63,6 +53,17 @@ public class InvoiceIT {
 
     @Autowired
     private ObjectMapper objectMapper;
+
+    @Autowired
+    private InvoiceRepository invoiceRepository;
+
+    @Autowired
+    private CompanyRepository companyRepository;
+
+    private CompanyEntity companyEntity;
+    private InvoiceEntity invoiceEntityPaid_Old;
+    private InvoiceEntity invoiceEntityUnpaid;
+    private InvoiceEntity invoiceEntityPaid_New;
 
     @Test
     public void postInvoiceItem_Failed_InvalidInvoiceId() throws Exception {
@@ -220,7 +221,7 @@ public class InvoiceIT {
                 .getId();
 
         InvoiceDto updatedInvoiceDto = new InvoiceDto();
-        updatedInvoiceDto.setPaymentStatus(PaymentStatus.PAID);
+        updatedInvoiceDto.setPaymentStatus(PAID);
 
         RequestBuilder updateInvoice = RestDocumentationRequestBuilders
                 .put("/invoice/{invoiceId}", invoiceId)
@@ -240,7 +241,9 @@ public class InvoiceIT {
                                 fieldWithPath("createdDate").ignored(),
                                 fieldWithPath("modifiedDate").ignored(),
                                 fieldWithPath("paymentStatus").description("Payment Status.").type("String: PAID,UNPAID"),
-                                fieldWithPath("total").ignored()
+                                fieldWithPath("total").ignored(),
+                                fieldWithPath("items").ignored()
+
                         ),
                         responseFields(
                                 fieldWithPath("id").description("Invoice Id."),
@@ -255,7 +258,7 @@ public class InvoiceIT {
         String companyId = createCompany();
 
         InvoiceDto invoiceDto = new InvoiceDto();
-        invoiceDto.setPaymentStatus(PaymentStatus.PAID);
+        invoiceDto.setPaymentStatus(PAID);
 
         RequestBuilder postInvoice = RestDocumentationRequestBuilders
                 .post("/invoice/{companyId}", companyId)
@@ -289,31 +292,10 @@ public class InvoiceIT {
 
     @Test
     public void deleteInvoiceTest_Success() throws Exception {
-
-        String companyId = createCompany();
-
-        InvoiceDto invoiceDto = new InvoiceDto();
-        ZonedDateTime date = ZonedDateTime.now().minusYears(2);
-        invoiceDto.setCreatedDate(date);
-        invoiceDto.setPaymentStatus(PaymentStatus.PAID);
-
-        RequestBuilder postInvoice = RestDocumentationRequestBuilders
-                .post("/invoice/{companyId}", companyId)
-                .accept(APPLICATION_JSON)
-                .contentType(APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(invoiceDto));
-
-        MvcResult result = mockMvc.perform(postInvoice)
-                .andExpect(status().isCreated())
-                .andExpect(jsonPath("responseMessage").exists())
-                .andDo(print())
-                .andReturn();
-
-        String invoiceId = objectMapper.readValue(result.getResponse().getContentAsString(), ResponseMessage.class)
-                .getId();
+        preSeedDB();
 
         RequestBuilder deleteInvoice = RestDocumentationRequestBuilders
-                .delete("/invoice/{invoiceId}", invoiceId)
+                .delete("/invoice/{invoiceId}", invoiceEntityPaid_Old.getId())
                 .accept(APPLICATION_JSON)
                 .contentType(APPLICATION_JSON);
 
@@ -334,31 +316,10 @@ public class InvoiceIT {
 
     @Test
     public void deleteInvoiceTest_Failure_Unpaid() throws Exception {
-
-        String companyId = createCompany();
-
-        InvoiceDto invoiceDto = new InvoiceDto();
-        ZonedDateTime date = ZonedDateTime.now().minusYears(2);
-        invoiceDto.setCreatedDate(date);
-        invoiceDto.setPaymentStatus(PaymentStatus.UNPAID);
-
-        RequestBuilder postInvoice = RestDocumentationRequestBuilders
-                .post("/invoice/{companyId}", companyId)
-                .accept(APPLICATION_JSON)
-                .contentType(APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(invoiceDto));
-
-        MvcResult result = mockMvc.perform(postInvoice)
-                .andExpect(status().isCreated())
-                .andExpect(jsonPath("responseMessage").exists())
-                .andDo(print())
-                .andReturn();
-
-        String invoiceId = objectMapper.readValue(result.getResponse().getContentAsString(), ResponseMessage.class)
-                .getId();
+        preSeedDB();
 
         RequestBuilder deleteInvoice = RestDocumentationRequestBuilders
-                .delete("/invoice/{invoiceId}", invoiceId)
+                .delete("/invoice/{invoiceId}", invoiceEntityUnpaid.getId())
                 .accept(APPLICATION_JSON)
                 .contentType(APPLICATION_JSON);
 
@@ -370,31 +331,10 @@ public class InvoiceIT {
 
     @Test
     public void deleteInvoiceTest_Failure_Date() throws Exception {
-
-        String companyId = createCompany();
-
-        InvoiceDto invoiceDto = new InvoiceDto();
-        ZonedDateTime date = ZonedDateTime.now();
-        invoiceDto.setCreatedDate(date);
-        invoiceDto.setPaymentStatus(PaymentStatus.PAID);
-
-        RequestBuilder postInvoice = RestDocumentationRequestBuilders
-                .post("/invoice/{companyId}", companyId)
-                .accept(APPLICATION_JSON)
-                .contentType(APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(invoiceDto));
-
-        MvcResult result = mockMvc.perform(postInvoice)
-                .andExpect(status().isCreated())
-                .andExpect(jsonPath("responseMessage").exists())
-                .andDo(print())
-                .andReturn();
-
-        String invoiceId = objectMapper.readValue(result.getResponse().getContentAsString(), ResponseMessage.class)
-                .getId();
+        preSeedDB();
 
         RequestBuilder deleteInvoice = RestDocumentationRequestBuilders
-                .delete("/invoice/{invoiceId}", invoiceId)
+                .delete("/invoice/{invoiceId}", invoiceEntityPaid_New.getId())
                 .accept(APPLICATION_JSON)
                 .contentType(APPLICATION_JSON);
 
@@ -477,6 +417,36 @@ public class InvoiceIT {
                 )))
                 .andExpect(status().isCreated())
                 .andDo(print());
+    }
+
+    private void preSeedDB(){
+        companyEntity = new CompanyEntity();
+        companyEntity.setName(RandomStringUtils.random(10));
+        companyEntity = companyRepository.save(companyEntity);
+
+        invoiceEntityPaid_Old = new InvoiceEntity();
+        invoiceEntityPaid_Old.setCreatedDate(ZonedDateTime.now().minusYears(3));
+        invoiceEntityPaid_Old.setModifiedDate(ZonedDateTime.now().minusYears(2));
+        invoiceEntityPaid_Old.setPaymentStatus(PAID);
+        invoiceEntityPaid_Old.setCompanyEntity(companyEntity);
+
+        invoiceRepository.save(invoiceEntityPaid_Old);
+
+        invoiceEntityUnpaid = new InvoiceEntity();
+        invoiceEntityUnpaid.setCreatedDate(ZonedDateTime.now().minusYears(3));
+        invoiceEntityUnpaid.setModifiedDate(ZonedDateTime.now().minusYears(2));
+        invoiceEntityUnpaid.setPaymentStatus(UNPAID);
+        invoiceEntityUnpaid.setCompanyEntity(companyEntity);
+
+        invoiceRepository.save(invoiceEntityUnpaid);
+
+        invoiceEntityPaid_New = new InvoiceEntity();
+        invoiceEntityPaid_New.setCreatedDate(ZonedDateTime.now());
+        invoiceEntityPaid_New.setModifiedDate(ZonedDateTime.now());
+        invoiceEntityPaid_New.setPaymentStatus(PAID);
+        invoiceEntityPaid_New.setCompanyEntity(companyEntity);
+
+        invoiceRepository.save(invoiceEntityPaid_New);
     }
 
 
