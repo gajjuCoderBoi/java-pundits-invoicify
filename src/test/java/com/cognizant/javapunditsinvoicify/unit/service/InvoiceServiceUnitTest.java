@@ -83,7 +83,6 @@ public class InvoiceServiceUnitTest {
     void initMockData(){
         invoiceDto = new InvoiceDto();
         invoiceDto.setPaymentStatus(PaymentStatus.UNPAID);
-        invoiceDto.setTotal(100.0d);
 
         //Company Mock data
         mockCompanyEntity = new CompanyEntity();

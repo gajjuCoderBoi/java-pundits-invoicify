@@ -36,4 +36,19 @@ public class InvoiceController {
         return new ResponseEntity<>(response, response.getHttpStatus());
     }
 
+    @PutMapping("/{invoiceId}")
+    public ResponseEntity<?> updateInvoice(@RequestBody InvoiceDto invoiceDto,
+                                        @PathVariable(name="invoiceId") Long invoiceId)
+    {
+        ResponseMessage response = invoiceService.updateInvoice(invoiceDto, invoiceId);
+        return new ResponseEntity<>(response, response.getHttpStatus());
+    }
+
+    @DeleteMapping("/{invoiceId}")
+    public ResponseEntity<?> deleteInvoice(@PathVariable(name="invoiceId") Long invoiceId)
+    {
+        ResponseMessage response = invoiceService.deleteInvoice(invoiceId);
+        return new ResponseEntity<>(response, response.getHttpStatus());
+    }
+
 }

@@ -1,0 +1,17 @@
+
+Update Invoice Item
+
+===== Sample Request
+include::{snippets}/update-invoice/http-request.adoc[]
+
+===== Request-Parameters
+include::{snippets}/update-invoice/request-parameters.adoc[]
+
+===== Request-Body
+include::{snippets}/update-invoice/request-fields.adoc[]
+
+===== Response-Body
+include::{snippets}/update-invoice/response-fields.adoc[]
+
+===== Sample Response
+include::{snippets}/update-invoice/http-response.adoc[]
