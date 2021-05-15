@@ -1,0 +1,26 @@
+version: '3'
+
+services:
+  invoicify-db:
+    image: postgres
+    container_name: invoicify-db
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_USER=myusername
+      - POSTGRES_PASSWORD=mypassword
+      - POSTGRES_DB=invoicifydb
+
+  invoicify-service:
+    image: ghazanfar9131/java-pundits-invoicify
+    depends_on:
+      - invoicify-db
+    ports:
+      - 8081:8080
+    environment:
+      - SPRING_PROFILES_ACTIVE=dev
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://invoicify-db:5432/invoicifydb
+      - SPRING_DATASOURCE_USERNAME=myusername
+      - SPRING_DATASOURCE_PASSWORD=mypassword
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+      - SPRING_JPA_DATABASE_PLATFORM=org.hibernate.dialect.PostgreSQLDialect

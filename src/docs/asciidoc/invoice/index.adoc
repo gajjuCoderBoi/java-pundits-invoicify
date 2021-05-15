@@ -1,0 +1,3 @@
+include::create-invoice.adoc[]
+
+include::get-invoice-by-id.adoc[]

@@ -10,6 +10,10 @@ class JavaPunditsInvoicifyApplicationTests {
     void contextLoads() {
     }
 
+    @Test
+    void applicationContextTest() {
+        JavaPunditsInvoicifyApplication.main(new String[] {});
+    }
 
 
 }

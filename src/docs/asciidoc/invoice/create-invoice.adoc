@@ -1,0 +1,16 @@
+==== Add Invoice Item
+
+===== Sample Request
+include::{snippets}/add-invoice/http-request.adoc[]
+
+===== Path Variables
+include::{snippets}/add-invoice/path-parameters.adoc[]
+
+===== Request-Body
+include::{snippets}/add-invoice/request-fields.adoc[]
+
+===== Response-Body
+include::{snippets}/add-invoice/response-fields.adoc[]
+
+===== Sample Response
+include::{snippets}/add-invoice/http-response.adoc[]

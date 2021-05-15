@@ -1,0 +1,17 @@
+==== Update Company
+
+===== Sample Request
+include::{snippets}/update-company/http-request.adoc[]
+
+===== Sample Response
+include::{snippets}/update-company/http-response.adoc[]
+
+===== Curl Sample
+include::{snippets}/update-company/curl-request.adoc[]
+
+===== Path Variable
+include::{snippets}/update-company/path-parameters.adoc[]
+
+===== Request Fields
+include::{snippets}/update-company/request-fields.adoc[]
+

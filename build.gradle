@@ -3,6 +3,7 @@ plugins {
     id 'io.spring.dependency-management' version '1.0.11.RELEASE'
     id 'org.asciidoctor.convert' version '1.5.8'
     id 'java'
+    id 'jacoco'
 }
 
 group = 'com.cognizant'
@@ -26,6 +27,7 @@ ext {
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.12.0'
     compileOnly 'org.projectlombok:lombok'
     runtimeOnly 'com.h2database:h2'
     runtimeOnly 'org.postgresql:postgresql'
@@ -39,11 +41,21 @@ dependencies {
 test {
     outputs.dir snippetsDir
     useJUnitPlatform()
+    finalizedBy jacocoTestReport
+    jacoco {
+        excludes += ["**/dto/**","**/entity/**", "**/mapper/**", "**/response/**"]
+    }
 }
 
 asciidoctor {
-    inputs.dir snippetsDir
+    attributes 'snippets': snippetsDir
     dependsOn test
+}
+
+task copyConfig(type: Copy) {
+    from file("${projectDir}/conf.yml")
+    into file("${buildDir}/resources/main")
+    rename 'conf.yml', 'application-dev.yml'
 }
 
 bootJar {
@@ -51,4 +63,45 @@ bootJar {
     from("${asciidoctor.outputDir}/html5") {
         into 'static/docs'
     }
+    dependsOn copyConfig
+    archiveFileName = "invoicify.jar"
+    destinationDirectory = file("$projectDir/target")
 }
+jacoco {
+    toolVersion = "0.8.6"
+}
+
+jacocoTestReport {
+    reports {
+        dependsOn test
+        xml.enabled true
+        csv.enabled true
+        csv.destination layout.buildDirectory.dir('coverage/reports/jacocoCsv.csv').get().asFile
+        xml.destination layout.buildDirectory.dir('coverage/reports/jacocoXml.xml').get().asFile
+        html.destination layout.buildDirectory.dir('coverage/reports/jacocoHtml').get().asFile
+
+    }
+    afterEvaluate {
+        classDirectories.setFrom(files(classDirectories.files.collect {
+            fileTree(dir: it,
+                    exclude: [
+                            'com/cognizant/javapunditsinvoicify/entity',
+                            'com/cognizant/javapunditsinvoicify/dto',
+                            'com/cognizant/javapunditsinvoicify/mapper',
+                            'com/cognizant/javapunditsinvoicify/response'
+                    ]
+            )
+        }))
+    }
+}
+
+jacocoTestCoverageVerification {
+    violationRules {
+        rule {
+            limit {
+                minimum = 0.85
+            }
+        }
+    }
+}
+

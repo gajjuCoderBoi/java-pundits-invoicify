@@ -16,12 +16,12 @@ import javax.persistence.*;
 @Table(name="address")
 public class AddressEntity {
     @Id
-    @JsonIgnore
     @GeneratedValue(strategy = GenerationType.AUTO)
-    Long id;
-    String line1;
-    String line2;
-    String city;
-    String state;
-    Integer zip;
+    private Long id;
+    private String line1;
+    private String line2;
+    private String city;
+    private String state;
+    private Integer zip;
+
 }
