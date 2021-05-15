@@ -59,7 +59,6 @@ public class CompanyService {
             addressEntity.setZip(AddressDto.getZipcode());
 
             CompanyEntity companyEntity = new CompanyEntity();
-
             companyEntity.setName(companyDto.getName());
             companyEntity.setAddressEntity(addressEntity);
             companyEntity.setContactName(companyDto.getContactName());
@@ -68,8 +67,10 @@ public class CompanyService {
 
             companyEntity = companyRepository.save(companyEntity);
 
-            if(companyEntity != null) {
-                responseMessage.setResponseMessage(companyEntity.getId().toString());
+            if(companyEntity != null)
+            {
+                responseMessage.setId(companyEntity.getId().toString());
+                responseMessage.setResponseMessage("Company created.");
             }
             else
             {

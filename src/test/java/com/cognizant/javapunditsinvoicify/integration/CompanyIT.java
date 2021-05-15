@@ -84,8 +84,8 @@ public class CompanyIT {
 
                 )))
                 .andDo(document("addCompany", responseFields(
-                        fieldWithPath("responseMessage").description("Id of the company created or conflict error-message for payload")
-
+                        fieldWithPath("id").description("Id of the company created."),
+                        fieldWithPath("responseMessage").description("Company created or conflict error-message for payload")
                 )));
 
     }
@@ -161,7 +161,7 @@ public class CompanyIT {
                 ;
 
         String companyId = objectMapper.readValue(result.getResponse().getContentAsString(), ResponseMessage.class)
-                .getResponseMessage();
+                .getId();
 
         CompanyDto wallmartDto = CompanyDto
                 .builder()
@@ -260,7 +260,7 @@ public class CompanyIT {
                 ;
 
         String companyId = objectMapper.readValue(result.getResponse().getContentAsString(), ResponseMessage.class)
-                .getResponseMessage();
+                .getId();
 
         CompanyDto wallmartDto = CompanyDto
                 .builder()

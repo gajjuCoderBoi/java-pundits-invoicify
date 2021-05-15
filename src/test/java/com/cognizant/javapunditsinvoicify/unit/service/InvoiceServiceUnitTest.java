@@ -26,7 +26,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.util.ArrayList;
@@ -150,21 +149,16 @@ public class InvoiceServiceUnitTest {
     @Test
     public void createInvoices()
     {
-//Create a company
-
-        ResponseMessage actualResponseCompany = companyService.addCompany(mockCompanyDto);
-
-        verify(companyRepository).save(mockCompanyEntity);
-
-        assertNotNull(actualResponseCompany);
-        assertNotNull(actualResponseCompany.getResponseMessage());
-        assertEquals(actualResponseCompany.getResponseMessage(),"Mock Company created");
-        when(companyRepository.findById(anyLong())).thenReturn(Optional.ofNullable(mockCompanyEntity));
-
         when(invoiceMapper.invoiceDtoToEntity(any())).thenReturn(new InvoiceEntity());
+        when(companyRepository.findById(anyLong())).thenReturn(Optional.of(new CompanyEntity()));
+        InvoiceEntity invoiceEntity = new InvoiceEntity();
+        invoiceEntity.setId(1l);
+        when(invoiceRepository.save(any(InvoiceEntity.class))).thenReturn(invoiceEntity);
         ResponseMessage actualResponse = invoiceService.addInvoice(invoiceDto,1l);
 
         assertNotNull(actualResponse);
+        assertEquals(actualResponse.getId(),"1");
+        assertEquals(actualResponse.getResponseMessage(),"Invoice created.");
         assertEquals(actualResponse.getHttpStatus(), CREATED);
     }
 

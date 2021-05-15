@@ -80,7 +80,7 @@ public class InvoiceIT {
     public void postInvoiceItem_Success() throws Exception {
         String companyId = createCompany();
 
-        String invoiceId = objectMapper.readValue(postInvoice(), ResponseMessage.class).getResponseMessage();
+        String invoiceId = objectMapper.readValue(postInvoice(), ResponseMessage.class).getId();
 
         InvoiceItemDto sampleInvoiceItemDto = InvoiceItemDto.builder()
                 .description("Test Item")
@@ -165,6 +165,7 @@ public class InvoiceIT {
                                 fieldWithPath("total").ignored()
                         ),
                         responseFields(
+                                fieldWithPath("id").description("Invoice Id."),
                                 fieldWithPath("responseMessage").description("Response Message i.e Success Message or Error Message. ")
                         )
                 ));
@@ -193,7 +194,7 @@ public class InvoiceIT {
                 ;
 
         String companyId = objectMapper.readValue(result.getResponse().getContentAsString(), ResponseMessage.class)
-                .getResponseMessage();
+                .getId();
 
         return companyId;
     }
