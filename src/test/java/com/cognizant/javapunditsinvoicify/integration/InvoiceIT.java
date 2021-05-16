@@ -163,7 +163,7 @@ public class InvoiceIT {
     }
 
     @Test
-    public void getInvoiceById() throws Exception {
+    public void getInvoiceById_Success() throws Exception {
         String companyId = createCompany();
         String invoiceId = objectMapper.readValue(postInvoice(companyId), ResponseMessage.class).getId();
         addInvoiceItems(invoiceId);
@@ -344,6 +344,24 @@ public class InvoiceIT {
                 .andDo(print());
     }
 
+    @Test
+    public void getAllInvoicesTest_Success() throws Exception {
+
+        RequestBuilder getAllInvoices = RestDocumentationRequestBuilders.get("/invoice")
+                .accept(APPLICATION_JSON)
+                .contentType(APPLICATION_JSON)
+                .param("pageNo", "0")
+                .param("pageSize", "5")
+                .param("sortBy", "createdDate")
+                .param("orderBy", "asc")
+                ;
+
+        mockMvc.perform(getAllInvoices)
+                .andExpect(status().isOk())
+                .andDo(print());
+
+    }
+
     private String postInvoice(String companyId) throws Exception {
 
         InvoiceDto invoiceDto = new InvoiceDto();
@@ -363,7 +381,7 @@ public class InvoiceIT {
     private String createCompany() throws Exception {
         RequestBuilder createCompany = post("/company")
                 .content(objectMapper.writeValueAsString(CompanyDto.builder()
-                        .name(RandomStringUtils.randomAlphanumeric(10))
+                        .name(randomAlphanumeric(10))
                         .contactName("Contact Name")
                         .contactTitle("Contact Title")
                         .contactNumber(123456789)
@@ -397,8 +415,8 @@ public class InvoiceIT {
                         InvoiceItemDto.builder()
                                 .description("Test Item RATE")
                                 .feeType(FeeType.RATE)
-                                .quantity(5)
-                                .rate(10.0d)
+                                .quantity(getRandomInt(1, 10))
+                                .rate(getRandomDouble(1, 50))
                                 .build()
                 )))
                 .andExpect(status().isCreated())
@@ -412,7 +430,7 @@ public class InvoiceIT {
                         InvoiceItemDto.builder()
                                 .description("Test Item FLAT")
                                 .feeType(FeeType.FLAT)
-                                .amount(20D)
+                                .amount(getRandomDouble(50, 100))
                                 .build()
                 )))
                 .andExpect(status().isCreated())
@@ -421,7 +439,7 @@ public class InvoiceIT {
 
     private void preSeedDB(){
         companyEntity = new CompanyEntity();
-        companyEntity.setName(RandomStringUtils.random(10));
+        companyEntity.setName(randomAlphanumeric(10));
         companyEntity = companyRepository.save(companyEntity);
 
         invoiceEntityPaid_Old = new InvoiceEntity();
