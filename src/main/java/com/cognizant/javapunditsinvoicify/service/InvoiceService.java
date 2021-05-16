@@ -1,5 +1,6 @@
 package com.cognizant.javapunditsinvoicify.service;
 
+import com.cognizant.javapunditsinvoicify.dto.CompanyDto;
 import com.cognizant.javapunditsinvoicify.dto.InvoiceDto;
 import com.cognizant.javapunditsinvoicify.dto.InvoiceItemDto;
 import com.cognizant.javapunditsinvoicify.entity.CompanyEntity;
@@ -16,11 +17,17 @@ import com.cognizant.javapunditsinvoicify.response.ResponseMessage;
 import com.cognizant.javapunditsinvoicify.util.DateFormatUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.ZonedDateTime;
+import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.cognizant.javapunditsinvoicify.util.InvoicifyConstants.DESCENDING;
 import static org.springframework.http.HttpStatus.*;
 
 @Service
@@ -101,7 +108,6 @@ public class InvoiceService {
         Double calculatedTotal = 0.0;
         if(invoiceEntity.getInvoiceItemEntityList()!=null) {
             calculatedTotal = invoiceEntity.getInvoiceItemEntityList().stream().mapToDouble(invoiceItemEntity -> {
-                System.out.println(invoiceItemEntity.getFeeType());
                         if (invoiceItemEntity.getFeeType() == FeeType.FLAT)
                             return invoiceItemEntity.getAmount();
                         else return invoiceItemEntity.getRate() * invoiceItemEntity.getQuantity();
@@ -179,5 +185,46 @@ public class InvoiceService {
         }
 
         return responseMessage;
+    }
+
+    public List<InvoiceDto> getAllInvoices(Integer pageNo, Integer pageSize, String sortBy, String orderBy) {
+        Pageable paging = PageRequest.of(
+                pageNo,
+                pageSize,
+                orderBy.equals(DESCENDING) ? Sort.by(sortBy).descending() : Sort.by(sortBy).ascending()
+                );
+
+        Page<InvoiceEntity> pagedResult = invoiceRepository.findAll(paging);
+
+        List<InvoiceDto> invoiceDtoList = pagedResult.stream().map(invoiceEntity -> {
+            InvoiceDto invoiceDto= invoiceMapper.invoiceEntityToDto(invoiceEntity);
+            invoiceDto.setCompany(CompanyDto.builder()
+                    .name(invoiceEntity.getCompanyEntity().getName())
+                    .id(String.valueOf(invoiceEntity.getCompanyEntity().getCompanyId()))
+                    .build());
+            if(invoiceEntity.getCreatedDate() != null) {
+                invoiceDto.setCreatedDate(DateFormatUtil.formatDate(invoiceEntity.getCreatedDate()));
+                invoiceDto.setModifiedDate(DateFormatUtil.formatDate(invoiceEntity.getModifiedDate()));
+            }
+            Double calculatedTotal = 0.0;
+            if(invoiceEntity.getInvoiceItemEntityList()!=null) {
+                calculatedTotal = invoiceEntity.getInvoiceItemEntityList().stream().mapToDouble(invoiceItemEntity -> {
+                            if (invoiceItemEntity.getFeeType() == FeeType.FLAT)
+                                return invoiceItemEntity.getAmount();
+                            else return invoiceItemEntity.getRate() * invoiceItemEntity.getQuantity();
+                        }
+                ).sum();
+                invoiceDto.setItems(
+                        invoiceEntity.getInvoiceItemEntityList().stream().map(entity->{
+                            return invoiceItemMapper.invoiceItemEntityToDto(entity);
+                        }).collect(Collectors.toList())
+                );
+            }
+
+            invoiceDto.setTotal(calculatedTotal);
+            return invoiceDto;
+        }).collect(Collectors.toList());
+
+        return invoiceDtoList;
     }
 }

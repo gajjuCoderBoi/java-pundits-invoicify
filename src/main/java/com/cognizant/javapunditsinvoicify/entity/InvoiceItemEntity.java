@@ -10,14 +10,14 @@ import javax.persistence.*;
 @Entity
 @Data
 @NoArgsConstructor
-@Table(name = "invoiceItemEntity")
+@Table(name = "invoiceitems")
 public class InvoiceItemEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
     private String description;
-    private int quantity;
+    private Integer quantity;
     private Double amount;
 
     @Enumerated(EnumType.ORDINAL)

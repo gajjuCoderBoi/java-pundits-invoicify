@@ -13,10 +13,12 @@ import java.util.List;
 @ToString
 public class InvoiceDto {
 
+    private Long id;
     private String createdDate;
     private String modifiedDate;
     private PaymentStatus paymentStatus;
     private Double total;
     private List<InvoiceItemDto> items;
+    private CompanyDto company;
 
 }

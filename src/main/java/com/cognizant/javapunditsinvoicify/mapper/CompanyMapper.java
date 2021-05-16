@@ -5,9 +5,10 @@ import com.cognizant.javapunditsinvoicify.entity.CompanyEntity;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;
-import org.mapstruct.ReportingPolicy;
 
-@Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE, unmappedSourcePolicy = ReportingPolicy.IGNORE)
+import static org.mapstruct.ReportingPolicy.IGNORE;
+
+@Mapper(unmappedTargetPolicy = IGNORE, unmappedSourcePolicy = IGNORE)
 public interface CompanyMapper {
     @Mappings({
             @Mapping(source = "dto.name", target = "name"),
