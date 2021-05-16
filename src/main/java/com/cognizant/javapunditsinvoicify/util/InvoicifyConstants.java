@@ -6,4 +6,6 @@ public class InvoicifyConstants {
     public static final String ASCENDING = "asc";
 
     public static final String DESCENDING = "desc";
+
+    public static final Integer MAX_PAGE_SIZE = 10;
 }

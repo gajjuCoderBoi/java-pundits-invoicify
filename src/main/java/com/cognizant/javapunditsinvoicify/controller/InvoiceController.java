@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 import static com.cognizant.javapunditsinvoicify.util.InvoicifyConstants.ASCENDING;
+import static com.cognizant.javapunditsinvoicify.util.InvoicifyConstants.MAX_PAGE_SIZE;
 import static java.lang.Math.max;
 import static org.springframework.http.HttpStatus.OK;
 
@@ -67,7 +68,7 @@ public class InvoiceController {
             @RequestParam(name = "sortBy", defaultValue = "createdDate") String sortBy,
             @RequestParam(name = "orderBy", defaultValue = ASCENDING) String orderBy
     ){
-        List<InvoiceDto> invoices = invoiceService.getAllInvoices(pageNo, Math.min(pageSize, 10), sortBy, orderBy);
+        List<InvoiceDto> invoices = invoiceService.getAllInvoices(pageNo, Math.min(pageSize, MAX_PAGE_SIZE), sortBy, orderBy);
         return new ResponseEntity<>(invoices, OK);
     }
 
