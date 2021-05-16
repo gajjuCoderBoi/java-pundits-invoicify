@@ -4,11 +4,17 @@ import com.cognizant.javapunditsinvoicify.dto.InvoiceDto;
 import com.cognizant.javapunditsinvoicify.dto.InvoiceItemDto;
 import com.cognizant.javapunditsinvoicify.response.ResponseMessage;
 import com.cognizant.javapunditsinvoicify.service.InvoiceService;
+import com.cognizant.javapunditsinvoicify.util.InvoicifyConstants;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 import static com.cognizant.javapunditsinvoicify.util.InvoicifyConstants.ASCENDING;
+import static java.lang.Math.max;
+import static org.springframework.http.HttpStatus.OK;
 
 @RestController
 @RequestMapping("invoice")
@@ -61,7 +67,8 @@ public class InvoiceController {
             @RequestParam(name = "sortBy", defaultValue = "createdDate") String sortBy,
             @RequestParam(name = "orderBy", defaultValue = ASCENDING) String orderBy
     ){
-        return null;
+        List<InvoiceDto> invoices = invoiceService.getAllInvoices(pageNo, Math.min(pageSize, 10), sortBy, orderBy);
+        return new ResponseEntity<>(invoices, OK);
     }
 
 }
