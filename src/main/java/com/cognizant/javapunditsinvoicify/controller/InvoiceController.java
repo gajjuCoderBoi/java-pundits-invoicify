@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import static com.cognizant.javapunditsinvoicify.util.InvoicifyConstants.ASCENDING;
+
 @RestController
 @RequestMapping("invoice")
 public class InvoiceController {
@@ -50,6 +52,16 @@ public class InvoiceController {
     {
         ResponseMessage response = invoiceService.deleteInvoice(invoiceId);
         return new ResponseEntity<>(response, response.getHttpStatus());
+    }
+
+    @GetMapping
+    public ResponseEntity<?> getAllInvoices(
+            @RequestParam(name = "pageNo", defaultValue = "0") Integer pageNo,
+            @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize,
+            @RequestParam(name = "sortBy", defaultValue = "createdDate") String sortBy,
+            @RequestParam(name = "orderBy", defaultValue = ASCENDING) String orderBy
+    ){
+        return null;
     }
 
 }
