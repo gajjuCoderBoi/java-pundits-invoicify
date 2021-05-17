@@ -390,9 +390,68 @@ public class InvoiceIT {
 
     @Test
     public void getCompanyInvoices_Unpaid_Success() throws Exception {
-    RequestBuilder getCompanyInvoices_Unpaid_Success=RestDocumentationRequestBuilders.get("/invoice/{companyId}/unpaid", "1234");
+        int countUnpaidInvoice=0;
+        String companyId = createCompany();
+
+        for(int j=0;j<=20;j++){
+            PaymentStatus status;
+            boolean unpaid=new Random().nextInt(100)%2 == 0;
+            if(unpaid){
+                status=UNPAID;
+                countUnpaidInvoice++;
+            }else{
+                status=PAID;
+            }
+
+            String invoiceId =  objectMapper.readValue(mockMvc.perform(post("/invoice/" + companyId)
+                    .accept(APPLICATION_JSON)
+                    .contentType(APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(InvoiceDto.builder()
+                            .paymentStatus(status)
+                            .build())))
+                    .andReturn().getResponse().getContentAsString(), ResponseMessage.class).getId();
+            for(int k=0;k<=40;k++){
+                if(new Random().nextInt(100)%2 == 0){
+                    mockMvc.perform(post("/invoice/item")
+                            .param("invoice_id", invoiceId)
+                            .accept(APPLICATION_JSON)
+                            .contentType(APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(
+                                    InvoiceItemDto.builder()
+                                            .description(randomAlphanumeric(10)+"-RATE")
+                                            .feeType(FeeType.RATE)
+                                            .quantity(getRandomInt(1, 10))
+                                            .rate(getRandomDouble(1, 50))
+                                            .build()
+                            )))
+                            .andExpect(status().isCreated());
+                }
+                else{
+                    mockMvc.perform(post("/invoice/item")
+                            .param("invoice_id", invoiceId)
+                            .accept(APPLICATION_JSON)
+                            .contentType(APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(
+                                    InvoiceItemDto.builder()
+                                            .description(randomAlphanumeric(10)+"-FLAT")
+                                            .feeType(FeeType.FLAT)
+                                            .amount(getRandomDouble(50, 100))
+                                            .build()
+                            )))
+                            .andExpect(status().isCreated());
+                }
+            }
+        }
+
+
+    RequestBuilder getCompanyInvoices_Unpaid_Success=RestDocumentationRequestBuilders.get("/invoice/{companyId}/unpaid", companyId);
     mockMvc.perform(getCompanyInvoices_Unpaid_Success)
-            .andExpect(status().isOk());
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$").isArray())
+            .andExpect(jsonPath("$",hasSize(countUnpaidInvoice)))
+            .andDo(print());
+
+
 
     }
 

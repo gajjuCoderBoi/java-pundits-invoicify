@@ -76,7 +76,8 @@ public class InvoiceController {
     public ResponseEntity<?> getCompanyUnpaidInvoices(
             @PathVariable(name="companyId") Long companyId
     ){
-        return new ResponseEntity<>("Hello", OK);
+        List<InvoiceDto> unpaidInvoices=invoiceService.getCompanyUnpaidInvoices(companyId);
+        return new ResponseEntity<>(unpaidInvoices, OK);
 
     }
 

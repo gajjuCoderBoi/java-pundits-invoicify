@@ -227,4 +227,40 @@ public class InvoiceService {
 
         return invoiceDtoList;
     }
+
+    public List<InvoiceDto> getCompanyUnpaidInvoices(Long companyId) {
+        CompanyEntity savedCompanyEntity=companyRepository.findById(companyId).orElse(null);
+        List<InvoiceEntity> unpaidInvoiceEntity=invoiceRepository
+                .findInvoiceEntitiesByCompanyEntityAndPaymentStatusEquals(savedCompanyEntity,PaymentStatus.UNPAID);
+
+        List<InvoiceDto> invoiceDtoList = unpaidInvoiceEntity.stream().map(invoiceEntity -> {
+            InvoiceDto invoiceDto= invoiceMapper.invoiceEntityToDto(invoiceEntity);
+            invoiceDto.setCompany(CompanyDto.builder()
+                    .name(invoiceEntity.getCompanyEntity().getName())
+                    .id(String.valueOf(invoiceEntity.getCompanyEntity().getCompanyId()))
+                    .build());
+            if(invoiceEntity.getCreatedDate() != null) {
+                invoiceDto.setCreatedDate(DateFormatUtil.formatDate(invoiceEntity.getCreatedDate()));
+                invoiceDto.setModifiedDate(DateFormatUtil.formatDate(invoiceEntity.getModifiedDate()));
+            }
+            Double calculatedTotal = 0.0;
+            if(invoiceEntity.getInvoiceItemEntityList()!=null) {
+                calculatedTotal = invoiceEntity.getInvoiceItemEntityList().stream().mapToDouble(invoiceItemEntity -> {
+                            if (invoiceItemEntity.getFeeType() == FeeType.FLAT)
+                                return invoiceItemEntity.getAmount();
+                            else return invoiceItemEntity.getRate() * invoiceItemEntity.getQuantity();
+                        }
+                ).sum();
+                invoiceDto.setItems(
+                        invoiceEntity.getInvoiceItemEntityList().stream().map(entity->{
+                            return invoiceItemMapper.invoiceItemEntityToDto(entity);
+                        }).collect(Collectors.toList())
+                );
+            }
+
+            invoiceDto.setTotal(calculatedTotal);
+            return invoiceDto;
+        }).collect(Collectors.toList());
+        return invoiceDtoList;
+    }
 }
