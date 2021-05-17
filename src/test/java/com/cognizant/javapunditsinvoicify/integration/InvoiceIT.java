@@ -388,6 +388,16 @@ public class InvoiceIT {
 
     }
 
+    @Test
+    public void getCompanyInvoices_Unpaid_Success() throws Exception {
+    RequestBuilder getCompanyInvoices_Unpaid_Success=RestDocumentationRequestBuilders.get("/invoice/{companyId}/unpaid", "1234");
+    mockMvc.perform(getCompanyInvoices_Unpaid_Success)
+            .andExpect(status().isOk());
+
+    }
+
+
+
     private String postInvoice(String companyId) throws Exception {
 
         InvoiceDto invoiceDto = new InvoiceDto();
@@ -548,5 +558,8 @@ public class InvoiceIT {
             }
         }
     }
+
+
+
 
 }
