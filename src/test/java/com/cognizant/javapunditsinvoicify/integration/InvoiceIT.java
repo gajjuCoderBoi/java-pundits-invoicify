@@ -350,7 +350,7 @@ public class InvoiceIT {
                 .accept(APPLICATION_JSON)
                 .contentType(APPLICATION_JSON)
                 .param("pageNo", "0")
-                .param("pageSize", "10")
+                .param("pageSize", "5")
                 .param("sortBy", "createdDate")
                 .param("orderBy", "asc")
                 ;
