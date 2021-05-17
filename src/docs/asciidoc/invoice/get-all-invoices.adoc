@@ -1,0 +1,13 @@
+==== Get All Invoices
+
+===== Sample Request
+include::{snippets}/get-all-invoices/http-request.adoc[]
+
+===== Path Variables
+include::{snippets}/get-all-invoices/request-parameters.adoc[]
+
+===== Response-Body
+include::{snippets}/get-all-invoices/response-fields.adoc[]
+
+===== Sample Response
+include::{snippets}/get-all-invoices/http-response.adoc[]

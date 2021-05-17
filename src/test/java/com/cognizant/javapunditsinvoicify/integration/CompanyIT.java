@@ -22,7 +22,6 @@ import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.docu
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
-import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -32,7 +31,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @AutoConfigureRestDocs
 @Transactional
-@DirtiesContext(methodMode = DirtiesContext.MethodMode.BEFORE_METHOD)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @ActiveProfiles("qa")
 public class CompanyIT {
     @Autowired
@@ -75,7 +74,6 @@ public class CompanyIT {
                         fieldWithPath("contactName").description("Name of the Contact person of the company"),
                         fieldWithPath("contactTitle").description("Title of the Contact person of the company"),
                         fieldWithPath("contactNumber").description("Contact No of the company PoC"),
-                        fieldWithPath("invoices").ignored(),
                         fieldWithPath("address.line1").description("Address line 1 of the Company"),
                         fieldWithPath("address.line2").description("Address line 2 of the Company"),
                         fieldWithPath("address.city").description("City of the Company location"),
@@ -121,9 +119,6 @@ public class CompanyIT {
                 .andExpect(status().isCreated())
                 .andDo(print())
                 .andExpect(jsonPath("responseMessage").exists());
-
-        ///Repushing the same response in order to validate the dupe logic
-
 
         mockMvc.perform(rq)
                 .andExpect(status().isConflict())
@@ -189,16 +184,15 @@ public class CompanyIT {
                 .andDo(document("update-company", pathParameters(
                         parameterWithName("companyId").description("Company Id")
                 ),requestFields(
-                        fieldWithPath("name").description("Name of the Company"),
-                        fieldWithPath("contactName").description("Name of the Contact person of the company"),
-                        fieldWithPath("contactTitle").description("Title of the Contact person of the company"),
-                        fieldWithPath("contactNumber").description("Contact No of the company PoC"),
-                        fieldWithPath("address.line1").description("Address line 1 of the Company"),
-                        fieldWithPath("address.line2").description("Address line 2 of the Company"),
-                        fieldWithPath("address.city").description("City of the Company location"),
-                        fieldWithPath("address.state").description("State of the Company location"),
-                        fieldWithPath("address.zipcode").description("Zip-Code of the Company location"),
-                        fieldWithPath("invoices").ignored()
+                        fieldWithPath("name").description("Name of the Company").optional(),
+                        fieldWithPath("contactName").description("Name of the Contact person of the company").type("String").optional(),
+                        fieldWithPath("contactTitle").description("Title of the Contact person of the company").type("String").optional(),
+                        fieldWithPath("contactNumber").description("Contact No of the company PoC").type("Integer").optional(),
+                        fieldWithPath("address.line1").description("Address line 1 of the Company").type("String").optional(),
+                        fieldWithPath("address.line2").description("Address line 2 of the Company").type("String").optional(),
+                        fieldWithPath("address.city").description("City of the Company location").type("String").optional(),
+                        fieldWithPath("address.state").description("State of the Company location").type("String").optional(),
+                        fieldWithPath("address.zipcode").description("Zip-Code of the Company location").type("Integer").optional()
 
                 )))
         ;
@@ -226,7 +220,7 @@ public class CompanyIT {
                         fieldWithPath("contactName").description("Name of the Contact person of the company"),
                         fieldWithPath("contactTitle").description("Title of the Contact person of the company"),
                         fieldWithPath("contactNumber").description("Contact No of the company PoC"),
-                        fieldWithPath("invoices").ignored(),
+                        fieldWithPath("invoices").ignored().optional(),
                         fieldWithPath("address.line1").description("Address line 1 of the Company"),
                         fieldWithPath("address.line2").description("Address line 2 of the Company"),
                         fieldWithPath("address.city").description("City of the Company location"),
@@ -308,7 +302,6 @@ public class CompanyIT {
                         fieldWithPath("[].name").description("wallmart"),
                         fieldWithPath("[].contactName").description("wallmartCEO"),
                         fieldWithPath("[].contactNumber").description("123456789"),
-                        fieldWithPath("[].invoices").ignored(),
                         fieldWithPath("[].contactTitle").description("Contact Title 3"),
                         fieldWithPath("[].address").description("Address Object of Company").type("Address"),
                         fieldWithPath("[].address.line1").description("Address line 1"),

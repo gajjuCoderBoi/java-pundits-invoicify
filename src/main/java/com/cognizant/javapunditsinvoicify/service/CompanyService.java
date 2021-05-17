@@ -69,7 +69,7 @@ public class CompanyService {
 
             if(companyEntity != null)
             {
-                responseMessage.setId(companyEntity.getId().toString());
+                responseMessage.setId(companyEntity.getCompanyId().toString());
                 responseMessage.setResponseMessage("Company created.");
             }
             else

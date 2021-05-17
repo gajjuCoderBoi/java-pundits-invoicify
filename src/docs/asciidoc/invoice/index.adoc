@@ -5,3 +5,5 @@ include::update-invoice.adoc[]
 include::delete-invoice.adoc[]
 
 include::get-invoice-by-id.adoc[]
+
+include::get-all-invoices.adoc[]

@@ -13,7 +13,7 @@ import static javax.persistence.CascadeType.MERGE;
 @Entity
 @Data
 @NoArgsConstructor
-@Table(name = "invoiceEntity")
+@Table(name = "invoices")
 public class InvoiceEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -22,7 +22,7 @@ public class InvoiceEntity {
     private ZonedDateTime modifiedDate;
 
     @ManyToOne
-    @JoinColumn(name="company_id", referencedColumnName = "id")
+    @JoinColumn(name="company_id", referencedColumnName = "companyId")
     private CompanyEntity companyEntity;
 
     @OneToMany(mappedBy = "invoiceEntity", cascade = MERGE)
