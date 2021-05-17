@@ -37,6 +37,7 @@ import java.util.stream.IntStream;
 import static com.cognizant.javapunditsinvoicify.misc.PaymentStatus.PAID;
 import static com.cognizant.javapunditsinvoicify.misc.PaymentStatus.UNPAID;
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric;
+import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
@@ -349,13 +350,15 @@ public class InvoiceIT {
                 .accept(APPLICATION_JSON)
                 .contentType(APPLICATION_JSON)
                 .param("pageNo", "0")
-                .param("pageSize", "5")
+                .param("pageSize", "10")
                 .param("sortBy", "createdDate")
                 .param("orderBy", "asc")
                 ;
 
         mockMvc.perform(getAllInvoices)
                 .andExpect(status().isOk())
+                .andExpect(jsonPath("$").isArray())
+                .andExpect(jsonPath("$", hasSize(5)))
                 .andDo(print())
                 .andDo(document("get-all-invoices", requestParameters(
                         parameterWithName("pageSize").description("Limit count of Invoices. (max 10 count)"),
@@ -504,37 +507,43 @@ public class InvoiceIT {
         for (int i=0;i<=10;i++){
             String companyId = createCompany();
             for(int j=0;j<=20;j++){
-                String invoiceId = objectMapper.readValue(postInvoice(companyId), ResponseMessage.class).getId();
-                for(int k=0;k<=20;k++){
-                    mockMvc.perform(post("/invoice/item")
-                            .param("invoice_id", invoiceId)
-                            .accept(APPLICATION_JSON)
-                            .contentType(APPLICATION_JSON)
-                            .content(objectMapper.writeValueAsString(
-                                    InvoiceItemDto.builder()
-                                            .description(randomAlphanumeric(10)+"-RATE")
-                                            .feeType(FeeType.RATE)
-                                            .quantity(getRandomInt(1, 10))
-                                            .rate(getRandomDouble(1, 50))
-                                            .build()
-                            )))
-                            .andExpect(status().isCreated())
-                            /*.andDo(print())*/;
-                }
-                for(int k=0;k<=20;k++){
-                    mockMvc.perform(post("/invoice/item")
-                            .param("invoice_id", invoiceId)
-                            .accept(APPLICATION_JSON)
-                            .contentType(APPLICATION_JSON)
-                            .content(objectMapper.writeValueAsString(
-                                    InvoiceItemDto.builder()
-                                            .description(randomAlphanumeric(10)+"-FLAT")
-                                            .feeType(FeeType.FLAT)
-                                            .amount(getRandomDouble(50, 100))
-                                            .build()
-                            )))
-                            .andExpect(status().isCreated())
-                            /*.andDo(print())*/;
+                String invoiceId =  objectMapper.readValue(mockMvc.perform(post("/invoice/" + companyId)
+                        .accept(APPLICATION_JSON)
+                        .contentType(APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(InvoiceDto.builder()
+                                .paymentStatus(new Random().nextInt(100)%2 == 0 ? UNPAID : PAID)
+                                .build())))
+                        .andReturn().getResponse().getContentAsString(), ResponseMessage.class).getId();
+                for(int k=0;k<=40;k++){
+                    if(new Random().nextInt(100)%2 == 0){
+                        mockMvc.perform(post("/invoice/item")
+                                .param("invoice_id", invoiceId)
+                                .accept(APPLICATION_JSON)
+                                .contentType(APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(
+                                        InvoiceItemDto.builder()
+                                                .description(randomAlphanumeric(10)+"-RATE")
+                                                .feeType(FeeType.RATE)
+                                                .quantity(getRandomInt(1, 10))
+                                                .rate(getRandomDouble(1, 50))
+                                                .build()
+                                )))
+                                .andExpect(status().isCreated());
+                    }
+                    else{
+                        mockMvc.perform(post("/invoice/item")
+                                .param("invoice_id", invoiceId)
+                                .accept(APPLICATION_JSON)
+                                .contentType(APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(
+                                        InvoiceItemDto.builder()
+                                                .description(randomAlphanumeric(10)+"-FLAT")
+                                                .feeType(FeeType.FLAT)
+                                                .amount(getRandomDouble(50, 100))
+                                                .build()
+                                )))
+                                .andExpect(status().isCreated());
+                    }
                 }
             }
         }
