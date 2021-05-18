@@ -26,39 +26,26 @@ import org.mapstruct.factory.Mappers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
+import org.springframework.data.domain.*;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.web.servlet.RequestBuilder;
 
 import java.time.ZonedDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.Random;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.cognizant.javapunditsinvoicify.misc.FeeType.FLAT;
 import static com.cognizant.javapunditsinvoicify.misc.FeeType.RATE;
 import static com.cognizant.javapunditsinvoicify.misc.PaymentStatus.PAID;
 import static com.cognizant.javapunditsinvoicify.misc.PaymentStatus.UNPAID;
+import static com.cognizant.javapunditsinvoicify.util.InvoicifyConstants.ASCENDING;
+import static com.cognizant.javapunditsinvoicify.util.InvoicifyConstants.DESCENDING;
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric;
-import static org.hamcrest.Matchers.hasSize;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
-import static org.springframework.http.MediaType.APPLICATION_JSON;
-import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
-import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
-import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
-import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
-import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(MockitoExtension.class)
 @ActiveProfiles("qa")
@@ -160,13 +147,47 @@ public class InvoiceServiceUnitTest {
     }
 
     @Test
+    public void addInvoice_CompanyNotFound_Failed(){
+        when(companyRepository.findById(anyLong())).thenReturn(Optional.empty());
+
+        ResponseMessage response = invoiceService.addInvoice(new InvoiceDto(), 1L);
+
+        assertNotNull(response);
+        assertEquals("No Company found." ,response.getResponseMessage());
+        assertEquals(NOT_FOUND, response.getHttpStatus());
+
+    }
+
+    @Test
+    public void updateInvoice_InvoiceNotFound_Failed(){
+        when(invoiceRepository.findById(anyLong())).thenReturn(Optional.empty());
+
+        ResponseMessage actualResponse = invoiceService.updateInvoice(new InvoiceDto(), 1L);
+
+        assertNotNull(actualResponse);
+        assertEquals("Invoice does not exist.", actualResponse.getResponseMessage());
+        assertEquals(NOT_FOUND, actualResponse.getHttpStatus());
+    }
+
+    @Test
+    public void deleteInvoice_InvoiceNotFound_Failed(){
+        when(invoiceRepository.findById(anyLong())).thenReturn(Optional.empty());
+
+        ResponseMessage actualResponse = invoiceService.deleteInvoice(1L);
+
+        assertNotNull(actualResponse);
+        assertEquals("Invoice does not exist.", actualResponse.getResponseMessage());
+        assertEquals(NOT_FOUND, actualResponse.getHttpStatus());
+    }
+
+    @Test
     public void createInvoices() {
         when(invoiceMapper.invoiceDtoToEntity(any())).thenReturn(new InvoiceEntity());
         when(companyRepository.findById(anyLong())).thenReturn(Optional.of(new CompanyEntity()));
         InvoiceEntity invoiceEntity = new InvoiceEntity();
-        invoiceEntity.setId(1l);
+        invoiceEntity.setId(1L);
         when(invoiceRepository.save(any(InvoiceEntity.class))).thenReturn(invoiceEntity);
-        ResponseMessage actualResponse = invoiceService.addInvoice(invoiceDto,1l);
+        ResponseMessage actualResponse = invoiceService.addInvoice(invoiceDto, 1L);
 
         assertNotNull(actualResponse);
         assertEquals(actualResponse.getId(),"1");
@@ -196,7 +217,131 @@ public class InvoiceServiceUnitTest {
     }
 
     @Test
-    public void getCompanyUnpaidInvoices() throws Exception {
+    public void getInvoiceIdById_NoDate(){
+        mockInvoiceEntity = new InvoiceEntity();
+        mockInvoiceEntity.setCompanyEntity(mockCompanyEntity);
+        mockInvoiceEntity.setModifiedDate(null);
+        mockInvoiceEntity.setCreatedDate(null);
+        mockInvoiceEntity.setPaymentStatus(PAID);
+
+        when(invoiceRepository.findById(anyLong())).thenReturn(Optional.of(mockInvoiceEntity));
+        when(invoiceMapper.invoiceEntityToDto(any(InvoiceEntity.class))).thenReturn(new InvoiceDto());
+
+        InvoiceDto actual = invoiceService.getInvoiceById(1L);
+
+        assertNotNull(actual);
+        assertNull(actual.getCreatedDate());
+        assertNull(actual.getModifiedDate());
+    }
+    
+    @Test
+    public void getAllInvoices(){
+
+        Pageable mockPaging = PageRequest.of(0, 10, Sort.by("createdDate").ascending());
+
+
+
+        long count = 0;
+        CompanyEntity companyEntity = new CompanyEntity();
+        companyEntity.setCompanyId(++count);
+        companyEntity.setName(randomAlphanumeric(10));
+        companyEntity.setContactName("Contact Name");
+        companyEntity.setContactTitle("Contact Title");
+        companyEntity.setContactNumber(123456789);
+
+        AddressEntity addressEntity = new AddressEntity();
+        addressEntity.setLine1("Address line 1");
+        addressEntity.setLine2("Line 2");
+        addressEntity.setCity("City");
+        addressEntity.setState("XX");
+        addressEntity.setZip(12345);
+        companyEntity.setAddressEntity(addressEntity);
+        companyEntity.setInvoices(new ArrayList<>());
+
+        for(int j=1;j<=10;j++){
+            InvoiceEntity invoiceEntity = new InvoiceEntity();
+            invoiceEntity.setId(++count);
+            invoiceEntity.setPaymentStatus(UNPAID);
+            invoiceEntity.setCompanyEntity(companyEntity);
+            invoiceEntity.setCreatedDate(ZonedDateTime.now());
+            invoiceEntity.setModifiedDate(ZonedDateTime.now());
+            invoiceEntity.setInvoiceItemEntityList(new ArrayList<>());
+            for(int k=0;k<=2;k++){
+                InvoiceItemEntity invoiceItemEntity = new InvoiceItemEntity();
+                invoiceItemEntity.setId(++count);
+                invoiceItemEntity.setInvoiceEntity(invoiceEntity);
+                if(new Random().nextInt(100)%2 == 0){
+                    invoiceItemEntity.setDescription(randomAlphanumeric(10)+"-FLAT");
+                    invoiceItemEntity.setFeeType(FLAT);
+                    invoiceItemEntity.setAmount(getRandomDouble(1, 100));
+                }else{
+                    invoiceItemEntity.setDescription(randomAlphanumeric(10)+"-RATE");
+                    invoiceItemEntity.setFeeType(RATE);
+                    invoiceItemEntity.setRate(getRandomDouble(1, 100));
+                    invoiceItemEntity.setQuantity(getRandomInt(1, 10));
+                }
+                invoiceEntity.getInvoiceItemEntityList().add(invoiceItemEntity);
+            }
+            companyEntity.getInvoices().add(invoiceEntity);
+        }
+        InvoiceMapper invoiceMapper = Mappers.getMapper(InvoiceMapper.class);
+        InvoiceItemMapper invoiceItemMapper = Mappers.getMapper(InvoiceItemMapper.class);
+        List<InvoiceDto> invoiceDtoList = companyEntity.getInvoices().stream().map(invoiceEntity -> {
+            InvoiceDto invoiceDto= invoiceMapper.invoiceEntityToDto(invoiceEntity);
+            invoiceDto.setCompany(CompanyDto.builder()
+                    .name(invoiceEntity.getCompanyEntity().getName())
+                    .id(String.valueOf(invoiceEntity.getCompanyEntity().getCompanyId()))
+                    .build());
+            if(invoiceEntity.getCreatedDate() != null) {
+                invoiceDto.setCreatedDate(DateFormatUtil.formatDate(invoiceEntity.getCreatedDate()));
+                invoiceDto.setModifiedDate(DateFormatUtil.formatDate(invoiceEntity.getModifiedDate()));
+            }
+            Double calculatedTotal = 0.0;
+            if(invoiceEntity.getInvoiceItemEntityList()!=null) {
+                calculatedTotal = invoiceEntity.getInvoiceItemEntityList().stream().mapToDouble(invoiceItemEntity -> {
+                            if (invoiceItemEntity.getFeeType() == FeeType.FLAT)
+                                return invoiceItemEntity.getAmount();
+                            else return invoiceItemEntity.getRate() * invoiceItemEntity.getQuantity();
+                        }
+                ).sum();
+                invoiceDto.setItems(
+                        invoiceEntity.getInvoiceItemEntityList().stream().map(entity->{
+                            return invoiceItemMapper.invoiceItemEntityToDto(entity);
+                        }).collect(Collectors.toList())
+                );
+            }
+
+            invoiceDto.setTotal(calculatedTotal);
+            return invoiceDto;
+        }).collect(Collectors.toList());
+        when(helperMethods.convertInvoiceEntityToDtoList(any())).thenReturn(invoiceDtoList);
+
+        Page<InvoiceEntity> pageResult = new PageImpl<>(companyEntity.getInvoices());
+        when(invoiceRepository.findAll(mockPaging)).thenReturn(pageResult);
+        List<InvoiceDto> actual = invoiceService.getAllInvoices(0, 10, "createdDate", ASCENDING);
+
+        assertNotNull(actual);
+        assertEquals(10, actual.size());
+        for(int i=0;i<companyEntity.getInvoices().size();i++){
+            assertEquals(companyEntity.getInvoices().get(i).getPaymentStatus(), actual.get(i).getPaymentStatus());
+        }
+
+        mockPaging = PageRequest.of(0, 10, Sort.by("createdDate").descending());
+        when(helperMethods.convertInvoiceEntityToDtoList(any())).thenReturn(invoiceDtoList);
+        when(invoiceRepository.findAll(mockPaging)).thenReturn(pageResult);
+        actual = invoiceService.getAllInvoices(0, 10, "createdDate", DESCENDING);
+
+        assertNotNull(actual);
+        assertEquals(10, actual.size());
+        for(int i=0;i<companyEntity.getInvoices().size();i++){
+            assertEquals(companyEntity.getInvoices().get(i).getPaymentStatus(), actual.get(i).getPaymentStatus());
+        }
+
+
+    }
+
+    @Test
+    public void getCompanyUnpaidInvoices() {
 
         long count = 0;
         CompanyEntity companyEntity = new CompanyEntity();
