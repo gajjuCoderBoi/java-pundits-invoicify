@@ -45,7 +45,15 @@ test {
     useJUnitPlatform()
     finalizedBy jacocoTestReport
     jacoco {
-        excludes += ["**/dto/**","**/entity/**", "**/mapper/**", "**/response/**", "**/util/**", "**/misc/**", "**/config/**"]
+        excludes += [
+                "**/dto/**",
+                "**/entity/**",
+                "**/mapper/**",
+                "**/response/**",
+                "**/util/**",
+                "**/misc/**",
+                "**/config/**"
+        ]
     }
 }
 

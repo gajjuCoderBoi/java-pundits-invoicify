@@ -6,6 +6,7 @@ import com.cognizant.javapunditsinvoicify.entity.InvoiceEntity;
 import com.cognizant.javapunditsinvoicify.mapper.InvoiceItemMapper;
 import com.cognizant.javapunditsinvoicify.mapper.InvoiceMapper;
 import com.cognizant.javapunditsinvoicify.misc.FeeType;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Configuration;
@@ -53,5 +54,9 @@ public class HelperMethods {
             invoiceDto.setTotal(calculatedTotal);
             return invoiceDto;
         }).collect(Collectors.toList());
+    }
+
+    public static boolean isNotEmpty(String value){
+        return StringUtils.isNotEmpty(value) && StringUtils.isNotBlank(value);
     }
 }

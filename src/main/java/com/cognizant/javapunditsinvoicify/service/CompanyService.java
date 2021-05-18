@@ -1,6 +1,5 @@
 package com.cognizant.javapunditsinvoicify.service;
 
-import com.cognizant.javapunditsinvoicify.response.CompanySimpleViewResponse;
 import com.cognizant.javapunditsinvoicify.dto.AddressDto;
 import com.cognizant.javapunditsinvoicify.dto.CompanyDto;
 import com.cognizant.javapunditsinvoicify.entity.AddressEntity;
@@ -8,11 +7,8 @@ import com.cognizant.javapunditsinvoicify.entity.CompanyEntity;
 import com.cognizant.javapunditsinvoicify.mapper.AddressMapper;
 import com.cognizant.javapunditsinvoicify.mapper.CompanyMapper;
 import com.cognizant.javapunditsinvoicify.repository.CompanyRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
+import com.cognizant.javapunditsinvoicify.response.CompanySimpleViewResponse;
 import com.cognizant.javapunditsinvoicify.response.ResponseMessage;
-import com.cognizant.javapunditsinvoicify.response.ResponseMessage;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
@@ -23,7 +19,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static java.lang.String.valueOf;
+import static com.cognizant.javapunditsinvoicify.util.HelperMethods.isNotEmpty;
 
 @Service
 public class CompanyService {
@@ -119,9 +115,6 @@ public class CompanyService {
         return companyDto;
     }
 
-    private boolean isNotEmpty(String value){
-        return StringUtils.isNotEmpty(value) && StringUtils.isNotBlank(value);
-    }
 
     public List<CompanyDto> getCompanyList() {
 

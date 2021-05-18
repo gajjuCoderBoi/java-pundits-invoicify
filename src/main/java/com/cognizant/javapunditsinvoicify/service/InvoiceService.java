@@ -108,8 +108,11 @@ public class InvoiceService {
         if(invoiceEntity.getCreatedDate() != null) {
             invoiceDto.setCreatedDate(DateFormatUtil.formatDate(invoiceEntity.getCreatedDate()));
             invoiceDto.setModifiedDate(DateFormatUtil.formatDate(invoiceEntity.getModifiedDate()));
+        }else{
+            invoiceDto.setCreatedDate(null);
+            invoiceDto.setModifiedDate(null);
         }
-        Double calculatedTotal = 0.0;
+        double calculatedTotal = 0.0;
         if(invoiceEntity.getInvoiceItemEntityList()!=null) {
             calculatedTotal = invoiceEntity.getInvoiceItemEntityList().stream().mapToDouble(invoiceItemEntity -> {
                         if (invoiceItemEntity.getFeeType() == FeeType.FLAT)
