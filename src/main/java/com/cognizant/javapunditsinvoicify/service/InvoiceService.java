@@ -185,7 +185,7 @@ public class InvoiceService {
             else
             {
                 responseMessage.setId(existingInvoiceEntity.getId().toString());
-                responseMessage.setResponseMessage("Unpaid Invoice cannot be deleted.");
+                responseMessage.setResponseMessage("Unpaid/Recent Invoice cannot be deleted.");
                 responseMessage.setHttpStatus(NOT_ACCEPTABLE);
             }
         }

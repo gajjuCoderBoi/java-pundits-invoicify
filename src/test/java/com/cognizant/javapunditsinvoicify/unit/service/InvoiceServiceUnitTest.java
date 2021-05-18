@@ -26,6 +26,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpStatus;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.time.ZonedDateTime;
@@ -115,6 +116,13 @@ public class InvoiceServiceUnitTest {
         addressDto.setZipcode(12345);
 
         mockCompanyDto.setAddress(addressDto);
+
+        // Mock Invoice Entity object
+        mockInvoiceEntity = new InvoiceEntity();
+        mockInvoiceEntity.setId(1L);
+        mockInvoiceEntity.setPaymentStatus(PaymentStatus.UNPAID);
+
+
     }
 
     @Test
@@ -154,11 +162,69 @@ public class InvoiceServiceUnitTest {
         InvoiceEntity invoiceEntity = new InvoiceEntity();
         invoiceEntity.setId(1l);
         when(invoiceRepository.save(any(InvoiceEntity.class))).thenReturn(invoiceEntity);
-        ResponseMessage actualResponse = invoiceService.addInvoice(invoiceDto,1l);
+        ResponseMessage actualResponse = invoiceService.addInvoice(invoiceDto, 1l);
 
         assertNotNull(actualResponse);
-        assertEquals(actualResponse.getId(),"1");
-        assertEquals(actualResponse.getResponseMessage(),"Invoice created.");
+        assertEquals(actualResponse.getId(), "1");
+        assertEquals(actualResponse.getResponseMessage(), "Invoice created.");
         assertEquals(actualResponse.getHttpStatus(), CREATED);
+    }
+
+    @Test
+    public void updateInvoice() {
+        var entity = new InvoiceDto();
+        InvoiceEntity invoiceEntity = new InvoiceEntity();
+        entity.setPaymentStatus(PaymentStatus.UNPAID);
+
+        when(invoiceRepository.findById(anyLong())).thenReturn(Optional.ofNullable(mockInvoiceEntity));
+        when(invoiceRepository.save(any(InvoiceEntity.class))).thenReturn(mockInvoiceEntity);
+
+        ResponseMessage actualResponse = invoiceService.updateInvoice(entity, 1L);
+        invoiceService.updateInvoice(entity, 1L);
+
+        assertNotNull(actualResponse);
+        assertEquals(actualResponse.getResponseMessage(), "Invoice updated successfully.");
+        assertEquals(actualResponse.getHttpStatus(), HttpStatus.ACCEPTED);
+    }
+
+
+    @Test
+    public void deleteInvoice() {
+        //Invoice status as PAID and more then 1 year old
+        mockInvoiceEntity.setPaymentStatus(PaymentStatus.PAID);
+        mockInvoiceEntity.setCreatedDate(ZonedDateTime.now().minusMonths(13));
+
+        when(invoiceRepository.findById(anyLong())).thenReturn(Optional.ofNullable(mockInvoiceEntity));
+        ResponseMessage actualResponse = invoiceService.deleteInvoice(1L);
+
+        assertNotNull(actualResponse);
+        assertEquals("Invoice deleted successfully.", actualResponse.getResponseMessage());
+        assertEquals(HttpStatus.ACCEPTED, actualResponse.getHttpStatus());
+
+
+        //Invoice status as PAID and less then 1 year old
+        mockInvoiceEntity.setPaymentStatus(PaymentStatus.PAID);
+        mockInvoiceEntity.setCreatedDate(ZonedDateTime.now().minusMonths(6));
+
+        when(invoiceRepository.findById(anyLong())).thenReturn(Optional.ofNullable(mockInvoiceEntity));
+        actualResponse = invoiceService.deleteInvoice(1L);
+
+        assertNotNull(actualResponse);
+        assertEquals("Unpaid/Recent Invoice cannot be deleted.", actualResponse.getResponseMessage());
+        assertEquals(NOT_ACCEPTABLE, actualResponse.getHttpStatus());
+
+
+        //Invoice status as UNPAID and more then 1 year old
+        mockInvoiceEntity.setPaymentStatus(PaymentStatus.UNPAID);
+        mockInvoiceEntity.setCreatedDate(ZonedDateTime.now().minusMonths(16));
+
+        when(invoiceRepository.findById(anyLong())).thenReturn(Optional.ofNullable(mockInvoiceEntity));
+        actualResponse = invoiceService.deleteInvoice(1L);
+
+        assertNotNull(actualResponse);
+        assertEquals("Unpaid/Recent Invoice cannot be deleted.", actualResponse.getResponseMessage());
+        assertEquals(NOT_ACCEPTABLE, actualResponse.getHttpStatus());
+
+
     }
 }

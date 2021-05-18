@@ -6,6 +6,7 @@ import com.cognizant.javapunditsinvoicify.dto.InvoiceItemDto;
 import com.cognizant.javapunditsinvoicify.misc.PaymentStatus;
 import com.cognizant.javapunditsinvoicify.response.ResponseMessage;
 import com.cognizant.javapunditsinvoicify.service.InvoiceService;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,10 +22,11 @@ import java.time.ZonedDateTime;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpStatus.*;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -91,4 +93,54 @@ public class InvoiceControllerUnitTest {
                 .andDo(print())
         ;
     }
+
+    @Test
+    public void updateInvoiceTest() throws Exception {
+
+        String invoiceId = "1";
+        var invoiceDto = new InvoiceDto();
+        invoiceDto.setPaymentStatus(PaymentStatus.PAID);
+
+        RequestBuilder updatedInvoice = put(String.format("/invoice/%s", invoiceId))
+                .accept(APPLICATION_JSON)
+                .contentType(APPLICATION_JSON)
+                .content(mapper.writeValueAsString(invoiceDto));
+
+        System.out.println("Request Builder :" + updatedInvoice.toString());
+
+        when(invoiceService.updateInvoice(any(InvoiceDto.class), anyLong())).thenReturn(ResponseMessage.builder()
+                .responseMessage("Update successfully.")
+                .httpStatus(CREATED)
+                .build());
+
+
+        mockMvc.perform(updatedInvoice)
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("responseMessage").value("Update successfully."))
+                .andDo(print());
+    }
+
+
+    @Test
+    public void deleteInvoiceTest() throws Exception {
+
+        String invoiceId = "1";
+
+        RequestBuilder deletedInvoice = delete(String.format("/invoice/%s", invoiceId))
+                .accept(APPLICATION_JSON)
+                .contentType(APPLICATION_JSON);
+
+        when(invoiceService.deleteInvoice(anyLong())).thenReturn(ResponseMessage.builder()
+                .responseMessage("Invoice deleted successfully.")
+                .httpStatus(ACCEPTED)
+                .build());
+
+
+        mockMvc.perform(deletedInvoice)
+                .andExpect(status().isAccepted())
+                .andExpect(jsonPath("responseMessage").value("Invoice deleted successfully."))
+                .andDo(print());
+    }
+
+
 }
