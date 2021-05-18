@@ -1,4 +1,4 @@
-# Guest Book Service
+# Invoicify Service
 
 <p align="center">
   <a href="#">
@@ -13,9 +13,11 @@
   <br>
 
   <br>
+
+[![Build, Test, Release, Deploy](https://github.com/gajjuCoderBoi/java-pundits-invoicify/actions/workflows/cicd.yml/badge.svg)](https://github.com/gajjuCoderBoi/java-pundits-invoicify/actions/workflows/cicd.yml)  [![codecov](https://codecov.io/gh/gajjuCoderBoi/java-pundits-invoicify/branch/develop/graph/badge.svg?token=N8P18UJIME)](https://codecov.io/gh/gajjuCoderBoi/java-pundits-invoicify) [![Generic badge](https://img.shields.io/badge/docker_pulls-ghazanfar9131/java--pundits--invoicify-red.svg)](https://hub.docker.com/repository/docker/ghazanfar9131/java-pundits-invoicify) [![Generic badge](https://img.shields.io/badge/java_ver->=11-blue.svg)]() [![Generic badge](https://img.shields.io/badge/springboot_version-2.4.5-blue.svg)]() [![Generic badge](https://img.shields.io/badge/demo_server-2.4.5-blue.svg)](https://java-pundits-invoicify.herokuapp.com/)
+
 </p>
 
-[![Build, Test, Release, Deploy](https://github.com/gajjuCoderBoi/java-pundits-invoicify/actions/workflows/cicd.yml/badge.svg)](https://github.com/gajjuCoderBoi/java-pundits-invoicify/actions/workflows/cicd.yml)  [![codecov](https://codecov.io/gh/gajjuCoderBoi/java-pundits-invoicify/branch/develop/graph/badge.svg?token=N8P18UJIME)](https://codecov.io/gh/gajjuCoderBoi/java-pundits-invoicify)  [![Generic badge](https://img.shields.io/badge/java_ver->=11-blue.svg)](https://shields.io/) [![Generic badge](https://img.shields.io/badge/springboot_version-2.4.5-blue.svg)](https://shields.io/)
 
 ## Table of contents
 
@@ -93,7 +95,7 @@ Build from Source:
          password: sa
    ```
 
-   Configuration parameters for PostgreSQL (replace [SERVER-ADDRESS], [PORT] (if available), [DATABASE], [USER], [PASSWORD] with appropriate values):
+   Configuration parameters for PostgreSQL (replace **[SERVER-ADDRESS]**, **[PORT]** (if available), **[DATABASE]**, **[USER]**, **[PASSWORD]** with appropriate values):
 
 ```yaml
       spring:
@@ -117,7 +119,8 @@ Build from Source:
 
      ```yaml
         # Add Server Port property
-        server.port=your-port                        
+        server
+          port: your-port                        
      ```
    * Java Command
       
@@ -195,7 +198,28 @@ Build from Source:
        C:\> wget https://github.com/gajjuCoderBoi/java-pundits-invoicify/releases/download/Releases/invoicify.jar
     ```
   
+## Architecture
 
+#### ERD, DB, DTO Relationship Diagram
+
+ERD             |  DATABASE | DTO Diagram
+:-------------------------:|:-------------------------:|:-------------------------:
+![erd](./img/erd.png)  |  ![dbdiagram](./img/dbdiagram.png) | ![dtorelationshipdiagram](./img/dtorelationshipdiagram.png)
+ 
+#### Class Diagram 
+
+<details>
+<summary>
+Expand
+</summary>
+
+![classdiagram](./img/javapunditsinvoicify.png)
+
+</details>
+
+## API
+
+Please find API on [demo server](https://java-pundits-invoicify.herokuapp.com/docs/index.html)
 
 ## Developers
 
