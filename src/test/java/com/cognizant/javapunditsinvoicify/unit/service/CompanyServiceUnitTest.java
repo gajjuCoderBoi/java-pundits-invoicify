@@ -12,6 +12,8 @@ import com.cognizant.javapunditsinvoicify.service.CompanyService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mapstruct.Mapper;
+import org.mapstruct.factory.Mappers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -19,12 +21,10 @@ import org.springframework.test.context.ActiveProfiles;
 
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 @ActiveProfiles("qa")
@@ -107,6 +107,23 @@ public class CompanyServiceUnitTest {
     }
 
     @Test
+    public void updateCompanyTest_CompanyIdNotFound(){
+        when(companyRepository.findById(anyLong())).thenReturn(Optional.empty());
+
+        companyService.update(mockCompanyDto, 1L);
+    }
+
+    @Test
+    public void updateCompanyTest_CompanyNoAddress(){
+
+        when(companyRepository.findById(anyLong())).thenReturn(Optional.ofNullable(mockCompanyEntity));
+        when(companyRepository.findById(anyLong())).thenReturn(Optional.empty());
+
+        mockCompanyDto.setAddress(new AddressDto());
+        companyService.update(mockCompanyDto, 1L);
+    }
+
+    @Test
     void addCompany() {
 
         ResponseMessage actualResponse = companyService.addCompany(mockCompanyDto);
@@ -116,5 +133,36 @@ public class CompanyServiceUnitTest {
         assertNotNull(actualResponse);
         assertNotNull(actualResponse.getResponseMessage());
         assertEquals(actualResponse.getResponseMessage(),"Mock Company created");
+    }
+
+    @Test
+    public void getCompanyById(){
+        when(companyRepository.findById(anyLong())).thenReturn(Optional.of(mockCompanyEntity));
+        CompanyMapper companyMapper = Mappers.getMapper(CompanyMapper.class);
+        AddressMapper addressMapper = Mappers.getMapper(AddressMapper.class);
+        CompanyDto companyDto = companyMapper.companyEntityToDto(mockCompanyEntity);
+        AddressDto addressDto = addressMapper.addressEntityToDto(mockCompanyEntity.getAddressEntity());
+        when(this.companyMapper.companyEntityToDto(any())).thenReturn(companyDto);
+        when(this.addressMapper.addressEntityToDto(any())).thenReturn(addressDto);
+
+        CompanyDto actualDto = companyService.getCompanyById(1L);
+
+        assertNotNull(actualDto);
+    }
+
+    @Test
+    public void getCompanyById_NoCompany(){
+        when(companyRepository.findById(anyLong())).thenReturn(Optional.empty());
+
+        CompanyDto actualDto = companyService.getCompanyById(1L);
+
+        assertNotNull(actualDto);
+        assertNull(actualDto.getName());
+        assertNull(actualDto.getAddress());
+        assertNull(actualDto.getContactName());
+        assertNull(actualDto.getContactNumber());
+        assertNull(actualDto.getId());
+        assertNull(actualDto.getInvoices());
+
     }
 }
