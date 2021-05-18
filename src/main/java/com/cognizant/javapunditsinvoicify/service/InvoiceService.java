@@ -15,6 +15,7 @@ import com.cognizant.javapunditsinvoicify.repository.InvoiceItemRepository;
 import com.cognizant.javapunditsinvoicify.repository.InvoiceRepository;
 import com.cognizant.javapunditsinvoicify.response.ResponseMessage;
 import com.cognizant.javapunditsinvoicify.util.DateFormatUtil;
+import com.cognizant.javapunditsinvoicify.util.HelperMethods;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
@@ -49,6 +50,9 @@ public class InvoiceService {
     @Autowired
     @Qualifier("invoice-mapper")
     private InvoiceMapper invoiceMapper;
+
+    @Autowired
+    private HelperMethods helperMethods;
 
     public ResponseMessage addInvoiceItem(InvoiceItemDto invoiceItemDto, Long invoiceId) {
         InvoiceEntity savedInvoice = invoiceRepository.findById(invoiceId).orElse(null);
@@ -196,35 +200,14 @@ public class InvoiceService {
 
         Page<InvoiceEntity> pagedResult = invoiceRepository.findAll(paging);
 
-        List<InvoiceDto> invoiceDtoList = pagedResult.stream().map(invoiceEntity -> {
-            InvoiceDto invoiceDto= invoiceMapper.invoiceEntityToDto(invoiceEntity);
-            invoiceDto.setCompany(CompanyDto.builder()
-                    .name(invoiceEntity.getCompanyEntity().getName())
-                    .id(String.valueOf(invoiceEntity.getCompanyEntity().getCompanyId()))
-                    .build());
-            if(invoiceEntity.getCreatedDate() != null) {
-                invoiceDto.setCreatedDate(DateFormatUtil.formatDate(invoiceEntity.getCreatedDate()));
-                invoiceDto.setModifiedDate(DateFormatUtil.formatDate(invoiceEntity.getModifiedDate()));
-            }
-            Double calculatedTotal = 0.0;
-            if(invoiceEntity.getInvoiceItemEntityList()!=null) {
-                calculatedTotal = invoiceEntity.getInvoiceItemEntityList().stream().mapToDouble(invoiceItemEntity -> {
-                            if (invoiceItemEntity.getFeeType() == FeeType.FLAT)
-                                return invoiceItemEntity.getAmount();
-                            else return invoiceItemEntity.getRate() * invoiceItemEntity.getQuantity();
-                        }
-                ).sum();
-                invoiceDto.setItems(
-                        invoiceEntity.getInvoiceItemEntityList().stream().map(entity->{
-                            return invoiceItemMapper.invoiceItemEntityToDto(entity);
-                        }).collect(Collectors.toList())
-                );
-            }
+        return helperMethods.convertInvoiceEntityToDtoList(pagedResult.toList());
+    }
 
-            invoiceDto.setTotal(calculatedTotal);
-            return invoiceDto;
-        }).collect(Collectors.toList());
+    public List<InvoiceDto> getCompanyUnpaidInvoices(Long companyId) {
+        CompanyEntity savedCompanyEntity=companyRepository.findById(companyId).orElse(null);
+        List<InvoiceEntity> unpaidInvoiceEntity=invoiceRepository
+                .findInvoiceEntitiesByCompanyEntityAndPaymentStatusEquals(savedCompanyEntity,PaymentStatus.UNPAID);
 
-        return invoiceDtoList;
+        return helperMethods.convertInvoiceEntityToDtoList(unpaidInvoiceEntity);
     }
 }

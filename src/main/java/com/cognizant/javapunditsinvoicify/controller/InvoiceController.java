@@ -72,4 +72,13 @@ public class InvoiceController {
         return new ResponseEntity<>(invoices, OK);
     }
 
+    @GetMapping("/{companyId}/unpaid")
+    public ResponseEntity<?> getCompanyUnpaidInvoices(
+            @PathVariable(name="companyId") Long companyId
+    ){
+        List<InvoiceDto> unpaidInvoices=invoiceService.getCompanyUnpaidInvoices(companyId);
+        return new ResponseEntity<>(unpaidInvoices, OK);
+
+    }
+
 }

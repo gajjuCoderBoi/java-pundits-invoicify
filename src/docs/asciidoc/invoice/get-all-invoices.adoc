@@ -3,7 +3,7 @@
 ===== Sample Request
 include::{snippets}/get-all-invoices/http-request.adoc[]
 
-===== Path Variables
+===== Request Parameters
 include::{snippets}/get-all-invoices/request-parameters.adoc[]
 
 ===== Response-Body

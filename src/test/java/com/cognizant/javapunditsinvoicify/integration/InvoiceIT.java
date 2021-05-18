@@ -388,6 +388,98 @@ public class InvoiceIT {
 
     }
 
+    @Test
+    public void getCompanyInvoices_Unpaid_Success() throws Exception {
+        int countUnpaidInvoice=0;
+        String companyId = createCompany();
+
+        for(int j=0;j<=20;j++){
+            PaymentStatus status;
+            boolean unpaid=new Random().nextInt(100)%2 == 0;
+            if(unpaid){
+                status=UNPAID;
+                countUnpaidInvoice++;
+            }else{
+                status=PAID;
+            }
+
+            String invoiceId =  objectMapper.readValue(mockMvc.perform(post("/invoice/" + companyId)
+                    .accept(APPLICATION_JSON)
+                    .contentType(APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(InvoiceDto.builder()
+                            .paymentStatus(status)
+                            .build())))
+                    .andReturn().getResponse().getContentAsString(), ResponseMessage.class).getId();
+            for(int k=0;k<=40;k++){
+                if(new Random().nextInt(100)%2 == 0){
+                    mockMvc.perform(post("/invoice/item")
+                            .param("invoice_id", invoiceId)
+                            .accept(APPLICATION_JSON)
+                            .contentType(APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(
+                                    InvoiceItemDto.builder()
+                                            .description(randomAlphanumeric(10)+"-RATE")
+                                            .feeType(FeeType.RATE)
+                                            .quantity(getRandomInt(1, 10))
+                                            .rate(getRandomDouble(1, 50))
+                                            .build()
+                            )))
+                            .andExpect(status().isCreated());
+                }
+                else{
+                    mockMvc.perform(post("/invoice/item")
+                            .param("invoice_id", invoiceId)
+                            .accept(APPLICATION_JSON)
+                            .contentType(APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(
+                                    InvoiceItemDto.builder()
+                                            .description(randomAlphanumeric(10)+"-FLAT")
+                                            .feeType(FeeType.FLAT)
+                                            .amount(getRandomDouble(50, 100))
+                                            .build()
+                            )))
+                            .andExpect(status().isCreated());
+                }
+            }
+        }
+
+
+    RequestBuilder getCompanyInvoices_Unpaid_Success=RestDocumentationRequestBuilders.get("/invoice/{companyId}/unpaid", companyId);
+    mockMvc.perform(getCompanyInvoices_Unpaid_Success)
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$").isArray())
+            .andExpect(jsonPath("$",hasSize(countUnpaidInvoice)))
+            .andDo(print())
+            .andDo(document("get-company-unpaid-invoices",
+            pathParameters(
+                    parameterWithName("companyId").description("Uniquely identifier of company.")
+            ),
+                    responseFields(
+                            fieldWithPath("[]").description("An Array of Invoice.").type("Array: Invoice"),
+                            fieldWithPath("[].id").description("Uniquely Identifier of the Invoice").type("Long"),
+                            fieldWithPath("[].createdDate").description("Invoice Created Date and Time").type("String formatted Date"),
+                            fieldWithPath("[].modifiedDate").description("Invoice Last updated Date and Time").type("String formatted Date"),
+                            fieldWithPath("[].paymentStatus").description("Payment Status.").type("String: PAID,UNPAID"),
+                            fieldWithPath("[].total").description("Total Billed Amount").type("Double"),
+                            fieldWithPath("[].company").description("Company Simple Detail").type("Company"),
+                            fieldWithPath("[].company.id").description("Uniquely Identifier of Company").type("Long"),
+                            fieldWithPath("[].company.name").description("Name of the Company").type("String"),
+                            fieldWithPath("[].items").description("An Arrray of Invoice Items.").type("Array: Invoice Item"),
+                            fieldWithPath("[].items.[]").description("An Array of Invoice Items.").type("Invoice Item"),
+                            fieldWithPath("[].items.[].description").description("Item Description.").type("String"),
+                            fieldWithPath("[].items.[].feeType").description("Type of the Item. ").type("String: FLAT, RATE"),
+                            fieldWithPath("[].items.[].quantity").description("Quantity of An Item. (Only Populate when feeType:rate)").type("Integer").optional(),
+                            fieldWithPath("[].items.[].rate").description("Rate of the Item. (Only Populate when feeType:rate)").type("Double").optional(),
+                            fieldWithPath("[].items.[].amount").description("Item Amount.  (Only Populate when feeType:rate) (Only Populate when feeType:flat)").type("Double").optional()
+                    )
+
+
+            ));
+
+
+
+    }
+
     private String postInvoice(String companyId) throws Exception {
 
         InvoiceDto invoiceDto = new InvoiceDto();
@@ -548,5 +640,8 @@ public class InvoiceIT {
             }
         }
     }
+
+
+
 
 }
