@@ -30,6 +30,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.*;
+import org.springframework.http.HttpStatus;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.time.ZonedDateTime;
@@ -47,8 +48,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.springframework.http.HttpStatus.CREATED;
-import static org.springframework.http.HttpStatus.NOT_FOUND;
+import static org.springframework.http.HttpStatus.*;
 
 @ExtendWith(MockitoExtension.class)
 @ActiveProfiles("qa")
@@ -197,7 +197,6 @@ public class InvoiceServiceUnitTest {
         InvoiceEntity invoiceEntity = new InvoiceEntity();
         invoiceEntity.setId(1l);
         when(invoiceRepository.save(any(InvoiceEntity.class))).thenReturn(invoiceEntity);
-        ResponseMessage actualResponse = invoiceService.addInvoice(invoiceDto, 1L);
         ResponseMessage actualResponse = invoiceService.addInvoice(invoiceDto, 1l);
 
         assertNotNull(actualResponse);
