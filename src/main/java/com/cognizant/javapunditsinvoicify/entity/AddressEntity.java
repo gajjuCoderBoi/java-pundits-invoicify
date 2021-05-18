@@ -13,7 +13,7 @@ import javax.persistence.*;
 @NoArgsConstructor
 @Entity
 @Builder
-@Table(name="address")
+@Table(name="addresses")
 public class AddressEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

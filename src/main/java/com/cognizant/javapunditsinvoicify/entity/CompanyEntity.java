@@ -16,12 +16,12 @@ import java.util.List;
 @Entity
 @DynamicUpdate
 @Builder
-@Table(name="company")
+@Table(name="companies")
 public class CompanyEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
+    private Long companyId;
     @Column(unique = true)
     private String name;
 
@@ -35,9 +35,5 @@ public class CompanyEntity {
 
     @OneToMany(mappedBy = "companyEntity")
     private List<InvoiceEntity> invoices;
-
-    public Long getId() {
-        return id;
-    }
 
 }

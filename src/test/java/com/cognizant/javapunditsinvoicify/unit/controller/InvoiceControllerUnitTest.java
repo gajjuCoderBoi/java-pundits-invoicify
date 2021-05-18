@@ -3,7 +3,6 @@ package com.cognizant.javapunditsinvoicify.unit.controller;
 import com.cognizant.javapunditsinvoicify.controller.InvoiceController;
 import com.cognizant.javapunditsinvoicify.dto.InvoiceDto;
 import com.cognizant.javapunditsinvoicify.dto.InvoiceItemDto;
-import com.cognizant.javapunditsinvoicify.misc.PaymentStatus;
 import com.cognizant.javapunditsinvoicify.response.ResponseMessage;
 import com.cognizant.javapunditsinvoicify.service.InvoiceService;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -12,21 +11,26 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
+import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.RequestBuilder;
 
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
+import static com.cognizant.javapunditsinvoicify.misc.PaymentStatus.UNPAID;
+import static com.cognizant.javapunditsinvoicify.util.DateFormatUtil.formatDate;
+import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
-import static org.springframework.http.HttpStatus.*;
+import static org.springframework.http.HttpStatus.CREATED;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -92,6 +96,48 @@ public class InvoiceControllerUnitTest {
                 .andExpect(jsonPath("responseMessage").value("InvoiceItem added Successfully."))
                 .andDo(print())
         ;
+    }
+
+    @Test
+    public void getInvoiceByIdUnitTest() throws Exception {
+        ZonedDateTime createdTime =  ZonedDateTime.now();
+        ZonedDateTime modifiedTime = ZonedDateTime.now();
+        InvoiceDto mockInvoiceDto = InvoiceDto.builder()
+                .total(100D)
+                .createdDate(formatDate(createdTime))
+                .build();
+
+        RequestBuilder  getInvoiceById = get("/invoice/1")
+                .accept(APPLICATION_JSON);
+
+        when(invoiceService.getInvoiceById(anyLong())).thenReturn(mockInvoiceDto);
+
+        mockMvc.perform(getInvoiceById)
+                .andExpect(status().isOk());
+
+    }
+
+    @Test
+    public void getCompanyInvoices_Unpaid_Success() throws Exception {
+        List<InvoiceDto> mockUnpaidInvoices = new ArrayList<>();
+        int unpaidCount = 10;
+        for (int i=1;i<=10;i++){
+            mockUnpaidInvoices.add(InvoiceDto.builder()
+                    .paymentStatus(UNPAID)
+                    .build());
+        }
+
+        when(invoiceService.getCompanyUnpaidInvoices(anyLong())).thenReturn(mockUnpaidInvoices);
+
+        RequestBuilder getCompanyInvoices_Unpaid_Success= RestDocumentationRequestBuilders.get("/invoice/{companyId}/unpaid", "1");
+        mockMvc.perform(getCompanyInvoices_Unpaid_Success)
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$").isArray())
+                .andExpect(jsonPath("$",hasSize(unpaidCount)))
+                .andDo(print());
+
+
+
     }
 
     @Test

@@ -4,6 +4,7 @@ plugins {
     id 'org.asciidoctor.convert' version '1.5.8'
     id 'java'
     id 'jacoco'
+    id "org.sonarqube" version "3.2.0"
 }
 
 group = 'com.cognizant'
@@ -36,6 +37,7 @@ dependencies {
     testImplementation 'org.springframework.restdocs:spring-restdocs-mockmvc'
     implementation "org.mapstruct:mapstruct:1.4.2.Final"
     annotationProcessor "org.mapstruct:mapstruct-processor:1.4.2.Final"
+    implementation group: 'org.sonarsource.scanner.maven', name: 'sonar-maven-plugin', version: '3.9.0.2155'
 }
 
 test {
@@ -43,7 +45,15 @@ test {
     useJUnitPlatform()
     finalizedBy jacocoTestReport
     jacoco {
-        excludes += ["**/dto/**","**/entity/**", "**/mapper/**", "**/response/**"]
+        excludes += [
+                "**/dto/**",
+                "**/entity/**",
+                "**/mapper/**",
+                "**/response/**",
+                "**/util/**",
+                "**/misc/**",
+                "**/config/**"
+        ]
     }
 }
 
@@ -88,7 +98,10 @@ jacocoTestReport {
                             'com/cognizant/javapunditsinvoicify/entity',
                             'com/cognizant/javapunditsinvoicify/dto',
                             'com/cognizant/javapunditsinvoicify/mapper',
-                            'com/cognizant/javapunditsinvoicify/response'
+                            'com/cognizant/javapunditsinvoicify/response',
+                            'com/cognizant/javapunditsinvoicify/util',
+                            'com/cognizant/javapunditsinvoicify/misc',
+                            'com/cognizant/javapunditsinvoicify/config'
                     ]
             )
         }))

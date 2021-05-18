@@ -1,9 +1,8 @@
 package com.cognizant.javapunditsinvoicify.service;
 
-import com.cognizant.javapunditsinvoicify.dto.AddressDto;
+import com.cognizant.javapunditsinvoicify.dto.CompanyDto;
 import com.cognizant.javapunditsinvoicify.dto.InvoiceDto;
 import com.cognizant.javapunditsinvoicify.dto.InvoiceItemDto;
-import com.cognizant.javapunditsinvoicify.entity.AddressEntity;
 import com.cognizant.javapunditsinvoicify.entity.CompanyEntity;
 import com.cognizant.javapunditsinvoicify.entity.InvoiceEntity;
 import com.cognizant.javapunditsinvoicify.entity.InvoiceItemEntity;
@@ -16,21 +15,20 @@ import com.cognizant.javapunditsinvoicify.repository.InvoiceItemRepository;
 import com.cognizant.javapunditsinvoicify.repository.InvoiceRepository;
 import com.cognizant.javapunditsinvoicify.response.ResponseMessage;
 import com.cognizant.javapunditsinvoicify.util.DateFormatUtil;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.cognizant.javapunditsinvoicify.util.HelperMethods;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.http.HttpStatus;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.ZonedDateTime;
-import java.util.stream.Collector;
+import java.util.List;
 import java.util.stream.Collectors;
 
-import static org.springframework.http.HttpStatus.CREATED;
-import static org.springframework.http.HttpStatus.NOT_FOUND;
-import java.time.LocalDateTime;
-import java.time.ZonedDateTime;
-
+import static com.cognizant.javapunditsinvoicify.util.InvoicifyConstants.DESCENDING;
 import static org.springframework.http.HttpStatus.*;
 
 @Service
@@ -52,6 +50,9 @@ public class InvoiceService {
     @Autowired
     @Qualifier("invoice-mapper")
     private InvoiceMapper invoiceMapper;
+
+    @Autowired
+    private HelperMethods helperMethods;
 
     public ResponseMessage addInvoiceItem(InvoiceItemDto invoiceItemDto, Long invoiceId) {
         InvoiceEntity savedInvoice = invoiceRepository.findById(invoiceId).orElse(null);
@@ -104,15 +105,16 @@ public class InvoiceService {
         InvoiceEntity invoiceEntity=invoiceRepository.findById(invoiceId).orElse(null);
 
         InvoiceDto invoiceDto= invoiceMapper.invoiceEntityToDto(invoiceEntity);
-
         if(invoiceEntity.getCreatedDate() != null) {
             invoiceDto.setCreatedDate(DateFormatUtil.formatDate(invoiceEntity.getCreatedDate()));
             invoiceDto.setModifiedDate(DateFormatUtil.formatDate(invoiceEntity.getModifiedDate()));
+        }else{
+            invoiceDto.setCreatedDate(null);
+            invoiceDto.setModifiedDate(null);
         }
-        Double calculatedTotal = 0.0;
+        double calculatedTotal = 0.0;
         if(invoiceEntity.getInvoiceItemEntityList()!=null) {
             calculatedTotal = invoiceEntity.getInvoiceItemEntityList().stream().mapToDouble(invoiceItemEntity -> {
-                System.out.println(invoiceItemEntity.getFeeType());
                         if (invoiceItemEntity.getFeeType() == FeeType.FLAT)
                             return invoiceItemEntity.getAmount();
                         else return invoiceItemEntity.getRate() * invoiceItemEntity.getQuantity();
@@ -129,8 +131,7 @@ public class InvoiceService {
         return invoiceDto;
     }
 
-    public ResponseMessage updateInvoice(InvoiceDto invoiceDto, Long invoiceId)
-    {
+    public ResponseMessage updateInvoice(InvoiceDto invoiceDto, Long invoiceId) {
         ResponseMessage responseMessage = new ResponseMessage();
         InvoiceEntity savedInvoiceEntity;
 
@@ -191,5 +192,25 @@ public class InvoiceService {
         }
 
         return responseMessage;
+    }
+
+    public List<InvoiceDto> getAllInvoices(Integer pageNo, Integer pageSize, String sortBy, String orderBy) {
+        Pageable paging = PageRequest.of(
+                pageNo,
+                pageSize,
+                orderBy.equals(DESCENDING) ? Sort.by(sortBy).descending() : Sort.by(sortBy).ascending()
+                );
+
+        Page<InvoiceEntity> pagedResult = invoiceRepository.findAll(paging);
+
+        return helperMethods.convertInvoiceEntityToDtoList(pagedResult.toList());
+    }
+
+    public List<InvoiceDto> getCompanyUnpaidInvoices(Long companyId) {
+        CompanyEntity savedCompanyEntity=companyRepository.findById(companyId).orElse(null);
+        List<InvoiceEntity> unpaidInvoiceEntity=invoiceRepository
+                .findInvoiceEntitiesByCompanyEntityAndPaymentStatusEquals(savedCompanyEntity,PaymentStatus.UNPAID);
+
+        return helperMethods.convertInvoiceEntityToDtoList(unpaidInvoiceEntity);
     }
 }

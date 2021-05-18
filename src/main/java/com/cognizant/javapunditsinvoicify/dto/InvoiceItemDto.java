@@ -13,7 +13,7 @@ import lombok.*;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class InvoiceItemDto {
     private String description;
-    private int quantity;
+    private Integer quantity;
     private Double amount;
     private FeeType feeType;
     private Double rate;
