@@ -1,5 +1,6 @@
 package com.cognizant.javapunditsinvoicify.dto;
 
+import com.cognizant.javapunditsinvoicify.misc.PaymentStatus;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
 
@@ -14,13 +15,14 @@ import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
 @EqualsAndHashCode
 @ToString
 @JsonInclude(NON_NULL)
-public class CompanyDto {
-    private String id;
-    private String name;
-    private AddressDto address;
-    private String contactName;
-    private String contactTitle;
-    private Integer contactNumber;
-    private List<InvoiceDto> invoices;
+public class InvoiceDto {
+
+    private Long id;
+    private String createdDate;
+    private String modifiedDate;
+    private PaymentStatus paymentStatus;
+    private Double total;
+    private List<InvoiceItemDto> items;
+    private CompanyDto company;
 
 }

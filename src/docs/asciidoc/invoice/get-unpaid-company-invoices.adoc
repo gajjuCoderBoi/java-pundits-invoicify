@@ -1,0 +1,13 @@
+==== Get Unpaid Invoices of a Company
+
+===== Sample Request
+include::{snippets}/get-company-unpaid-invoices/http-request.adoc[]
+
+===== Path Variables
+include::{snippets}/get-company-unpaid-invoices/path-parameters.adoc[]
+
+===== Response-Body
+include::{snippets}/get-company-unpaid-invoices/response-fields.adoc[]
+
+===== Sample Response
+include::{snippets}/get-company-unpaid-invoices/http-response.adoc[]

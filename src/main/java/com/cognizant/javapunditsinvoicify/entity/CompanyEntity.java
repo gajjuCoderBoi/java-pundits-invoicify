@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -15,34 +16,24 @@ import javax.persistence.*;
 @Entity
 @DynamicUpdate
 @Builder
-@Table(name="company")
+@Table(name="companies")
 public class CompanyEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    Long id;
+    private Long companyId;
     @Column(unique = true)
-    String name;
+    private String name;
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "address_id")
     private AddressEntity addressEntity;
 
-    String contactName;
-    String contactTitle;
-    Integer contactNumber;
-    String invoices;
+    private String contactName;
+    private String contactTitle;
+    private Integer contactNumber;
 
-    public Long getId() {
-        return id;
-    }
+    @OneToMany(mappedBy = "companyEntity")
+    private List<InvoiceEntity> invoices;
 
-    public CompanyEntity(String name, AddressEntity addressEntity, String contactName, String contactTitle, Integer contactNumber, String invoices) {
-        this.name = name;
-        this.addressEntity = addressEntity;
-        this.contactName = contactName;
-        this.contactTitle = contactTitle;
-        this.contactNumber = contactNumber;
-        this.invoices = invoices;
-    }
 }

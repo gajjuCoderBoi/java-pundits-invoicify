@@ -31,7 +31,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @AutoConfigureRestDocs
 @Transactional
-@DirtiesContext(methodMode = DirtiesContext.MethodMode.BEFORE_METHOD)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @ActiveProfiles("qa")
 public class CompanyIT {
     @Autowired
@@ -47,24 +47,23 @@ public class CompanyIT {
     @Test
     public void createCompanyTest() throws Exception {
 
-        CompanyDto CompanyDto = new CompanyDto();
-        CompanyDto.setName("Name");
-        CompanyDto.setContactName("Contact Name");
-        CompanyDto.setContactTitle("Contact Title");
-        CompanyDto.setContactNumber(123456789);
-        CompanyDto.setInvoices("Invoices");
+        CompanyDto companyDto = new CompanyDto();
+        companyDto.setName("Name");
+        companyDto.setContactName("Contact Name");
+        companyDto.setContactTitle("Contact Title");
+        companyDto.setContactNumber(123456789);
 
-        AddressDto AddressDto = new AddressDto();
-        AddressDto.setLine1("Address line 1");
-        AddressDto.setLine2("line 2");
-        AddressDto.setCity("City");
-        AddressDto.setState("XX");
-        AddressDto.setZipcode(12345);
+        AddressDto addressDto = new AddressDto();
+        addressDto.setLine1("Address line 1");
+        addressDto.setLine2("line 2");
+        addressDto.setCity("City");
+        addressDto.setState("XX");
+        addressDto.setZipcode(12345);
 
-        CompanyDto.setAddress(AddressDto);
+        companyDto.setAddress(addressDto);
 
         RequestBuilder rq = post("/company")
-                .content(objectMapper.writeValueAsString(CompanyDto))
+                .content(objectMapper.writeValueAsString(companyDto))
                 .contentType(MediaType.APPLICATION_JSON);
 
         mockMvc.perform(rq)
@@ -75,7 +74,6 @@ public class CompanyIT {
                         fieldWithPath("contactName").description("Name of the Contact person of the company"),
                         fieldWithPath("contactTitle").description("Title of the Contact person of the company"),
                         fieldWithPath("contactNumber").description("Contact No of the company PoC"),
-                        fieldWithPath("invoices").description("Invoices"),
                         fieldWithPath("address.line1").description("Address line 1 of the Company"),
                         fieldWithPath("address.line2").description("Address line 2 of the Company"),
                         fieldWithPath("address.city").description("City of the Company location"),
@@ -84,8 +82,8 @@ public class CompanyIT {
 
                 )))
                 .andDo(document("addCompany", responseFields(
-                        fieldWithPath("responseMessage").description("Id of the company created or conflict error-message for payload")
-
+                        fieldWithPath("id").description("Id of the company created."),
+                        fieldWithPath("responseMessage").description("Company created or conflict error-message for payload")
                 )));
 
     }
@@ -98,33 +96,29 @@ public class CompanyIT {
     @Test
     public void createDuplicateCompanyTest() throws Exception{
 
-        CompanyDto CompanyDto = new CompanyDto();
-        CompanyDto.setName("First Company");
-        CompanyDto.setContactName("Contact Name");
-        CompanyDto.setContactTitle("Contact Title");
-        CompanyDto.setContactNumber(123456789);
-        CompanyDto.setInvoices("Invoices");
+        CompanyDto companyDto = new CompanyDto();
+        companyDto.setName("First Company");
+        companyDto.setContactName("Contact Name");
+        companyDto.setContactTitle("Contact Title");
+        companyDto.setContactNumber(123456789);
 
-        AddressDto AddressDto = new AddressDto();
-        AddressDto.setLine1("Address line 1");
-        AddressDto.setLine2("line 2");
-        AddressDto.setCity("City");
-        AddressDto.setState("XX");
-        AddressDto.setZipcode(12345);
+        AddressDto addressDto = new AddressDto();
+        addressDto.setLine1("Address line 1");
+        addressDto.setLine2("line 2");
+        addressDto.setCity("City");
+        addressDto.setState("XX");
+        addressDto.setZipcode(12345);
 
-        CompanyDto.setAddress(AddressDto);
+        companyDto.setAddress(addressDto);
 
         RequestBuilder rq = post("/company")
-                .content(objectMapper.writeValueAsString(CompanyDto))
+                .content(objectMapper.writeValueAsString(companyDto))
                 .contentType(MediaType.APPLICATION_JSON);
 
         mockMvc.perform(rq)
                 .andExpect(status().isCreated())
                 .andDo(print())
                 .andExpect(jsonPath("responseMessage").exists());
-
-        ///Repushing the same response in order to validate the dupe logic
-
 
         mockMvc.perform(rq)
                 .andExpect(status().isConflict())
@@ -146,7 +140,6 @@ public class CompanyIT {
                         .contactName("Contact Name")
                         .contactTitle("Contact Title")
                         .contactNumber(123456789)
-                        .invoices("Invoices")
                         .address(AddressDto.builder()
                                 .line1("Address line 1")
                                 .line2("line 2")
@@ -163,7 +156,7 @@ public class CompanyIT {
                 ;
 
         String companyId = objectMapper.readValue(result.getResponse().getContentAsString(), ResponseMessage.class)
-                .getResponseMessage();
+                .getId();
 
         CompanyDto wallmartDto = CompanyDto
                 .builder()
@@ -191,16 +184,15 @@ public class CompanyIT {
                 .andDo(document("update-company", pathParameters(
                         parameterWithName("companyId").description("Company Id")
                 ),requestFields(
-                        fieldWithPath("name").description("Name of the Company"),
-                        fieldWithPath("contactName").description("Name of the Contact person of the company"),
-                        fieldWithPath("contactTitle").description("Title of the Contact person of the company"),
-                        fieldWithPath("contactNumber").description("Contact No of the company PoC"),
-                        fieldWithPath("address.line1").description("Address line 1 of the Company"),
-                        fieldWithPath("address.line2").description("Address line 2 of the Company"),
-                        fieldWithPath("address.city").description("City of the Company location"),
-                        fieldWithPath("address.state").description("State of the Company location"),
-                        fieldWithPath("address.zipcode").description("Zip-Code of the Company location"),
-                        fieldWithPath("invoices").ignored()
+                        fieldWithPath("name").description("Name of the Company").optional(),
+                        fieldWithPath("contactName").description("Name of the Contact person of the company").type("String").optional(),
+                        fieldWithPath("contactTitle").description("Title of the Contact person of the company").type("String").optional(),
+                        fieldWithPath("contactNumber").description("Contact No of the company PoC").type("Integer").optional(),
+                        fieldWithPath("address.line1").description("Address line 1 of the Company").type("String").optional(),
+                        fieldWithPath("address.line2").description("Address line 2 of the Company").type("String").optional(),
+                        fieldWithPath("address.city").description("City of the Company location").type("String").optional(),
+                        fieldWithPath("address.state").description("State of the Company location").type("String").optional(),
+                        fieldWithPath("address.zipcode").description("Zip-Code of the Company location").type("Integer").optional()
 
                 )))
         ;
@@ -228,7 +220,7 @@ public class CompanyIT {
                         fieldWithPath("contactName").description("Name of the Contact person of the company"),
                         fieldWithPath("contactTitle").description("Title of the Contact person of the company"),
                         fieldWithPath("contactNumber").description("Contact No of the company PoC"),
-                        fieldWithPath("invoices").ignored(),
+                        fieldWithPath("invoices").ignored().optional(),
                         fieldWithPath("address.line1").description("Address line 1 of the Company"),
                         fieldWithPath("address.line2").description("Address line 2 of the Company"),
                         fieldWithPath("address.city").description("City of the Company location"),
@@ -246,7 +238,6 @@ public class CompanyIT {
                         .contactName("Contact Name")
                         .contactTitle("Contact Title")
                         .contactNumber(123456789)
-                        .invoices("Invoices")
                         .address(AddressDto.builder()
                                 .line1("Address line 1")
                                 .line2("line 2")
@@ -263,7 +254,7 @@ public class CompanyIT {
                 ;
 
         String companyId = objectMapper.readValue(result.getResponse().getContentAsString(), ResponseMessage.class)
-                .getResponseMessage();
+                .getId();
 
         CompanyDto wallmartDto = CompanyDto
                 .builder()
@@ -299,7 +290,6 @@ public class CompanyIT {
                 .andExpect(jsonPath("$[0].contactName").value("wallmartCEO"))
                 .andExpect(jsonPath("$[0].contactNumber").value("123456789"))
                 .andExpect(jsonPath("$[0].contactTitle").value("Contact Title"))
-                .andExpect(jsonPath("$[0].invoices").value("Invoices"))
                 .andExpect(jsonPath("$[0].address.line1").value("Address line 1"))
                 .andExpect(jsonPath("$[0].address.line2").value("line 2"))
                 .andExpect(jsonPath("$[0].address.city").value("New York"))
@@ -312,7 +302,6 @@ public class CompanyIT {
                         fieldWithPath("[].name").description("wallmart"),
                         fieldWithPath("[].contactName").description("wallmartCEO"),
                         fieldWithPath("[].contactNumber").description("123456789"),
-                        fieldWithPath("[].invoices").ignored(),
                         fieldWithPath("[].contactTitle").description("Contact Title 3"),
                         fieldWithPath("[].address").description("Address Object of Company").type("Address"),
                         fieldWithPath("[].address.line1").description("Address line 1"),
@@ -331,7 +320,6 @@ public class CompanyIT {
                         .contactName("Contact Name")
                         .contactTitle("Contact Title")
                         .contactNumber(123456789)
-                        .invoices("Invoices")
                         .address(AddressDto.builder()
                                 .line1("Address line 1")
                                 .line2("line 2")

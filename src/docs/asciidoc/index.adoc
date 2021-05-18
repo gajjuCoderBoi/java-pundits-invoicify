@@ -71,4 +71,3 @@ include::company/index.adoc[]
 === Invoice
 include::invoice/index.adoc[]
 
-

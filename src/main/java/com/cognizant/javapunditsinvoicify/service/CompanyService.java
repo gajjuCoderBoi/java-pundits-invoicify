@@ -39,6 +39,7 @@ public class CompanyService {
     @Autowired
     @Qualifier("company-mapper")
     private CompanyMapper companyMapper;
+
     public ResponseMessage addCompany(CompanyDto companyDto) {
 
         ResponseMessage responseMessage = new ResponseMessage();
@@ -58,18 +59,18 @@ public class CompanyService {
             addressEntity.setZip(AddressDto.getZipcode());
 
             CompanyEntity companyEntity = new CompanyEntity();
-
             companyEntity.setName(companyDto.getName());
             companyEntity.setAddressEntity(addressEntity);
             companyEntity.setContactName(companyDto.getContactName());
             companyEntity.setContactNumber(companyDto.getContactNumber());
             companyEntity.setContactTitle(companyDto.getContactTitle());
-            companyEntity.setInvoices(companyDto.getInvoices());
 
             companyEntity = companyRepository.save(companyEntity);
 
-            if(companyEntity != null) {
-                responseMessage.setResponseMessage(companyEntity.getId().toString());
+            if(companyEntity != null)
+            {
+                responseMessage.setId(companyEntity.getCompanyId().toString());
+                responseMessage.setResponseMessage("Company created.");
             }
             else
             {
