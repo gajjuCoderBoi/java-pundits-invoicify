@@ -480,8 +480,6 @@ public class InvoiceIT {
 
     }
 
-
-
     private String postInvoice(String companyId) throws Exception {
 
         InvoiceDto invoiceDto = new InvoiceDto();

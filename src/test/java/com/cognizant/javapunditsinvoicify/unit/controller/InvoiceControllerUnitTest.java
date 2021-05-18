@@ -10,13 +10,18 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.RequestBuilder;
 
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
+import static com.cognizant.javapunditsinvoicify.misc.PaymentStatus.UNPAID;
 import static com.cognizant.javapunditsinvoicify.util.DateFormatUtil.formatDate;
+import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
@@ -108,6 +113,29 @@ public class InvoiceControllerUnitTest {
 
         mockMvc.perform(getInvoiceById)
                 .andExpect(status().isOk());
+
+    }
+
+    @Test
+    public void getCompanyInvoices_Unpaid_Success() throws Exception {
+        List<InvoiceDto> mockUnpaidInvoices = new ArrayList<>();
+        int unpaidCount = 10;
+        for (int i=1;i<=10;i++){
+            mockUnpaidInvoices.add(InvoiceDto.builder()
+                    .paymentStatus(UNPAID)
+                    .build());
+        }
+
+        when(invoiceService.getCompanyUnpaidInvoices(anyLong())).thenReturn(mockUnpaidInvoices);
+
+        RequestBuilder getCompanyInvoices_Unpaid_Success= RestDocumentationRequestBuilders.get("/invoice/{companyId}/unpaid", "1");
+        mockMvc.perform(getCompanyInvoices_Unpaid_Success)
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$").isArray())
+                .andExpect(jsonPath("$",hasSize(unpaidCount)))
+                .andDo(print());
+
+
 
     }
 }
