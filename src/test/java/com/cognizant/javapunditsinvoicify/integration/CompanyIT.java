@@ -203,6 +203,7 @@ public class CompanyIT {
 
         mockMvc.perform(getCompanyByIdRequest)
                 .andExpect(status().isOk())
+                .andExpect(jsonPath("id").value("1"))
                 .andExpect(jsonPath("name").value("wallmart"))
                 .andExpect(jsonPath("contactName").value("wallmartCEO"))
                 .andExpect(jsonPath("contactNumber").value("123456789"))
@@ -216,6 +217,7 @@ public class CompanyIT {
                 .andDo(document("get-company-by-id", pathParameters(
                         parameterWithName("companyId").description("Company Id")
                 ),responseFields(
+                        fieldWithPath("id").description("Company Id"),
                         fieldWithPath("name").description("Name of the Company"),
                         fieldWithPath("contactName").description("Name of the Contact person of the company"),
                         fieldWithPath("contactTitle").description("Title of the Contact person of the company"),
@@ -286,6 +288,7 @@ public class CompanyIT {
         mockMvc.perform(get("/company/all")
         ).andExpect(status().isOk())
                 .andExpect(jsonPath("length()").value(1))
+                .andExpect(jsonPath("$[0].id").value("1"))
                 .andExpect(jsonPath("$[0].name").value("wallmart"))
                 .andExpect(jsonPath("$[0].contactName").value("wallmartCEO"))
                 .andExpect(jsonPath("$[0].contactNumber").value("123456789"))
@@ -299,6 +302,7 @@ public class CompanyIT {
                 // Follow Up to andExpect
                 .andDo(document("company-list", responseFields(
                         fieldWithPath("[]").description("An array of Company Details"),
+                        fieldWithPath("[].id").description("Company Id"),
                         fieldWithPath("[].name").description("wallmart"),
                         fieldWithPath("[].contactName").description("wallmartCEO"),
                         fieldWithPath("[].contactNumber").description("123456789"),

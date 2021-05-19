@@ -41,7 +41,7 @@ public class CompanyController {
     }
 
     @GetMapping("all")
-    public List<CompanyDto> getBooks(){
+    public List<CompanyDto> getCompany(){
         return this.companyService.getCompanyList();
     }
 
