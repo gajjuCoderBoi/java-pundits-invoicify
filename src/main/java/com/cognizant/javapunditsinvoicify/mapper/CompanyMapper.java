@@ -19,6 +19,7 @@ public interface CompanyMapper {
     CompanyEntity companyDtoToEntity(CompanyDto dto);
 
     @Mappings({
+            @Mapping(source = "entity.companyId", target = "id"),
             @Mapping(source = "entity.name", target = "name"),
             @Mapping(source = "entity.contactName", target = "contactName"),
             @Mapping(source = "entity.contactTitle", target = "contactTitle"),
