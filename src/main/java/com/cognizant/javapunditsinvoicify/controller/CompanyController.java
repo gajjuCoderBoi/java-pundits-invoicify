@@ -29,9 +29,10 @@ public class CompanyController {
 
     @PutMapping("{company_id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void updateCompany(@PathVariable(name = "company_id") Long companyId,
+    public ResponseEntity<?> updateCompany(@PathVariable(name = "company_id") Long companyId,
                               @RequestBody CompanyDto companyDto) {
-        companyService.update(companyDto,companyId) ;
+        ResponseMessage res = companyService.update(companyDto,companyId);
+        return new ResponseEntity<>(res, res.getHttpStatus());
 
     }
 
@@ -41,7 +42,7 @@ public class CompanyController {
     }
 
     @GetMapping("all")
-    public List<CompanyDto> getBooks(){
+    public List<CompanyDto> getCompany(){
         return this.companyService.getCompanyList();
     }
 
