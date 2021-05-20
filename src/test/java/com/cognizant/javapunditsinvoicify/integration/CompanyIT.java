@@ -180,7 +180,9 @@ public class CompanyIT {
                 .content(objectMapper.writeValueAsString(wallmartDto));
 
         mockMvc.perform(updateRequest)
-                .andExpect(status().isNoContent())
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("responseMessage").value("Company update Successfully."))
+                .andExpect(jsonPath("id").exists())
                 .andDo(document("update-company", pathParameters(
                         parameterWithName("companyId").description("Company Id")
                 ),requestFields(
@@ -194,7 +196,10 @@ public class CompanyIT {
                         fieldWithPath("address.state").description("State of the Company location").type("String").optional(),
                         fieldWithPath("address.zipcode").description("Zip-Code of the Company location").type("Integer").optional()
 
-                )))
+                ),responseFields(
+                        fieldWithPath("responseMessage").description("Response Message.").optional(),
+                        fieldWithPath("id").description("Uniquely Identifier of the Company.").type("Long").optional()
+                        )))
         ;
 
         RequestBuilder getCompanyByIdRequest = RestDocumentationRequestBuilders.get("/company/{companyId}","1")
@@ -229,6 +234,7 @@ public class CompanyIT {
                 )))
         ;
     }
+
     @Test
     @DirtiesContext()
     public void listCompanies() throws Exception {
@@ -278,7 +284,7 @@ public class CompanyIT {
                 .content(objectMapper.writeValueAsString(wallmartDto));
 
         mockMvc.perform(updateRequest)
-                .andExpect(status().isNoContent())
+                .andExpect(status().isCreated())
                 .andDo(document("UpdateCompany"));
 
 
@@ -286,6 +292,7 @@ public class CompanyIT {
         mockMvc.perform(get("/company/all")
         ).andExpect(status().isOk())
                 .andExpect(jsonPath("length()").value(1))
+                .andExpect(jsonPath("$[0].id").exists())
                 .andExpect(jsonPath("$[0].name").value("wallmart"))
                 .andExpect(jsonPath("$[0].contactName").value("wallmartCEO"))
                 .andExpect(jsonPath("$[0].contactNumber").value("123456789"))
@@ -299,10 +306,11 @@ public class CompanyIT {
                 // Follow Up to andExpect
                 .andDo(document("company-list", responseFields(
                         fieldWithPath("[]").description("An array of Company Details"),
-                        fieldWithPath("[].name").description("wallmart"),
-                        fieldWithPath("[].contactName").description("wallmartCEO"),
-                        fieldWithPath("[].contactNumber").description("123456789"),
-                        fieldWithPath("[].contactTitle").description("Contact Title 3"),
+                        fieldWithPath("[].id").description("Uniquely Identifier of the Company."),
+                        fieldWithPath("[].name").description("Name of the Company."),
+                        fieldWithPath("[].contactName").description("Contact Name of the Company."),
+                        fieldWithPath("[].contactNumber").description("Contact Number of the Company."),
+                        fieldWithPath("[].contactTitle").description("Contact Title of the Company."),
                         fieldWithPath("[].address").description("Address Object of Company").type("Address"),
                         fieldWithPath("[].address.line1").description("Address line 1"),
                         fieldWithPath("[].address.line2").description("line 2"),
