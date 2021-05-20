@@ -222,6 +222,7 @@ public class CompanyIT {
                         parameterWithName("companyId").description("Company Id")
                 ),responseFields(
                         fieldWithPath("name").description("Name of the Company"),
+                        fieldWithPath("id").description("Uniquely Identifier of the Company."),
                         fieldWithPath("contactName").description("Name of the Contact person of the company"),
                         fieldWithPath("contactTitle").description("Title of the Contact person of the company"),
                         fieldWithPath("contactNumber").description("Contact No of the company PoC"),
