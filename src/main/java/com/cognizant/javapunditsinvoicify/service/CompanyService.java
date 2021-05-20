@@ -11,6 +11,7 @@ import com.cognizant.javapunditsinvoicify.response.CompanySimpleViewResponse;
 import com.cognizant.javapunditsinvoicify.response.ResponseMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.annotation.CreatedDate;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -30,7 +31,7 @@ public class CompanyService {
 
     @Autowired
     @Qualifier("address-mapper")
-    private AddressMapper addressMapper ;
+    private AddressMapper addressMapper;
 
     @Autowired
     @Qualifier("company-mapper")
@@ -42,8 +43,7 @@ public class CompanyService {
 
         Optional<CompanyEntity> companyExist = companyRepository.findAll().stream().filter(companyEntity -> companyEntity.getName().equals(companyDto.getName())).findFirst();
 
-        if (companyExist.stream().count() ==0)
-        {
+        if (companyExist.stream().count() == 0) {
 
             AddressDto AddressDto = companyDto.getAddress();
             AddressEntity addressEntity = new AddressEntity();
@@ -63,19 +63,15 @@ public class CompanyService {
 
             companyEntity = companyRepository.save(companyEntity);
 
-            if(companyEntity != null)
-            {
+            if (companyEntity != null) {
                 responseMessage.setId(companyEntity.getCompanyId().toString());
                 responseMessage.setResponseMessage("Company created.");
-            }
-            else
-            {
+            } else {
                 responseMessage.setResponseMessage("Mock Company created");
             }
             responseMessage.setHttpStatus(HttpStatus.CREATED);
 
-        }
-        else {
+        } else {
             responseMessage.setResponseMessage("Company Already Exist");
             responseMessage.setHttpStatus(HttpStatus.CONFLICT);
         }
@@ -83,33 +79,41 @@ public class CompanyService {
 
     }
 
-    public void update(CompanyDto companyDto, Long companyId) {
+    public ResponseMessage update(CompanyDto companyDto, Long companyId) {
         CompanyEntity savedCompanyEntity;
 
         savedCompanyEntity = companyRepository.findById(companyId).orElse(null);
-        if (savedCompanyEntity == null) return;
+        if (savedCompanyEntity == null) return ResponseMessage.builder()
+                .responseMessage("Company Not Found. ")
+                .httpStatus(HttpStatus.NOT_FOUND)
+                .build();
         if (companyDto.getAddress() != null) {
             AddressDto addressDto = companyDto.getAddress();
             AddressEntity savedCompanyAddressEntity = savedCompanyEntity.getAddressEntity();
             if (savedCompanyAddressEntity == null) savedCompanyAddressEntity = new AddressEntity();
-            if(isNotEmpty(addressDto.getLine1())) savedCompanyAddressEntity.setLine1(addressDto.getLine1());
-            if(isNotEmpty(addressDto.getLine2())) savedCompanyAddressEntity.setLine2(addressDto.getLine2());
-            if(isNotEmpty(addressDto.getCity())) savedCompanyAddressEntity.setCity(addressDto.getCity());
-            if(isNotEmpty(addressDto.getState())) savedCompanyAddressEntity.setState(addressDto.getState());
+            if (isNotEmpty(addressDto.getLine1())) savedCompanyAddressEntity.setLine1(addressDto.getLine1());
+            if (isNotEmpty(addressDto.getLine2())) savedCompanyAddressEntity.setLine2(addressDto.getLine2());
+            if (isNotEmpty(addressDto.getCity())) savedCompanyAddressEntity.setCity(addressDto.getCity());
+            if (isNotEmpty(addressDto.getState())) savedCompanyAddressEntity.setState(addressDto.getState());
             if (addressDto.getZipcode() != null) savedCompanyAddressEntity.setZip(addressDto.getZipcode());
             savedCompanyEntity.setAddressEntity(savedCompanyAddressEntity);
         }
 
-        if(isNotEmpty(companyDto.getName())) savedCompanyEntity.setName(companyDto.getName());
-        if(isNotEmpty(companyDto.getContactName())) savedCompanyEntity.setContactName(companyDto.getContactName());
-        if(isNotEmpty(companyDto.getContactTitle())) savedCompanyEntity.setContactTitle(companyDto.getContactTitle());
-        if(companyDto.getContactNumber()!=null) savedCompanyEntity.setContactNumber(companyDto.getContactNumber());
+        if (isNotEmpty(companyDto.getName())) savedCompanyEntity.setName(companyDto.getName());
+        if (isNotEmpty(companyDto.getContactName())) savedCompanyEntity.setContactName(companyDto.getContactName());
+        if (isNotEmpty(companyDto.getContactTitle())) savedCompanyEntity.setContactTitle(companyDto.getContactTitle());
+        if (companyDto.getContactNumber() != null) savedCompanyEntity.setContactNumber(companyDto.getContactNumber());
         companyRepository.save(savedCompanyEntity);
+        return ResponseMessage.builder()
+                .responseMessage("Company update Successfully.")
+                .httpStatus(HttpStatus.CREATED)
+                .id(String.valueOf(savedCompanyEntity.getCompanyId()))
+                .build();
     }
 
     public CompanyDto getCompanyById(Long companyId) {
         CompanyEntity savedCompanyEntity = companyRepository.findById(companyId).orElse(null);
-        if(savedCompanyEntity == null) return new CompanyDto();
+        if (savedCompanyEntity == null) return new CompanyDto();
         CompanyDto companyDto = companyMapper.companyEntityToDto(savedCompanyEntity);
         companyDto.setAddress(addressMapper.addressEntityToDto(savedCompanyEntity.getAddressEntity()));
         return companyDto;
@@ -118,25 +122,22 @@ public class CompanyService {
 
     public List<CompanyDto> getCompanyList() {
 
-        List<CompanyDto> companyListDto=new ArrayList<>();
-        List<CompanyEntity> listSavedCompanyEntity =this.companyRepository.findAll();
-    //    if(savedCompanyEntity. == null) return companyListDto;
-        int i=0;
-                for (CompanyEntity savedCompanyEntity:listSavedCompanyEntity){
-
-         //       =this.companyRepository.findAll().stream().map(x->companyMapper.companyEntityToDto(x).setAddress(addressMapper.addressEntityToDto( x.getAddressEntity() )).collect(Collectors.toList());
-                    CompanyDto  companyDto = companyMapper.companyEntityToDto(savedCompanyEntity);
-                    companyDto.setAddress(addressMapper.addressEntityToDto(savedCompanyEntity.getAddressEntity()));
-                    companyListDto.add(companyDto);
-                }
+        List<CompanyDto> companyListDto = new ArrayList<>();
+        List<CompanyEntity> listSavedCompanyEntity = this.companyRepository.findAll();
+        for (CompanyEntity savedCompanyEntity : listSavedCompanyEntity) {
+            CompanyDto companyDto = companyMapper.companyEntityToDto(savedCompanyEntity);
+            companyDto.setAddress(addressMapper.addressEntityToDto(savedCompanyEntity.getAddressEntity()));
+            companyDto.setId(String.valueOf(savedCompanyEntity.getCompanyId()));
+            companyListDto.add(companyDto);
+        }
         return companyListDto;
     }
 
     public List<CompanySimpleViewResponse> getCompanySimpleList() {
-        List<CompanyEntity> savedCompanies=companyRepository.findAll();
-        List<CompanySimpleViewResponse> listCompanySimpleViewResponse=savedCompanies.
+        List<CompanyEntity> savedCompanies = companyRepository.findAll();
+        List<CompanySimpleViewResponse> listCompanySimpleViewResponse = savedCompanies.
                 stream()
-                .map(entity->{
+                .map(entity -> {
                     return CompanySimpleViewResponse
                             .builder()
                             .companyName(entity.getName())

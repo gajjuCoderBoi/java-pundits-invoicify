@@ -80,10 +80,16 @@ public class CompanyControllerUnitTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(mapper.writeValueAsString(wallmartDto));
 
-        doNothing().when(companyService).update(any(), anyLong());
+        when(companyService.update(any(), anyLong())).thenReturn(ResponseMessage.builder()
+                .responseMessage("Company update Successfully.")
+                .httpStatus(HttpStatus.CREATED)
+                .id(String.valueOf(1L))
+                .build());
 
         mockMvc.perform(updateRequest)
-                .andExpect(status().isNoContent());
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("responseMessage").value("Company update Successfully."))
+                .andExpect(jsonPath("id").exists());
     }
 
     @Test
