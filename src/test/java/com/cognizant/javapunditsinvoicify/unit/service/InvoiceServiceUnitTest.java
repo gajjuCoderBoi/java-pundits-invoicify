@@ -128,12 +128,14 @@ public class InvoiceServiceUnitTest {
     }
 
     @Test
-    public void addInvoiceItem_Failed(){
+    public void addInvoiceItem_RATE_quantity_Failed(){
         when(invoiceRepository.findById(anyLong())).thenReturn(java.util.Optional.of(new InvoiceEntity()));
         when(invoiceItemMapper.invoiceItemDtoToEntity(any(InvoiceItemDto.class))).thenReturn(new InvoiceItemEntity());
 
         ResponseMessage actualResponse = invoiceService.addInvoiceItem(InvoiceItemDto.builder()
                 .description("Test Item")
+                .feeType(RATE)
+                .rate(10.00)
                 .build(), 1L);
 
         assertNotNull(actualResponse);
@@ -142,6 +144,39 @@ public class InvoiceServiceUnitTest {
 
     }
 
+    @Test
+    public void addInvoiceItem_FLAT_Amount_Missing_Failed(){
+        when(invoiceRepository.findById(anyLong())).thenReturn(java.util.Optional.of(new InvoiceEntity()));
+        when(invoiceItemMapper.invoiceItemDtoToEntity(any(InvoiceItemDto.class))).thenReturn(new InvoiceItemEntity());
+
+        ResponseMessage actualResponse = invoiceService.addInvoiceItem(InvoiceItemDto.builder()
+                .description("Test Item")
+                .feeType(FLAT)
+                .amount(null)
+                .build(), 1L);
+
+        assertNotNull(actualResponse);
+        assertEquals(actualResponse.getResponseMessage(), "FLAT Item Amount Cannot be empty.");
+        assertEquals(actualResponse.getHttpStatus(), BAD_REQUEST);
+
+    }
+    @Test
+    public void addInvoiceItem_RATE_rate_Missing_Failed(){
+        when(invoiceRepository.findById(anyLong())).thenReturn(java.util.Optional.of(new InvoiceEntity()));
+        when(invoiceItemMapper.invoiceItemDtoToEntity(any(InvoiceItemDto.class))).thenReturn(new InvoiceItemEntity());
+
+        ResponseMessage actualResponse = invoiceService.addInvoiceItem(InvoiceItemDto.builder()
+                .description("Test Item")
+                .feeType(RATE)
+                .quantity(10)
+                .rate(null)
+                .build(), 1L);
+
+        assertNotNull(actualResponse);
+        assertEquals(actualResponse.getResponseMessage(), "RATE Item Rate Cannot be empty.");
+        assertEquals(actualResponse.getHttpStatus(), BAD_REQUEST);
+
+    }
     @Test
     public void addInvoiceItem_Success(){
         when(invoiceRepository.findById(anyLong())).thenReturn(Optional.empty());
