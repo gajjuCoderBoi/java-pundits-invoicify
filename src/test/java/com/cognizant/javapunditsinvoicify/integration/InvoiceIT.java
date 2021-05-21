@@ -142,7 +142,8 @@ public class InvoiceIT {
         invoiceDto.setPaymentStatus(PaymentStatus.UNPAID);
 
         RequestBuilder postInvoice = RestDocumentationRequestBuilders
-                .post("/invoice/{companyId}", companyId)
+                .post("/invoice")
+                .param("companyId", companyId)
                 .accept(APPLICATION_JSON)
                 .contentType(APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(invoiceDto));
@@ -152,7 +153,7 @@ public class InvoiceIT {
                 .andExpect(jsonPath("responseMessage").exists())
                 .andDo(print())
                 .andDo(document("add-invoice",
-                        pathParameters(
+                        requestParameters(
                                 parameterWithName("companyId").description("Company Id")
                         ),
                         requestFields(
@@ -210,7 +211,8 @@ public class InvoiceIT {
         invoiceDto.setPaymentStatus(PaymentStatus.UNPAID);
 
         RequestBuilder postInvoice = RestDocumentationRequestBuilders
-                .post("/invoice/{companyId}", companyId)
+                .post("/invoice")
+                .param("companyId", companyId)
                 .accept(APPLICATION_JSON)
                 .contentType(APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(invoiceDto));
@@ -260,7 +262,8 @@ public class InvoiceIT {
         invoiceDto.setPaymentStatus(PAID);
 
         RequestBuilder postInvoice = RestDocumentationRequestBuilders
-                .post("/invoice/{companyId}", companyId)
+                .post("/invoice")
+                .param("companyId", companyId)
                 .accept(APPLICATION_JSON)
                 .contentType(APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(invoiceDto));
@@ -403,7 +406,9 @@ public class InvoiceIT {
                 status=PAID;
             }
 
-            String invoiceId =  objectMapper.readValue(mockMvc.perform(post("/invoice/" + companyId)
+            String invoiceId =  objectMapper.readValue(mockMvc.perform(
+                    post("/invoice/")
+                    .param("companyId",companyId)
                     .accept(APPLICATION_JSON)
                     .contentType(APPLICATION_JSON)
                     .content(objectMapper.writeValueAsString(InvoiceDto.builder()
@@ -487,7 +492,8 @@ public class InvoiceIT {
         invoiceDto.setPaymentStatus(PaymentStatus.UNPAID);
 
 
-        RequestBuilder postInvoice = post("/invoice/" + companyId)
+        RequestBuilder postInvoice = post("/invoice")
+                .param("companyId", companyId)
                 .accept(APPLICATION_JSON)
                 .contentType(APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(invoiceDto));
@@ -599,7 +605,9 @@ public class InvoiceIT {
         for (int i=0;i<=10;i++){
             String companyId = createCompany();
             for(int j=0;j<=20;j++){
-                String invoiceId =  objectMapper.readValue(mockMvc.perform(post("/invoice/" + companyId)
+                String invoiceId =  objectMapper.readValue(mockMvc.perform(
+                        post("/invoice")
+                        .param("companyId", companyId)
                         .accept(APPLICATION_JSON)
                         .contentType(APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(InvoiceDto.builder()

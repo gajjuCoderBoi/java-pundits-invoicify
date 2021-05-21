@@ -32,9 +32,9 @@ public class InvoiceController {
         return new ResponseEntity<>(response, response.getHttpStatus());
     }
 
-    @PostMapping("/{companyId}")
+    @PostMapping("")
     public ResponseEntity<?> addInvoice(@RequestBody InvoiceDto invoiceDto,
-                                        @PathVariable(name="companyId") Long companyId)
+                                        @RequestParam(name="companyId") Long companyId)
     {
         ResponseMessage response = invoiceService.addInvoice(invoiceDto, companyId);
         return new ResponseEntity<>(response, response.getHttpStatus());

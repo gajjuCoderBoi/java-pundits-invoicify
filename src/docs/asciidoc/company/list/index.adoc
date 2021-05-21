@@ -1,0 +1,5 @@
+==== List
+
+include::company-list-with-details.adoc[]
+
+include::company-list-simple-view.adoc[]
