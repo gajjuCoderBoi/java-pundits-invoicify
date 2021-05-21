@@ -1,4 +1,4 @@
-==== Update Invoice
+==== Update
 
 ===== Sample Request
 include::{snippets}/update-invoice/http-request.adoc[]

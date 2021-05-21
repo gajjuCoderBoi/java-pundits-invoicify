@@ -1,4 +1,4 @@
-==== Get Invoice By Id
+==== Get  By Id
 
 ===== Sample Request
 include::{snippets}/get-invoice-by-id/http-request.adoc[]

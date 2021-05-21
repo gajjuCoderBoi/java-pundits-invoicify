@@ -1,4 +1,4 @@
-==== Update Company
+==== Update
 
 ===== Sample Request
 include::{snippets}/update-company/http-request.adoc[]

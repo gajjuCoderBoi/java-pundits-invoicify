@@ -1,4 +1,4 @@
-==== Get Company By ID
+==== Get  By ID
 
 ===== Sample Request
 include::{snippets}/get-company-by-id/http-request.adoc[]
