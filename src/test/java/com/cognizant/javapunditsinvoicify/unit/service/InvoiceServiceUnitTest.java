@@ -131,15 +131,14 @@ public class InvoiceServiceUnitTest {
     public void addInvoiceItem_Failed(){
         when(invoiceRepository.findById(anyLong())).thenReturn(java.util.Optional.of(new InvoiceEntity()));
         when(invoiceItemMapper.invoiceItemDtoToEntity(any(InvoiceItemDto.class))).thenReturn(new InvoiceItemEntity());
-        when(invoiceItemRepository.save(any(InvoiceItemEntity.class))).thenReturn(new InvoiceItemEntity());
 
         ResponseMessage actualResponse = invoiceService.addInvoiceItem(InvoiceItemDto.builder()
                 .description("Test Item")
                 .build(), 1L);
 
         assertNotNull(actualResponse);
-        assertEquals(actualResponse.getResponseMessage(), "InvoiceItem added Successfully.");
-        assertEquals(actualResponse.getHttpStatus(), CREATED);
+        assertEquals(actualResponse.getResponseMessage(), "RATE Item Quantity Cannot be empty.");
+        assertEquals(actualResponse.getHttpStatus(), BAD_REQUEST);
 
     }
 
