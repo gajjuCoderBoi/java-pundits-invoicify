@@ -2,7 +2,9 @@ package com.cognizant.javapunditsinvoicify.util;
 
 import com.cognizant.javapunditsinvoicify.dto.CompanyDto;
 import com.cognizant.javapunditsinvoicify.dto.InvoiceDto;
+import com.cognizant.javapunditsinvoicify.dto.InvoiceItemDto;
 import com.cognizant.javapunditsinvoicify.entity.InvoiceEntity;
+import com.cognizant.javapunditsinvoicify.entity.InvoiceItemEntity;
 import com.cognizant.javapunditsinvoicify.mapper.InvoiceItemMapper;
 import com.cognizant.javapunditsinvoicify.mapper.InvoiceMapper;
 import com.cognizant.javapunditsinvoicify.misc.FeeType;
@@ -36,17 +38,22 @@ public class HelperMethods {
                 invoiceDto.setCreatedDate(DateFormatUtil.formatDate(invoiceEntity.getCreatedDate()));
                 invoiceDto.setModifiedDate(DateFormatUtil.formatDate(invoiceEntity.getModifiedDate()));
             }
-            Double calculatedTotal = 0.0;
+            double calculatedTotal = 0.0;
             if(invoiceEntity.getInvoiceItemEntityList()!=null) {
                 calculatedTotal = invoiceEntity.getInvoiceItemEntityList().stream().mapToDouble(invoiceItemEntity -> {
                             if (invoiceItemEntity.getFeeType() == FeeType.FLAT)
                                 return invoiceItemEntity.getAmount();
-                            else return invoiceItemEntity.getRate() * invoiceItemEntity.getQuantity();
+                            else return (invoiceItemEntity.getRate() * invoiceItemEntity.getQuantity());
                         }
                 ).sum();
                 invoiceDto.setItems(
                         invoiceEntity.getInvoiceItemEntityList().stream().map(entity->{
-                            return invoiceItemMapper.invoiceItemEntityToDto(entity);
+                            {
+                                InvoiceItemDto invoiceItemDto =  invoiceItemMapper.invoiceItemEntityToDto(entity);
+                                if(entity.getFeeType() == FeeType.FLAT ){ invoiceItemDto.setRate(null);invoiceItemDto.setQuantity(null); }
+                                else { invoiceItemDto.setAmount(null); }
+                                return invoiceItemDto;
+                            }
                         }).collect(Collectors.toList())
                 );
             }

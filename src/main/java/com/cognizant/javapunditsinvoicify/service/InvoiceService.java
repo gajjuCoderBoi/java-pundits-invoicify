@@ -1,6 +1,5 @@
 package com.cognizant.javapunditsinvoicify.service;
 
-import com.cognizant.javapunditsinvoicify.dto.CompanyDto;
 import com.cognizant.javapunditsinvoicify.dto.InvoiceDto;
 import com.cognizant.javapunditsinvoicify.dto.InvoiceItemDto;
 import com.cognizant.javapunditsinvoicify.entity.CompanyEntity;
@@ -65,6 +64,28 @@ public class InvoiceService {
         }
 
         InvoiceItemEntity invoiceItemEntity = invoiceItemMapper.invoiceItemDtoToEntity(invoiceItemDto);
+        if(invoiceItemDto.getFeeType() == FeeType.FLAT ){
+            invoiceItemEntity.setRate(null);invoiceItemEntity.setQuantity(null);
+            if(invoiceItemDto.getAmount() == null) return ResponseMessage.builder()
+                    .responseMessage("FLAT Item Amount Cannot be empty.")
+                    .httpStatus(BAD_REQUEST)
+                    .build();
+        }
+        else {
+            invoiceItemEntity.setAmount(null);
+            if(invoiceItemDto.getQuantity() == null){
+                return ResponseMessage.builder()
+                        .responseMessage("RATE Item Quantity Cannot be empty.")
+                        .httpStatus(BAD_REQUEST)
+                        .build();
+            }
+            if(invoiceItemDto.getRate() == null){
+                return ResponseMessage.builder()
+                        .responseMessage("RATE Item Rate Cannot be empty.")
+                        .httpStatus(BAD_REQUEST)
+                        .build();
+            }
+        }
         invoiceItemEntity.setInvoiceEntity(savedInvoice);
         invoiceItemEntity = invoiceItemRepository.save(invoiceItemEntity);
 
@@ -122,7 +143,12 @@ public class InvoiceService {
             ).sum();
             invoiceDto.setItems(
                     invoiceEntity.getInvoiceItemEntityList().stream().map(entity->{
-                        return invoiceItemMapper.invoiceItemEntityToDto(entity);
+                        {
+                            InvoiceItemDto invoiceItemDto =  invoiceItemMapper.invoiceItemEntityToDto(entity);
+                            if(entity.getFeeType() == FeeType.FLAT ){ invoiceItemDto.setRate(null);invoiceItemDto.setQuantity(null); }
+                            else { invoiceItemDto.setAmount(null); }
+                            return invoiceItemDto;
+                        }
                     }).collect(Collectors.toList())
             );
         }

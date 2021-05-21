@@ -3,6 +3,9 @@
 ===== Sample Request
 include::{snippets}/get-all-invoices/http-request.adoc[]
 
+===== Curl Sample
+include::{snippets}/get-all-invoices/curl-request.adoc[]
+
 ===== Request Parameters
 include::{snippets}/get-all-invoices/request-parameters.adoc[]
 

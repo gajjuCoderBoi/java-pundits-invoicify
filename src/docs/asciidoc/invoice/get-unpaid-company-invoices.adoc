@@ -3,6 +3,9 @@
 ===== Sample Request
 include::{snippets}/get-company-unpaid-invoices/http-request.adoc[]
 
+===== Curl Sample
+include::{snippets}/get-company-unpaid-invoices/curl-request.adoc[]
+
 ===== Path Variables
 include::{snippets}/get-company-unpaid-invoices/path-parameters.adoc[]
 
