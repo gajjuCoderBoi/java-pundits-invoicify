@@ -2,6 +2,7 @@ package com.cognizant.javapunditsinvoicify.dto;
 
 import com.cognizant.javapunditsinvoicify.misc.PaymentStatus;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.sun.istack.NotNull;
 import lombok.*;
 
 import java.util.List;
