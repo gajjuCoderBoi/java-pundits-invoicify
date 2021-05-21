@@ -3,6 +3,9 @@
 ===== Sample Request
 include::{snippets}/invoice-add-item/http-request.adoc[]
 
+===== Curl Sample
+include::{snippets}/invoice-add-item/curl-request.adoc[]
+
 ===== Request Parameters
 include::{snippets}/invoice-add-item/request-parameters.adoc[]
 

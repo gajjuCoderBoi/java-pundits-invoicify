@@ -3,6 +3,9 @@
 ===== Sample Request
 include::{snippets}/add-invoice/http-request.adoc[]
 
+===== Curl Sample
+include::{snippets}/add-invoice/curl-request.adoc[]
+
 ===== Path Variables
 include::{snippets}/add-invoice/path-parameters.adoc[]
 

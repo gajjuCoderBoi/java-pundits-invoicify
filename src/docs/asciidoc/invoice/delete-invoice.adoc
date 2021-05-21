@@ -3,6 +3,9 @@
 ===== Sample Request
 include::{snippets}/delete-invoice/http-request.adoc[]
 
+===== Curl Sample
+include::{snippets}/delete-invoice/curl-request.adoc[]
+
 ===== Request-Parameters
 include::{snippets}/delete-invoice/path-parameters.adoc[]
 
