@@ -1,4 +1,4 @@
-==== Delete Invoice
+==== Delete
 
 ===== Sample Request
 include::{snippets}/delete-invoice/http-request.adoc[]

@@ -1,6 +1,4 @@
-include::company-list-with-details.adoc[]
-
-include::company-list-simple-view.adoc[]
+include::list/index.adoc[]
 
 include::get-company-by-id.adoc[]
 

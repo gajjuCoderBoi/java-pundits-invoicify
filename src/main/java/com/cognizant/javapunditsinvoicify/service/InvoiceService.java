@@ -5,6 +5,8 @@ import com.cognizant.javapunditsinvoicify.dto.InvoiceItemDto;
 import com.cognizant.javapunditsinvoicify.entity.CompanyEntity;
 import com.cognizant.javapunditsinvoicify.entity.InvoiceEntity;
 import com.cognizant.javapunditsinvoicify.entity.InvoiceItemEntity;
+import com.cognizant.javapunditsinvoicify.exception.InvalidDataException;
+import com.cognizant.javapunditsinvoicify.exception.MyEntityNotFoundException;
 import com.cognizant.javapunditsinvoicify.mapper.InvoiceItemMapper;
 import com.cognizant.javapunditsinvoicify.mapper.InvoiceMapper;
 import com.cognizant.javapunditsinvoicify.misc.FeeType;
@@ -22,6 +24,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.ZonedDateTime;
 import java.util.List;
@@ -57,33 +60,22 @@ public class InvoiceService {
         InvoiceEntity savedInvoice = invoiceRepository.findById(invoiceId).orElse(null);
         if (savedInvoice == null)
         {
-            return ResponseMessage.builder()
-                    .responseMessage("Invalid Invoice Id. Not Found.")
-                    .httpStatus(NOT_FOUND)
-                    .build();
+            throw new MyEntityNotFoundException("Invalid Invoice Id. Not Found.");
         }
 
         InvoiceItemEntity invoiceItemEntity = invoiceItemMapper.invoiceItemDtoToEntity(invoiceItemDto);
         if(invoiceItemDto.getFeeType() == FeeType.FLAT ){
             invoiceItemEntity.setRate(null);invoiceItemEntity.setQuantity(null);
-            if(invoiceItemDto.getAmount() == null) return ResponseMessage.builder()
-                    .responseMessage("FLAT Item Amount Cannot be empty.")
-                    .httpStatus(BAD_REQUEST)
-                    .build();
-        }
+            if(invoiceItemDto.getAmount() == null)
+                throw new InvalidDataException("FLAT Item Amount Cannot be empty.");
+                }
         else {
             invoiceItemEntity.setAmount(null);
             if(invoiceItemDto.getQuantity() == null){
-                return ResponseMessage.builder()
-                        .responseMessage("RATE Item Quantity Cannot be empty.")
-                        .httpStatus(BAD_REQUEST)
-                        .build();
+                throw new InvalidDataException("RATE Item Quantity Cannot be empty.") ;
             }
             if(invoiceItemDto.getRate() == null){
-                return ResponseMessage.builder()
-                        .responseMessage("RATE Item Rate Cannot be empty.")
-                        .httpStatus(BAD_REQUEST)
-                        .build();
+                throw new InvalidDataException("RATE Item Rate Cannot be empty.");
             }
         }
         invoiceItemEntity.setInvoiceEntity(savedInvoice);
@@ -96,6 +88,7 @@ public class InvoiceService {
                 .build();
     }
 
+    @Transactional
     public ResponseMessage addInvoice(InvoiceDto invoiceDto, Long companyId) {
 
         CompanyEntity savedCompanyEntity = companyRepository.findById(companyId).orElse(null);
@@ -113,6 +106,11 @@ public class InvoiceService {
         invoiceEntity.setCreatedDate(ZonedDateTime.now());
         invoiceEntity.setModifiedDate(ZonedDateTime.now());
         invoiceEntity = invoiceRepository.save(invoiceEntity);
+
+        if(invoiceDto.getItems() != null)
+        for (InvoiceItemDto itemDto:invoiceDto.getItems()) {
+                addInvoiceItem(itemDto, invoiceEntity.getId());
+            }
 
         return ResponseMessage.builder()
                 .id(invoiceEntity.getId().toString())

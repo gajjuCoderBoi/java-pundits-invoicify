@@ -1,4 +1,4 @@
-==== Add Invoice
+==== Add
 
 ===== Sample Request
 include::{snippets}/add-invoice/http-request.adoc[]
@@ -7,7 +7,7 @@ include::{snippets}/add-invoice/http-request.adoc[]
 include::{snippets}/add-invoice/curl-request.adoc[]
 
 ===== Path Variables
-include::{snippets}/add-invoice/path-parameters.adoc[]
+include::{snippets}/add-invoice/request-parameters.adoc[]
 
 ===== Request-Body
 include::{snippets}/add-invoice/request-fields.adoc[]

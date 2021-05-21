@@ -8,8 +8,8 @@ import com.cognizant.javapunditsinvoicify.entity.AddressEntity;
 import com.cognizant.javapunditsinvoicify.entity.CompanyEntity;
 import com.cognizant.javapunditsinvoicify.entity.InvoiceEntity;
 import com.cognizant.javapunditsinvoicify.entity.InvoiceItemEntity;
-import com.cognizant.javapunditsinvoicify.mapper.AddressMapper;
-import com.cognizant.javapunditsinvoicify.mapper.CompanyMapper;
+import com.cognizant.javapunditsinvoicify.exception.InvalidDataException;
+import com.cognizant.javapunditsinvoicify.exception.MyEntityNotFoundException;
 import com.cognizant.javapunditsinvoicify.mapper.InvoiceItemMapper;
 import com.cognizant.javapunditsinvoicify.mapper.InvoiceMapper;
 import com.cognizant.javapunditsinvoicify.misc.FeeType;
@@ -18,7 +18,6 @@ import com.cognizant.javapunditsinvoicify.repository.CompanyRepository;
 import com.cognizant.javapunditsinvoicify.repository.InvoiceItemRepository;
 import com.cognizant.javapunditsinvoicify.repository.InvoiceRepository;
 import com.cognizant.javapunditsinvoicify.response.ResponseMessage;
-import com.cognizant.javapunditsinvoicify.service.CompanyService;
 import com.cognizant.javapunditsinvoicify.service.InvoiceService;
 import com.cognizant.javapunditsinvoicify.util.DateFormatUtil;
 import com.cognizant.javapunditsinvoicify.util.HelperMethods;
@@ -46,8 +45,7 @@ import static com.cognizant.javapunditsinvoicify.util.InvoicifyConstants.DESCEND
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.springframework.http.HttpStatus.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -77,9 +75,12 @@ public class InvoiceServiceUnitTest {
     @Mock
     private HelperMethods helperMethods;
 
+    @Mock
+    private InvoiceItemDto mockInvoiceItemDto;
 
-    private CompanyEntity mockCompanyEntity;
-    private InvoiceEntity mockInvoiceEntity;
+
+    private CompanyEntity sampleCompanyEntity;
+    private InvoiceEntity sampleInvoiceEntity;
     private CompanyDto mockCompanyDto;
     private AddressDto addressDto;
 
@@ -89,11 +90,11 @@ public class InvoiceServiceUnitTest {
         invoiceDto.setPaymentStatus(PaymentStatus.UNPAID);
 
         //Company Mock data
-        mockCompanyEntity = new CompanyEntity();
-        mockCompanyEntity.setName("Name");
-        mockCompanyEntity.setContactName("Contact Name");
-        mockCompanyEntity.setContactTitle("Contact Title");
-        mockCompanyEntity.setContactNumber(123456789);
+        sampleCompanyEntity = new CompanyEntity();
+        sampleCompanyEntity.setName("Name");
+        sampleCompanyEntity.setContactName("Contact Name");
+        sampleCompanyEntity.setContactTitle("Contact Title");
+        sampleCompanyEntity.setContactNumber(123456789);
 
         AddressEntity addressEntity = new AddressEntity();
         addressEntity.setLine1("Address Line 1");
@@ -102,7 +103,7 @@ public class InvoiceServiceUnitTest {
         addressEntity.setState("XX");
         addressEntity.setZip(12345);
 
-        mockCompanyEntity.setAddressEntity(addressEntity);
+        sampleCompanyEntity.setAddressEntity(addressEntity);
 
         mockCompanyDto = new CompanyDto();
         mockCompanyDto.setName("Name");
@@ -120,9 +121,9 @@ public class InvoiceServiceUnitTest {
         mockCompanyDto.setAddress(addressDto);
 
         // Mock Invoice Entity object
-        mockInvoiceEntity = new InvoiceEntity();
-        mockInvoiceEntity.setId(1L);
-        mockInvoiceEntity.setPaymentStatus(PaymentStatus.UNPAID);
+        sampleInvoiceEntity = new InvoiceEntity();
+        sampleInvoiceEntity.setId(1L);
+        sampleInvoiceEntity.setPaymentStatus(PaymentStatus.UNPAID);
 
 
     }
@@ -130,63 +131,52 @@ public class InvoiceServiceUnitTest {
     @Test
     public void addInvoiceItem_RATE_quantity_Failed(){
         when(invoiceRepository.findById(anyLong())).thenReturn(java.util.Optional.of(new InvoiceEntity()));
-        when(invoiceItemMapper.invoiceItemDtoToEntity(any(InvoiceItemDto.class))).thenReturn(new InvoiceItemEntity());
-
-        ResponseMessage actualResponse = invoiceService.addInvoiceItem(InvoiceItemDto.builder()
-                .description("Test Item")
-                .feeType(RATE)
-                .rate(10.00)
-                .build(), 1L);
-
-        assertNotNull(actualResponse);
-        assertEquals(actualResponse.getResponseMessage(), "RATE Item Quantity Cannot be empty.");
-        assertEquals(actualResponse.getHttpStatus(), BAD_REQUEST);
-
+        when(invoiceItemMapper.invoiceItemDtoToEntity(any(InvoiceItemDto.class))).thenThrow(new InvalidDataException("RATE Item Quantity Cannot be empty."));
+        assertThrows(InvalidDataException.class, ()->{
+            ResponseMessage actualResponse = invoiceService.addInvoiceItem(InvoiceItemDto.builder()
+                    .description("Test Item")
+                    .feeType(RATE)
+                    .rate(10.00)
+                    .build(), 1L);
+        });
     }
 
     @Test
     public void addInvoiceItem_FLAT_Amount_Missing_Failed(){
         when(invoiceRepository.findById(anyLong())).thenReturn(java.util.Optional.of(new InvoiceEntity()));
         when(invoiceItemMapper.invoiceItemDtoToEntity(any(InvoiceItemDto.class))).thenReturn(new InvoiceItemEntity());
-
-        ResponseMessage actualResponse = invoiceService.addInvoiceItem(InvoiceItemDto.builder()
-                .description("Test Item")
-                .feeType(FLAT)
-                .amount(null)
-                .build(), 1L);
-
-        assertNotNull(actualResponse);
-        assertEquals(actualResponse.getResponseMessage(), "FLAT Item Amount Cannot be empty.");
-        assertEquals(actualResponse.getHttpStatus(), BAD_REQUEST);
+        assertThrows(InvalidDataException.class, ()->{
+            ResponseMessage actualResponse = invoiceService.addInvoiceItem(InvoiceItemDto.builder()
+                    .description("Test Item")
+                    .feeType(FLAT)
+                    .amount(null)
+                    .build(), 1L);
+        });
 
     }
     @Test
     public void addInvoiceItem_RATE_rate_Missing_Failed(){
         when(invoiceRepository.findById(anyLong())).thenReturn(java.util.Optional.of(new InvoiceEntity()));
         when(invoiceItemMapper.invoiceItemDtoToEntity(any(InvoiceItemDto.class))).thenReturn(new InvoiceItemEntity());
-
-        ResponseMessage actualResponse = invoiceService.addInvoiceItem(InvoiceItemDto.builder()
-                .description("Test Item")
-                .feeType(RATE)
-                .quantity(10)
-                .rate(null)
-                .build(), 1L);
-
-        assertNotNull(actualResponse);
-        assertEquals(actualResponse.getResponseMessage(), "RATE Item Rate Cannot be empty.");
-        assertEquals(actualResponse.getHttpStatus(), BAD_REQUEST);
+        assertThrows(InvalidDataException.class, ()->{
+            ResponseMessage actualResponse = invoiceService.addInvoiceItem(InvoiceItemDto.builder()
+                    .description("Test Item")
+                    .feeType(RATE)
+                    .quantity(10)
+                    .rate(null)
+                    .build(), 1L);
+        });
 
     }
     @Test
-    public void addInvoiceItem_Success(){
-        when(invoiceRepository.findById(anyLong())).thenReturn(Optional.empty());
-        ResponseMessage actualResponse = invoiceService.addInvoiceItem(InvoiceItemDto.builder()
-                .description("Test Item")
-                .build(), 1L);
+    public void addInvoiceItem_Failed(){
+        when(invoiceRepository.findById(anyLong())).thenThrow(new MyEntityNotFoundException("Invalid Invoice Id. Not Found."));
 
-        assertNotNull(actualResponse);
-        assertEquals(actualResponse.getResponseMessage(), "Invalid Invoice Id. Not Found.");
-        assertEquals(actualResponse.getHttpStatus(), NOT_FOUND);
+        assertThrows(MyEntityNotFoundException.class, ()->{
+            ResponseMessage actualResponse = invoiceService.addInvoiceItem(InvoiceItemDto.builder()
+                    .description("Test Item")
+                    .build(), 1L);
+        });
 
     }
 
@@ -243,13 +233,13 @@ public class InvoiceServiceUnitTest {
     public void getInvoiceIdById(){
         ZonedDateTime _new, _modified;
         _new = _modified = ZonedDateTime.parse("2021-05-15T19:47:08.528563200-04:00[America/New_York]");
-        mockInvoiceEntity = new InvoiceEntity();
-        mockInvoiceEntity.setCompanyEntity(mockCompanyEntity);
-        mockInvoiceEntity.setModifiedDate(_new);
-        mockInvoiceEntity.setCreatedDate(_modified);
-        mockInvoiceEntity.setPaymentStatus(PAID);
+        sampleInvoiceEntity = new InvoiceEntity();
+        sampleInvoiceEntity.setCompanyEntity(sampleCompanyEntity);
+        sampleInvoiceEntity.setModifiedDate(_new);
+        sampleInvoiceEntity.setCreatedDate(_modified);
+        sampleInvoiceEntity.setPaymentStatus(PAID);
 
-        when(invoiceRepository.findById(anyLong())).thenReturn(Optional.of(mockInvoiceEntity));
+        when(invoiceRepository.findById(anyLong())).thenReturn(Optional.of(sampleInvoiceEntity));
         when(invoiceMapper.invoiceEntityToDto(any(InvoiceEntity.class))).thenReturn(new InvoiceDto());
 
         InvoiceDto actual = invoiceService.getInvoiceById(1L);
@@ -262,13 +252,13 @@ public class InvoiceServiceUnitTest {
 
     @Test
     public void getInvoiceIdById_NoDate(){
-        mockInvoiceEntity = new InvoiceEntity();
-        mockInvoiceEntity.setCompanyEntity(mockCompanyEntity);
-        mockInvoiceEntity.setModifiedDate(null);
-        mockInvoiceEntity.setCreatedDate(null);
-        mockInvoiceEntity.setPaymentStatus(PAID);
+        sampleInvoiceEntity = new InvoiceEntity();
+        sampleInvoiceEntity.setCompanyEntity(sampleCompanyEntity);
+        sampleInvoiceEntity.setModifiedDate(null);
+        sampleInvoiceEntity.setCreatedDate(null);
+        sampleInvoiceEntity.setPaymentStatus(PAID);
 
-        when(invoiceRepository.findById(anyLong())).thenReturn(Optional.of(mockInvoiceEntity));
+        when(invoiceRepository.findById(anyLong())).thenReturn(Optional.of(sampleInvoiceEntity));
         when(invoiceMapper.invoiceEntityToDto(any(InvoiceEntity.class))).thenReturn(new InvoiceDto());
 
         InvoiceDto actual = invoiceService.getInvoiceById(1L);
@@ -494,8 +484,8 @@ public class InvoiceServiceUnitTest {
         InvoiceEntity invoiceEntity = new InvoiceEntity();
         entity.setPaymentStatus(PaymentStatus.UNPAID);
 
-        when(invoiceRepository.findById(anyLong())).thenReturn(Optional.ofNullable(mockInvoiceEntity));
-        when(invoiceRepository.save(any(InvoiceEntity.class))).thenReturn(mockInvoiceEntity);
+        when(invoiceRepository.findById(anyLong())).thenReturn(Optional.ofNullable(sampleInvoiceEntity));
+        when(invoiceRepository.save(any(InvoiceEntity.class))).thenReturn(sampleInvoiceEntity);
 
         ResponseMessage actualResponse = invoiceService.updateInvoice(entity, 1L);
         invoiceService.updateInvoice(entity, 1L);
@@ -509,10 +499,10 @@ public class InvoiceServiceUnitTest {
     @Test
     public void deleteInvoice() {
         //Invoice status as PAID and more then 1 year old
-        mockInvoiceEntity.setPaymentStatus(PaymentStatus.PAID);
-        mockInvoiceEntity.setCreatedDate(ZonedDateTime.now().minusMonths(13));
+        sampleInvoiceEntity.setPaymentStatus(PaymentStatus.PAID);
+        sampleInvoiceEntity.setCreatedDate(ZonedDateTime.now().minusMonths(13));
 
-        when(invoiceRepository.findById(anyLong())).thenReturn(Optional.ofNullable(mockInvoiceEntity));
+        when(invoiceRepository.findById(anyLong())).thenReturn(Optional.ofNullable(sampleInvoiceEntity));
         ResponseMessage actualResponse = invoiceService.deleteInvoice(1L);
 
         assertNotNull(actualResponse);
@@ -521,10 +511,10 @@ public class InvoiceServiceUnitTest {
 
 
         //Invoice status as PAID and less then 1 year old
-        mockInvoiceEntity.setPaymentStatus(PaymentStatus.PAID);
-        mockInvoiceEntity.setCreatedDate(ZonedDateTime.now().minusMonths(6));
+        sampleInvoiceEntity.setPaymentStatus(PaymentStatus.PAID);
+        sampleInvoiceEntity.setCreatedDate(ZonedDateTime.now().minusMonths(6));
 
-        when(invoiceRepository.findById(anyLong())).thenReturn(Optional.ofNullable(mockInvoiceEntity));
+        when(invoiceRepository.findById(anyLong())).thenReturn(Optional.ofNullable(sampleInvoiceEntity));
         actualResponse = invoiceService.deleteInvoice(1L);
 
         assertNotNull(actualResponse);
@@ -533,10 +523,10 @@ public class InvoiceServiceUnitTest {
 
 
         //Invoice status as UNPAID and more then 1 year old
-        mockInvoiceEntity.setPaymentStatus(PaymentStatus.UNPAID);
-        mockInvoiceEntity.setCreatedDate(ZonedDateTime.now().minusMonths(16));
+        sampleInvoiceEntity.setPaymentStatus(PaymentStatus.UNPAID);
+        sampleInvoiceEntity.setCreatedDate(ZonedDateTime.now().minusMonths(16));
 
-        when(invoiceRepository.findById(anyLong())).thenReturn(Optional.ofNullable(mockInvoiceEntity));
+        when(invoiceRepository.findById(anyLong())).thenReturn(Optional.ofNullable(sampleInvoiceEntity));
         actualResponse = invoiceService.deleteInvoice(1L);
 
         assertNotNull(actualResponse);
