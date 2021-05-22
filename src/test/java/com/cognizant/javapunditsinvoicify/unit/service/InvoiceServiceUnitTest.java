@@ -94,7 +94,7 @@ public class InvoiceServiceUnitTest {
         sampleCompanyEntity.setName("Name");
         sampleCompanyEntity.setContactName("Contact Name");
         sampleCompanyEntity.setContactTitle("Contact Title");
-        sampleCompanyEntity.setContactNumber(123456789);
+        sampleCompanyEntity.setContactNumber(1234567890L);
 
         AddressEntity addressEntity = new AddressEntity();
         addressEntity.setLine1("Address Line 1");
@@ -109,7 +109,7 @@ public class InvoiceServiceUnitTest {
         mockCompanyDto.setName("Name");
         mockCompanyDto.setContactName("Contact Name");
         mockCompanyDto.setContactTitle("Contact Title");
-        mockCompanyDto.setContactNumber(123456789);
+        mockCompanyDto.setContactNumber(1234567890L);
 
         addressDto = new AddressDto();
         addressDto.setLine1("Address Line 1");
@@ -281,7 +281,7 @@ public class InvoiceServiceUnitTest {
         companyEntity.setName(randomAlphanumeric(10));
         companyEntity.setContactName("Contact Name");
         companyEntity.setContactTitle("Contact Title");
-        companyEntity.setContactNumber(123456789);
+        companyEntity.setContactNumber(1234567890L);
 
         AddressEntity addressEntity = new AddressEntity();
         addressEntity.setLine1("Address line 1");
@@ -383,7 +383,7 @@ public class InvoiceServiceUnitTest {
         companyEntity.setName(randomAlphanumeric(10));
         companyEntity.setContactName("Contact Name");
         companyEntity.setContactTitle("Contact Title");
-        companyEntity.setContactNumber(123456789);
+        companyEntity.setContactNumber(1234567890L);
 
         AddressEntity addressEntity = new AddressEntity();
         addressEntity.setLine1("Address line 1");

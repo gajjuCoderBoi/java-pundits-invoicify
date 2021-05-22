@@ -20,7 +20,7 @@ public class CompanyDto {
     private AddressDto address;
     private String contactName;
     private String contactTitle;
-    private Integer contactNumber;
+    private Long contactNumber;
     private List<InvoiceDto> invoices;
 
 }

@@ -56,7 +56,6 @@ public class InvoiceService {
     @Autowired
     private HelperMethods helperMethods;
 
-    @Transactional(rollbackFor = {InvalidDataException.class})
     public ResponseMessage addInvoiceItem(InvoiceItemDto invoiceItemDto, Long invoiceId) {
         InvoiceEntity savedInvoice = invoiceRepository.findById(invoiceId).orElse(null);
         if (savedInvoice == null)
@@ -108,7 +107,7 @@ public class InvoiceService {
         invoiceEntity.setCreatedDate(ZonedDateTime.now());
         invoiceEntity.setModifiedDate(ZonedDateTime.now());
         invoiceEntity = invoiceRepository.save(invoiceEntity);
-        System.out.println(invoiceDto.getItems());
+        System.out.println(invoiceEntity.getId());
         if(invoiceDto.getItems() != null)
         for (InvoiceItemDto itemDto:invoiceDto.getItems()) {
                 addInvoiceItem(itemDto, invoiceEntity.getId());

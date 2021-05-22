@@ -157,7 +157,13 @@ public class InvoiceIT {
                                 parameterWithName("companyId").description("Company Id")
                         ),
                         requestFields(
-                                fieldWithPath("paymentStatus").description("Payment Status.").type("String: PAID,UNPAID")
+                                fieldWithPath("paymentStatus").description("Payment Status.").type("String: PAID,UNPAID"),
+                                fieldWithPath("items.[]").description("Array of Invoice Items").type("Item").optional(),
+                                fieldWithPath("items.[].description").description("Item Description.").type("String"),
+                                fieldWithPath("items.[].feeType").description("Type of the Item. ").type("String: FLAT, RATE"),
+                                fieldWithPath("items.[].quantity").description("Quantity of An Item. (Only Populate when feeType:rate)").type("Integer"),
+                                fieldWithPath("items.[].rate").description("Rate of the Item. (Only Populate when feeType:rate)").type("Double"),
+                                fieldWithPath("items.[].amount").description("Item Amount.  (Only Populate when feeType:rate) (Only Populate when feeType:flat)").type("Double").optional()
                         ),
                         responseFields(
                                 fieldWithPath("id").description("Invoice Id."),
@@ -508,7 +514,7 @@ public class InvoiceIT {
                         .name(randomAlphanumeric(10))
                         .contactName("Contact Name")
                         .contactTitle("Contact Title")
-                        .contactNumber(123456789)
+                        .contactNumber(1234567890L)
                         .address(AddressDto.builder()
                                 .line1("Address line 1")
                                 .line2("line 2")
