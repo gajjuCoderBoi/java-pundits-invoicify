@@ -56,6 +56,7 @@ public class InvoiceService {
     @Autowired
     private HelperMethods helperMethods;
 
+    @Transactional(rollbackFor = {InvalidDataException.class})
     public ResponseMessage addInvoiceItem(InvoiceItemDto invoiceItemDto, Long invoiceId) {
         InvoiceEntity savedInvoice = invoiceRepository.findById(invoiceId).orElse(null);
         if (savedInvoice == null)
@@ -64,6 +65,7 @@ public class InvoiceService {
         }
 
         InvoiceItemEntity invoiceItemEntity = invoiceItemMapper.invoiceItemDtoToEntity(invoiceItemDto);
+
         if(invoiceItemDto.getFeeType() == FeeType.FLAT ){
             invoiceItemEntity.setRate(null);invoiceItemEntity.setQuantity(null);
             if(invoiceItemDto.getAmount() == null)
@@ -88,7 +90,7 @@ public class InvoiceService {
                 .build();
     }
 
-    @Transactional
+    @Transactional(rollbackFor = {InvalidDataException.class})
     public ResponseMessage addInvoice(InvoiceDto invoiceDto, Long companyId) {
 
         CompanyEntity savedCompanyEntity = companyRepository.findById(companyId).orElse(null);
@@ -106,7 +108,7 @@ public class InvoiceService {
         invoiceEntity.setCreatedDate(ZonedDateTime.now());
         invoiceEntity.setModifiedDate(ZonedDateTime.now());
         invoiceEntity = invoiceRepository.save(invoiceEntity);
-
+        System.out.println(invoiceDto.getItems());
         if(invoiceDto.getItems() != null)
         for (InvoiceItemDto itemDto:invoiceDto.getItems()) {
                 addInvoiceItem(itemDto, invoiceEntity.getId());
