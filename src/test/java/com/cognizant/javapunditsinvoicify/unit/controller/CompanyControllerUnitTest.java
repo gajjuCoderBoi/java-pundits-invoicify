@@ -50,7 +50,7 @@ public class CompanyControllerUnitTest {
         companyDto.setName("Name");
         companyDto.setContactName("Contact Name");
         companyDto.setContactTitle("Contact Title");
-        companyDto.setContactNumber(123456789);
+        companyDto.setContactNumber(1234567890L);
 
         addressDto = new AddressDto();
         addressDto.setLine1("Address Line 1");
@@ -106,7 +106,7 @@ public class CompanyControllerUnitTest {
                 .andExpect(jsonPath("name").value("Name"))
                 .andExpect(jsonPath("contactName").value("Contact Name"))
                 .andExpect(jsonPath("contactTitle").value("Contact Title"))
-                .andExpect(jsonPath("contactNumber").value("123456789"))
+                .andExpect(jsonPath("contactNumber").value("1234567890"))
                 .andExpect(jsonPath("address.line1").value("Address Line 1"))
                 .andExpect(jsonPath("address.line2").value("Address Line 2"))
                 .andExpect(jsonPath("address.city").value("City"))

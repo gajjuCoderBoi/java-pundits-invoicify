@@ -51,7 +51,7 @@ public class CompanyIT {
         companyDto.setName("Name");
         companyDto.setContactName("Contact Name");
         companyDto.setContactTitle("Contact Title");
-        companyDto.setContactNumber(123456789);
+        companyDto.setContactNumber(1234567890L);
 
         AddressDto addressDto = new AddressDto();
         addressDto.setLine1("Address line 1");
@@ -100,7 +100,7 @@ public class CompanyIT {
         companyDto.setName("First Company");
         companyDto.setContactName("Contact Name");
         companyDto.setContactTitle("Contact Title");
-        companyDto.setContactNumber(123456789);
+        companyDto.setContactNumber(1234567890L);
 
         AddressDto addressDto = new AddressDto();
         addressDto.setLine1("Address line 1");
@@ -139,7 +139,7 @@ public class CompanyIT {
                         .name("Test Name")
                         .contactName("Contact Name")
                         .contactTitle("Contact Title")
-                        .contactNumber(123456789)
+                        .contactNumber(1234567890L)
                         .address(AddressDto.builder()
                                 .line1("Address line 1")
                                 .line2("line 2")
@@ -210,7 +210,7 @@ public class CompanyIT {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("name").value("wallmart"))
                 .andExpect(jsonPath("contactName").value("wallmartCEO"))
-                .andExpect(jsonPath("contactNumber").value("123456789"))
+                .andExpect(jsonPath("contactNumber").value("1234567890"))
                 .andExpect(jsonPath("contactTitle").value("Contact Title"))
                 .andExpect(jsonPath("address.line1").value("Address line 1"))
                 .andExpect(jsonPath("address.line2").value("line 2"))
@@ -244,7 +244,7 @@ public class CompanyIT {
                         .name("Test Name")
                         .contactName("Contact Name")
                         .contactTitle("Contact Title")
-                        .contactNumber(123456789)
+                        .contactNumber(1234567890L)
                         .address(AddressDto.builder()
                                 .line1("Address line 1")
                                 .line2("line 2")
@@ -296,7 +296,7 @@ public class CompanyIT {
                 .andExpect(jsonPath("$[0].id").exists())
                 .andExpect(jsonPath("$[0].name").value("wallmart"))
                 .andExpect(jsonPath("$[0].contactName").value("wallmartCEO"))
-                .andExpect(jsonPath("$[0].contactNumber").value("123456789"))
+                .andExpect(jsonPath("$[0].contactNumber").value("1234567890"))
                 .andExpect(jsonPath("$[0].contactTitle").value("Contact Title"))
                 .andExpect(jsonPath("$[0].address.line1").value("Address line 1"))
                 .andExpect(jsonPath("$[0].address.line2").value("line 2"))
@@ -328,7 +328,7 @@ public class CompanyIT {
                         .name("Test Name")
                         .contactName("Contact Name")
                         .contactTitle("Contact Title")
-                        .contactNumber(123456789)
+                        .contactNumber(1234567890L)
                         .address(AddressDto.builder()
                                 .line1("Address line 1")
                                 .line2("line 2")

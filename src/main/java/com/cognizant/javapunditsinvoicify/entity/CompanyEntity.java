@@ -31,7 +31,7 @@ public class CompanyEntity {
 
     private String contactName;
     private String contactTitle;
-    private Integer contactNumber;
+    private Long contactNumber;
 
     @OneToMany(mappedBy = "companyEntity")
     private List<InvoiceEntity> invoices;

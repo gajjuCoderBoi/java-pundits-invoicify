@@ -50,7 +50,7 @@ public class CompanyServiceUnitTest {
         sampleTestCompanyEntity.setName("Name");
         sampleTestCompanyEntity.setContactName("Contact Name");
         sampleTestCompanyEntity.setContactTitle("Contact Title");
-        sampleTestCompanyEntity.setContactNumber(123456789);
+        sampleTestCompanyEntity.setContactNumber(1234567890L);
 
         AddressEntity addressEntity = new AddressEntity();
         addressEntity.setLine1("Address Line 1");
@@ -65,7 +65,7 @@ public class CompanyServiceUnitTest {
         sampleTestCompanyDto.setName("Name");
         sampleTestCompanyDto.setContactName("Contact Name");
         sampleTestCompanyDto.setContactTitle("Contact Title");
-        sampleTestCompanyDto.setContactNumber(123456789);
+        sampleTestCompanyDto.setContactNumber(1234567890L);
 
         addressDto = new AddressDto();
         addressDto.setLine1("Address Line 1");
@@ -89,7 +89,7 @@ public class CompanyServiceUnitTest {
         assertEquals(actualCompanyDto.getName(), "Name");
         assertEquals(actualCompanyDto.getContactName(), "Contact Name");
         assertEquals(actualCompanyDto.getContactTitle(), "Contact Title");
-        assertEquals(actualCompanyDto.getContactNumber(), 123456789);
+        assertEquals(actualCompanyDto.getContactNumber(), 1234567890L);
         assertEquals(actualCompanyDto.getAddress().getLine1(), "Address Line 1");
         assertEquals(actualCompanyDto.getAddress().getLine2(), "Address Line 2");
         assertEquals(actualCompanyDto.getAddress().getCity(), "City");
